@@ -1,8 +1,8 @@
 package com.example.nazoratv2.entity;
 
-
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -16,14 +16,10 @@ import java.time.LocalDate;
 public class Mark extends BaseEntity {
 
     private LocalDate date;
-
-    private Long studentId;
-
+    @ManyToOne
+    private Student student;
     private Integer homeworkScore;
 
     private Integer activeScore;
-
-    private Boolean status;
-
-
+    private String status;
 }

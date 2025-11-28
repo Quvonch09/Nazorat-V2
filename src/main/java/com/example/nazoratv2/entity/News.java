@@ -9,12 +9,11 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
 public class News extends BaseEntity {
-
 
     private String name;
 
@@ -24,6 +23,6 @@ public class News extends BaseEntity {
 
     private LocalDate date;
 
-    private Boolean active;
+    private boolean active;
 
 }

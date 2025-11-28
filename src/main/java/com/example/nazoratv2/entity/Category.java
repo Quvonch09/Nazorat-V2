@@ -2,7 +2,6 @@ package com.example.nazoratv2.entity;
 
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 
 @Getter
