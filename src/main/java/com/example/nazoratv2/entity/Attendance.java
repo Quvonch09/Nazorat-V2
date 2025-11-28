@@ -4,6 +4,8 @@ import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,5 +13,11 @@ import lombok.*;
 @Setter
 @Builder
 public class Attendance extends BaseEntity {
+
+    private LocalDate date;
+
+    private Student student;
+
+    private Boolean status; //true -> keldi, false -> kelmadi, null -> sababli
 
 }

@@ -12,5 +12,13 @@ import lombok.*;
 @Builder
 public class Category extends BaseEntity {
 
+    private String name;
 
+    private String description;
+
+    private int duration;
+
+    private String imgUrl;
+
+    private boolean active;
 }
