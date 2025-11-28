@@ -42,13 +42,13 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "updated_by")
     private String updatedBy;
 
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted = false;
-
-    /** Soft delete helper */
-    public void softDelete() {
-        this.deleted = true;
-    }
+//    @Column(name = "deleted", nullable = false)
+//    private boolean deleted = false;
+//
+//    /** Soft delete helper */
+//    public void softDelete() {
+//        this.deleted = true;
+//    }
 
     /** equals/hashCode faqat ID bo'yicha */
     @Override

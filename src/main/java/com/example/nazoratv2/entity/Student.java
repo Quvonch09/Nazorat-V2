@@ -29,4 +29,5 @@ public class Student extends BaseEntity {
     @ManyToOne
     private Group group;
 
+    private boolean deleted;
 }

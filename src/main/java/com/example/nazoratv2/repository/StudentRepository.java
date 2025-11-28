@@ -4,6 +4,7 @@ import com.example.nazoratv2.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -11,11 +12,11 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     boolean existsByPhoneNumber(String phoneNumber);
     Optional<Student> findByPhoneNumber(String phoneNumber);
 
-//    List<Student> findAllByGroup_id(Long group_id);
+    List<Student> findAllByGroup_id(Long group_id);
 //
 //    Optional<Student> findByParent_Phone(String phone);
 //
-//    long countByGroup_Id(Long groupId);
+    long countByGroup_Id(Long groupId);
 //
 //    @Query(value = """
 //    select s.* from student s join groups g on g.id = s.group_id join users u on u.id = g.teacher_id where
