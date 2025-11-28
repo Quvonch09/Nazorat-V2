@@ -14,6 +14,7 @@ import lombok.*;
 @Builder
 @Entity
 public class Student extends BaseEntity {
+
     private String fullName;
 
     private String phoneNumber;
@@ -24,7 +25,6 @@ public class Student extends BaseEntity {
 
     @ManyToOne
     private User parent;
-
 
     @ManyToOne
     private Group group;
