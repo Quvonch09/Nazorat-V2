@@ -22,6 +22,6 @@ public class Notification extends BaseEntity {
     private List<Student> students;
     @ManyToMany
     private List<User> parent;
-    private Boolean isRead;
+    private boolean isRead;
 
 }
