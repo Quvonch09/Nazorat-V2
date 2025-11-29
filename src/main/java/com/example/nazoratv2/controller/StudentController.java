@@ -20,8 +20,8 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping("/get-page-students")
-    public ResponseEntity<ApiResponse<ResPageable>> getStudentsByPage(@RequestBody int page,
-                                                                      @RequestBody int size) {
+    public ResponseEntity<ApiResponse<ResPageable>> getStudentsByPage(@RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(studentService.getStudents(page, size));
     }
 
