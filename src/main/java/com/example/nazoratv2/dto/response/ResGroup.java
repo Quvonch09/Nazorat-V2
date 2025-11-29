@@ -11,5 +11,6 @@ public class ResGroup {
     private Long id;
     private String name;
     private String teacherName;
+    private String categoryName;
     private Long studentCount;
 }

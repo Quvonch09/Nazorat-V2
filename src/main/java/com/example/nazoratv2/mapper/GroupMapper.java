@@ -24,6 +24,8 @@ public class GroupMapper {
                 .teacherName(group.getTeacher().getFullName())
                 .roomId(group.getRoom().getId())
                 .teacherId(group.getTeacher().getId())
+                .categoryId(group.getCategory().getId())
+                .categoryName(group.getCategory().getName())
                 .weekDays(group.getWeekDays().stream().map(Enum::toString).toList())
                 .students(studentRepository.findAllByGroup_id(group.getId()).stream()
                         .map(studentMapper::toStudentDTO).toList())
@@ -38,6 +40,7 @@ public class GroupMapper {
                 .name(group.getName())
                 .teacherName(group.getTeacher().getFullName())
                 .studentCount(studentRepository.countByGroup_Id(group.getId()))
+                .categoryName(group.getCategory().getName())
                 .build();
     }
 }
