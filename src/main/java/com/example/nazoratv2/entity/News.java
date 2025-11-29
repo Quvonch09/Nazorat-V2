@@ -18,5 +18,5 @@ public class News extends BaseEntity {
      private String imageUrl;
 
      private LocalDate date;
-     private Boolean isActive;
+     private boolean isActive;
 }
