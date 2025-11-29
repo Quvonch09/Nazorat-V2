@@ -53,7 +53,7 @@ public class GroupService {
         LocalTime endTime = LocalTime.parse(reqGroup.getEndTime());
 
         if (groupRepository.existsByGroup(reqGroup.getWeekDays(),room.getId(),startTime, endTime)) {
-            return ApiResponse.success(null, "There is no room for the group at this time");
+            return ApiResponse.error("There is no room for the group at this time");
         }
 
 
@@ -85,7 +85,7 @@ public class GroupService {
 
         if (groupRepository.existsByGroupForUpdate(reqGroup.getWeekDays(),
                 reqGroup.getRoomId(), startTime, endTime, group.getId())) {
-            return ApiResponse.success(null, "There is no room for the group at this time");
+            return ApiResponse.error("There is no room for the group at this time");
         }
 
         User teacher = userRepository.findById(reqGroup.getTeacherId()).orElseThrow(
