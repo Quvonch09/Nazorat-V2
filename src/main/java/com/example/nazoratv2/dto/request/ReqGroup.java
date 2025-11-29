@@ -31,6 +31,8 @@ public class ReqGroup {
 
     private Long teacherId;
 
+    private Long categoryId;
+
     private Long roomId;
 
     @Schema(hidden = true)
@@ -38,6 +40,9 @@ public class ReqGroup {
 
     @Schema(hidden = true)
     private String teacherName;
+
+    @Schema(hidden = true)
+    private String categoryName;
 
     @Schema(hidden = true)
     private List<ResStudent> students;

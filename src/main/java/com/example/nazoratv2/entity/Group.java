@@ -35,6 +35,9 @@ public class Group extends BaseEntity {
     private List<WeekDays> weekDays;
 
     @ManyToOne
+    private Category category;
+
+    @ManyToOne
     private User teacher;
 
     @ManyToOne

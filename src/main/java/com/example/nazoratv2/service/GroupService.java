@@ -4,6 +4,7 @@ import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqGroup;
 import com.example.nazoratv2.dto.response.ResGroup;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Room;
 import com.example.nazoratv2.entity.User;
@@ -11,6 +12,7 @@ import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.entity.enums.WeekDays;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.GroupMapper;
+import com.example.nazoratv2.repository.CategoryRepository;
 import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.RoomRepository;
 import com.example.nazoratv2.repository.UserRepository;
@@ -31,6 +33,7 @@ public class GroupService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final GroupMapper groupMapper;
+    private final CategoryRepository categoryRepository;
 
 
     public ApiResponse<String> saveGroup(ReqGroup reqGroup){
@@ -40,6 +43,10 @@ public class GroupService {
 
         Room room = roomRepository.findById(reqGroup.getRoomId()).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
+        );
+
+        Category category = categoryRepository.findById(reqGroup.getCategoryId()).orElseThrow(
+                () -> new DataNotFoundException("Category not found")
         );
 
         LocalTime startTime = LocalTime.parse(reqGroup.getStartTime());
@@ -59,6 +66,7 @@ public class GroupService {
                 .teacher(teacher)
                 .room(room)
                 .weekDays(weekdays)
+                .category(category)
                 .build();
         groupRepository.save(group);
         return ApiResponse.success(null, "Group successfully saved");
@@ -84,6 +92,10 @@ public class GroupService {
                 () -> new DataNotFoundException("Teacher not found")
         );
 
+        Category category = categoryRepository.findById(reqGroup.getCategoryId()).orElseThrow(
+                () -> new DataNotFoundException("Category not found")
+        );
+
         Room room = roomRepository.findById(reqGroup.getRoomId()).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
         );
@@ -96,6 +108,7 @@ public class GroupService {
         group.setRoom(room);
         group.setName(reqGroup.getName());
         group.setWeekDays(weekdays);
+        group.setCategory(category);
         groupRepository.save(group);
         return ApiResponse.success(null, "Group successfully updated");
     }
