@@ -1,10 +1,11 @@
 package com.example.nazoratv2.repository;
 
-import com.example.nazoratv2.entity.Room;
+import com.example.nazoratv2.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Long> {
-    boolean existsByName(String name);
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
+
+
 }

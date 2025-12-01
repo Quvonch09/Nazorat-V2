@@ -1,17 +1,16 @@
 package com.example.nazoratv2.entity;
 
-
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class News extends BaseEntity {
 
