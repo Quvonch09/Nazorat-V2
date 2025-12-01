@@ -15,4 +15,5 @@ public class ReqCategory {
 
     private String imgUrl;
 
+    public Long getId() {}
 }
