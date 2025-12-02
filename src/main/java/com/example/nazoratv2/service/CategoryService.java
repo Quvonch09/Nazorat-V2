@@ -5,11 +5,8 @@ import com.example.nazoratv2.dto.request.ReqCategory;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.exception.DataNotFoundException;
-import com.example.nazoratv2.mapper.GroupMapper;
+import com.example.nazoratv2.mapper.CategoryMapper;
 import com.example.nazoratv2.repository.CategoryRepository;
-import com.example.nazoratv2.repository.GroupRepository;
-import com.example.nazoratv2.repository.RoomRepository;
-import com.example.nazoratv2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
-    private final RoomRepository roomRepository;
-    private final GroupMapper groupMapper;
+    private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
     public ApiResponse<String> saveCategory(ReqCategory reqCategory) {
@@ -30,6 +24,9 @@ public class CategoryService {
         Category category = Category.builder()
                 .name(reqCategory.getName())
                 .description(reqCategory.getDescription())
+                .duration(reqCategory.getDuration())
+                .imgUrl(reqCategory.getImgUrl())
+                .active(true)
                 .build();
 
         categoryRepository.save(category);
@@ -56,7 +53,8 @@ public class CategoryService {
                 () -> new DataNotFoundException("Category not found")
         );
 
-        categoryRepository.delete(category);
+        category.setActive(false);
+        categoryRepository.save(category);
         return ApiResponse.success(null, "Category successfully deleted");
     }
 
@@ -65,24 +63,23 @@ public class CategoryService {
 
 
     public ApiResponse<ResCategory> getCategoryById(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(
+        Category category = categoryRepository.findByIdAndActiveTrue(id).orElseThrow(
                 () -> new DataNotFoundException("Category not found")
         );
 
-        return ApiResponse.success(categoryMapper.toDto(category), "Success");
+        return ApiResponse.success(categoryMapper.toRes(category), "Success");
     }
 
 
     public ApiResponse<List<ResCategory>> getAllCategory() {
-        List<Category> list = categoryRepository.findAll();
+        List<Category> list = categoryRepository.findAllByActiveTrue();
 
         if (list.isEmpty()) {
             return ApiResponse.error("Category not found");
         }
 
-        Object categoryMapper;
         List<ResCategory> res = list.stream()
-                .map(categoryMapper::toDto)
+                .map(categoryMapper::toRes)
                 .toList();
 
         return ApiResponse.success(res, "Success");
