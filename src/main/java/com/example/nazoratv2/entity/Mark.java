@@ -7,17 +7,19 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Entity
 public class Mark extends BaseEntity {
+
     private LocalDate date;
     @ManyToOne
     private Student student;
     private Integer homeworkScore;
+
     private Integer activeScore;
     private String status;
 }
