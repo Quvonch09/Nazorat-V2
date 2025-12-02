@@ -15,6 +15,8 @@ public class ResCategory {
 
     private String description;
 
+    private int duration;
+
     private String imgUrl;
 
 }
