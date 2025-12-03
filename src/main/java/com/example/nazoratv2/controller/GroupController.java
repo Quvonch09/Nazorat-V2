@@ -77,6 +77,7 @@ public class GroupController {
 
 
     @GetMapping("/getDays")
+    @Operation(description = "yearMonth = format -> yyyy-mm")
     public ResponseEntity<ApiResponse<List<LocalDate>>> getDays(@RequestParam Long groupId,
                                                                 @RequestParam YearMonth yearMonth){
         return ResponseEntity.ok(groupService.getLessonDaysForMonth(groupId, yearMonth));
