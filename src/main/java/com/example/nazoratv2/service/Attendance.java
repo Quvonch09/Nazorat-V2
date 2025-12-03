@@ -11,4 +11,7 @@ public class Attendance {
     private final AttendanceRepository attendanceRepository;
 
 
+    public ApiResponse<String> saveAttendance(){
+        return null;
+    }
 }

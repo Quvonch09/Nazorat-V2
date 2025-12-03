@@ -22,7 +22,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,4 +167,31 @@ public class GroupService {
         List<ResGroup> list = groups.stream().map(groupMapper::toDtoRes).toList();
         return ApiResponse.success(list, "Success");
     }
+
+
+    public ApiResponse<List<LocalDate>> getLessonDaysForMonth(Long groupId, YearMonth yearMonth) {
+
+        Group group = groupRepository.findById(groupId).orElseThrow(
+                () -> new DataNotFoundException("Group not found")
+        );
+
+        // Guruhning dars kunlari
+        List<WeekDays> lessonDays = group.getWeekDays();
+
+        // Bir oylik boshlanish va tugash sanasi
+        LocalDate start = yearMonth.atDay(1);
+        LocalDate end = yearMonth.atEndOfMonth();
+
+        List<LocalDate> lessonDates = new ArrayList<>();
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            // Hafta kuni guruh jadvalidagi kunlar bilan mos bo'lsa
+            if (lessonDays.contains(WeekDays.valueOf(date.getDayOfWeek().name()))) {
+                lessonDates.add(date);
+            }
+        }
+
+        return ApiResponse.success(lessonDates, "Success");
+    }
+
 }
