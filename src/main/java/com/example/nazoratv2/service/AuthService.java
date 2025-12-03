@@ -43,7 +43,7 @@ public class AuthService {
                     userDetails.getRole()
             );
 
-            return ApiResponse.success(token, userDetails.getRole());
+            return ApiResponse.success(token);
         }
 
         Optional<Student> optionalStudent = studentRepository.findByPhoneNumber(phone);
@@ -60,7 +60,7 @@ public class AuthService {
                     userDetails.getRole()
             );
 
-            return ApiResponse.success(token, userDetails.getRole());
+            return ApiResponse.success(token);
         }
 
         return ApiResponse.error("User topilmadi");
@@ -85,7 +85,7 @@ public class AuthService {
                 .role(role)
                 .build();
         userRepository.save(teacher);
-        return ApiResponse.success(null, "Successfully added user");
+        return ApiResponse.success(null);
     }
 
 
@@ -115,6 +115,6 @@ public class AuthService {
                 .imgUrl(reqStudent.getImgUrl())
                 .build();
         studentRepository.save(student);
-        return ApiResponse.success(null, "Successfully saved student");
+        return ApiResponse.success(null);
     }
 }

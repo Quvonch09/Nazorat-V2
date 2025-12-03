@@ -23,7 +23,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,7 +69,7 @@ public class GroupService {
                 .category(category)
                 .build();
         groupRepository.save(group);
-        return ApiResponse.success(null, "Group successfully saved");
+        return ApiResponse.success(null);
     }
 
 
@@ -111,7 +110,7 @@ public class GroupService {
         group.setWeekDays(weekdays);
         group.setCategory(category);
         groupRepository.save(group);
-        return ApiResponse.success(null, "Group successfully updated");
+        return ApiResponse.success(null);
     }
 
 
@@ -121,14 +120,14 @@ public class GroupService {
                 () -> new DataNotFoundException("Group not found")
         );
         groupRepository.delete(group);
-        return ApiResponse.success(null, "Group successfully deleted");
+        return ApiResponse.success(null);
     }
 
     public ApiResponse<ReqGroup> getGroupById(Long id){
         Group group = groupRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
-        return ApiResponse.success(groupMapper.toDto(group), "Success");
+        return ApiResponse.success(groupMapper.toDto(group));
     }
 
 
@@ -156,13 +155,13 @@ public class GroupService {
                 .totalPage(groups.getTotalPages())
                 .body(list)
                 .build();
-        return ApiResponse.success(resPageable, "Success");
+        return ApiResponse.success(resPageable);
     }
 
 
     public ApiResponse<List<ResGroup>> getAllGroup(){
         List<Group> groups = groupRepository.findAll();
         List<ResGroup> list = groups.stream().map(groupMapper::toDtoRes).toList();
-        return ApiResponse.success(list, "Success");
+        return ApiResponse.success(list);
     }
 }

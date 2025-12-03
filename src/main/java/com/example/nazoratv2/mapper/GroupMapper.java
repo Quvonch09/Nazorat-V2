@@ -1,5 +1,6 @@
 package com.example.nazoratv2.mapper;
 
+import com.example.nazoratv2.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.example.nazoratv2.dto.request.ReqGroup;
@@ -14,7 +15,7 @@ public class GroupMapper {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-    public ReqGroup toDto(Group group) {
+    public ReqGroup toDto(Category group) {
         return ReqGroup.builder()
                 .id(group.getId())
                 .name(group.getName())

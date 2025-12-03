@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class NotificationService {
                 .isRead(req.isRead())
                 .build();
         notificationRepository.save(notification);
-        return ApiResponse.success(null,"success");
+        return ApiResponse.success(null);
     }
 
     public ApiResponse<ResPageable> getNotifications(int page,int size) {
@@ -56,20 +55,20 @@ public class NotificationService {
                 .totalPage(notifications.getTotalPages())
                 .body(notificationsList)
                 .build();
-        return ApiResponse.success(resPageable, "success");
+        return ApiResponse.success(resPageable);
 
     }
 
     public ApiResponse<ResNotification> getNotificationById(Long id) {
         Notification notification = notificationRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Notification not found"));
-        return ApiResponse.success(notificationMapper.toNotificationDTO(notification), "success");
+        return ApiResponse.success(notificationMapper.toNotificationDTO(notification));
 
     }
 
     public ApiResponse<String> deleteNotificationById(Long id) {
         Notification notif = notificationRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Notification not found"));
         notificationRepository.delete(notif);
-        return ApiResponse.success(null,"success");
+        return ApiResponse.success(null);
     }
 
 }

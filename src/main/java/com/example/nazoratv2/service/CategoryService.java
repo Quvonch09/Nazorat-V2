@@ -2,6 +2,7 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqCategory;
+import com.example.nazoratv2.dto.request.ReqGroup;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -33,7 +34,7 @@ public class CategoryService {
                 .build();
 
         categoryRepository.save(category);
-        return ApiResponse.success(null, "Category successfully saved");
+        return ApiResponse.success(null);
     }
 
 
@@ -47,7 +48,7 @@ public class CategoryService {
 
         categoryRepository.save(category);
 
-        return ApiResponse.success(null, "Category successfully updated");
+        return ApiResponse.success(null);
     }
 
 
@@ -57,19 +58,20 @@ public class CategoryService {
         );
 
         categoryRepository.delete(category);
-        return ApiResponse.success(null, "Category successfully deleted");
+        return ApiResponse.success(null);
     }
 
 
 
 
 
-    public ApiResponse<ResCategory> getCategoryById(Long id) {
+    public ApiResponse<ReqGroup> getCategoryById(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Category not found")
         );
 
-        return ApiResponse.success(categoryMapper.toDto(category), "Success");
+        GroupMapper categoryMapper = null;
+        return ApiResponse.success(categoryMapper.toDto(category));
     }
 
 
@@ -80,12 +82,12 @@ public class CategoryService {
             return ApiResponse.error("Category not found");
         }
 
-        Object categoryMapper;
+        Object categoryMapper = null;
         List<ResCategory> res = list.stream()
                 .map(categoryMapper::toDto)
                 .toList();
 
-        return ApiResponse.success(res, "Success");
+        return ApiResponse.success(res);
     }
 
 
