@@ -9,6 +9,7 @@ public class NotificationMapper {
 
     public ResNotification toNotificationDTO(Notification notif) {
         return ResNotification.builder()
+                .id(notif.getId())
                 .message(notif.getMessage())
                 .description(notif.getDescription())
                 .studentId(notif.getStudent() != null ? notif.getStudent().getId() : null)

@@ -1,5 +1,6 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.dto.request.ReqNotification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
+    private final NotificationService notificationService;
 
     public ApiResponse<String> login(String phone, String password) {
         Optional<User> optionalUser = userRepository.findByPhone(phone);
@@ -42,6 +44,9 @@ public class AuthService {
                     userDetails.getUsername(),
                     userDetails.getRole()
             );
+
+            notificationService.saveNotification(new ReqNotification("Sfera xabarnomasi",
+                    "Siz tizimga muvaffaqiyatli kirdingiz!", null, user.getId()));
 
             return ApiResponse.success(token, userDetails.getRole());
         }
@@ -60,6 +65,8 @@ public class AuthService {
                     userDetails.getRole()
             );
 
+            notificationService.saveNotification(new ReqNotification("Sfera xabarnomasi",
+                    "Siz tizimga muvaffaqiyatli kirdingiz!", student.getId(), null));
             return ApiResponse.success(token, userDetails.getRole());
         }
 
