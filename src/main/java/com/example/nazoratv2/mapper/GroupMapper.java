@@ -15,7 +15,7 @@ public class GroupMapper {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-    public ReqGroup toDto(Category group) {
+    public ReqGroup toDto(Group group) {
         return ReqGroup.builder()
                 .id(group.getId())
                 .name(group.getName())
