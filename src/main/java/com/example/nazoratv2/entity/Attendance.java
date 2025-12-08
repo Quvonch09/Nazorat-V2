@@ -1,6 +1,7 @@
 package com.example.nazoratv2.entity;
 
 import com.example.nazoratv2.entity.base.BaseEntity;
+import com.example.nazoratv2.entity.enums.AttendaceEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -20,6 +21,6 @@ public class Attendance extends BaseEntity {
     @ManyToOne
     private Student student;
 
-    private Boolean status; //true -> keldi, false -> kelmadi, null -> sababli
+    private AttendaceEnum status;
 
 }

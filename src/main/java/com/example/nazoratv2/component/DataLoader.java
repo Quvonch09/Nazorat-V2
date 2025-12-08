@@ -20,7 +20,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (ddl.equals("create")){
+        if (ddl.equals("create") || ddl.equals("create-drop")){
             User admin = User.builder()
                     .phone("998900000000")
                     .password(encoder.encode("admin123"))

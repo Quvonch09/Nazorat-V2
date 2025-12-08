@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -71,5 +73,13 @@ public class GroupController {
     @Operation(summary = "Guruhni hammasini kurish")
     public ResponseEntity<ApiResponse<List<ResGroup>>> getAllGroup(){
         return ResponseEntity.ok(groupService.getAllGroup());
+    }
+
+
+    @GetMapping("/getDays")
+    @Operation(description = "yearMonth = format -> yyyy-mm")
+    public ResponseEntity<ApiResponse<List<LocalDate>>> getDays(@RequestParam Long groupId,
+                                                                @RequestParam YearMonth yearMonth){
+        return ResponseEntity.ok(groupService.getLessonDaysForMonth(groupId, yearMonth));
     }
 }

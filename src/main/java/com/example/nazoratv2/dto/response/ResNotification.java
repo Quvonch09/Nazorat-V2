@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class ResNotification {
+    private Long id;
     private String message;
     private String description;
     private Long studentId;

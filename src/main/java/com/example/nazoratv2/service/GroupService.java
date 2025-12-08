@@ -22,7 +22,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,7 +72,7 @@ public class GroupService {
                 .category(category)
                 .build();
         groupRepository.save(group);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Group successfully saved");
     }
 
 
@@ -110,7 +113,7 @@ public class GroupService {
         group.setWeekDays(weekdays);
         group.setCategory(category);
         groupRepository.save(group);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Group successfully updated");
     }
 
 
@@ -120,14 +123,14 @@ public class GroupService {
                 () -> new DataNotFoundException("Group not found")
         );
         groupRepository.delete(group);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Group successfully deleted");
     }
 
     public ApiResponse<ReqGroup> getGroupById(Long id){
         Group group = groupRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
-        return ApiResponse.success(groupMapper.toDto(group.getCategory()));
+        return ApiResponse.success(groupMapper.toDto(group), "Success");
     }
 
 
@@ -155,13 +158,40 @@ public class GroupService {
                 .totalPage(groups.getTotalPages())
                 .body(list)
                 .build();
-        return ApiResponse.success(resPageable);
+        return ApiResponse.success(resPageable, "Success");
     }
 
 
     public ApiResponse<List<ResGroup>> getAllGroup(){
         List<Group> groups = groupRepository.findAll();
         List<ResGroup> list = groups.stream().map(groupMapper::toDtoRes).toList();
-        return ApiResponse.success(list);
+        return ApiResponse.success(list, "Success");
     }
+
+
+    public ApiResponse<List<LocalDate>> getLessonDaysForMonth(Long groupId, YearMonth yearMonth) {
+
+        Group group = groupRepository.findById(groupId).orElseThrow(
+                () -> new DataNotFoundException("Group not found")
+        );
+
+        // Guruhning dars kunlari
+        List<WeekDays> lessonDays = group.getWeekDays();
+
+        // Bir oylik boshlanish va tugash sanasi
+        LocalDate start = yearMonth.atDay(1);
+        LocalDate end = yearMonth.atEndOfMonth();
+
+        List<LocalDate> lessonDates = new ArrayList<>();
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            // Hafta kuni guruh jadvalidagi kunlar bilan mos bo'lsa
+            if (lessonDays.contains(WeekDays.valueOf(date.getDayOfWeek().name()))) {
+                lessonDates.add(date);
+            }
+        }
+
+        return ApiResponse.success(lessonDates, "Success");
+    }
+
 }
