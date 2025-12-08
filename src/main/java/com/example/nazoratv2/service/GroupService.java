@@ -127,7 +127,7 @@ public class GroupService {
         Group group = groupRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
-        return ApiResponse.success(groupMapper.toDto(group));
+        return ApiResponse.success(groupMapper.toDto(group.getCategory()));
     }
 
 
