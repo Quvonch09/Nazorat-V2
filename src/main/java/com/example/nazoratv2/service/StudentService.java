@@ -2,7 +2,6 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.StudentDTO;
-import com.example.nazoratv2.dto.request.ReqStudent;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.entity.Student;
