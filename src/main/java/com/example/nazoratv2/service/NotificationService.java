@@ -50,7 +50,7 @@ public class NotificationService {
                 .isRead(false)
                 .build();
         notificationRepository.save(notification);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Success");
     }
 
     public ApiResponse<ResPageable> getNotifications(int page,int size) {
@@ -65,20 +65,20 @@ public class NotificationService {
                 .totalPage(notifications.getTotalPages())
                 .body(notificationsList)
                 .build();
-        return ApiResponse.success(resPageable);
+        return ApiResponse.success(resPageable, "Success");
 
     }
 
     public ApiResponse<ResNotification> getNotificationById(Long id) {
         Notification notification = notificationRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Notification not found"));
-        return ApiResponse.success(notificationMapper.toNotificationDTO(notification));
+        return ApiResponse.success(notificationMapper.toNotificationDTO(notification), "Success");
 
     }
 
     public ApiResponse<String> deleteNotificationById(Long id) {
         Notification notif = notificationRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Notification not found"));
         notificationRepository.delete(notif);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Success");
     }
 
 

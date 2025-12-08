@@ -27,45 +27,33 @@ public class NewsService {
     private final GroupRepository groupRepository;
     private final NewsMapper newsMapper;
 
-    public ApiResponse add(ReqNews req) {
-
-        Category category = categoryRepository.findById(req.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-
-        Mark mark = markRepository.findById(req.getMarkId())
-                .orElseThrow(() -> new RuntimeException("Mark not found"));
-
-        Group group = groupRepository.findById(req.getGroupId())
-                .orElseThrow(() -> new RuntimeException("Group not found"));
+    public ApiResponse<String> add(ReqNews req) {
 
         News news = newsMapper.toEntity(req);
-        news.setCategory(category);
-        news.setMark(mark);
-        news.setGroup(group);
 
         newsRepository.save(news);
 
-        return ApiResponse.success("News added");
+        return ApiResponse.success(null, "Success");
     }
 
-    public ApiResponse getAll() {
+    public ApiResponse<List<ResNews>> getAll() {
         List<ResNews> list = newsRepository.findAll()
                 .stream()
                 .map(newsMapper::toDto)
                 .toList();
-        return ApiResponse.success(list);
+        return ApiResponse.success(list, "Success");
     }
 
-    public ApiResponse getOne(Long id) {
+    public ApiResponse<ResNews> getOne(Long id) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found"));
 
-        return ApiResponse.success(newsMapper.toDto(news));
+        return ApiResponse.success(newsMapper.toDto(news), "Success");
     }
 
-    public ApiResponse delete(Long id) {
+    public ApiResponse<String> delete(Long id) {
         newsRepository.deleteById(id);
-        return ApiResponse.success("Deleted");
+        return ApiResponse.success(null,"Deleted");
     }
 
 }
