@@ -42,20 +42,20 @@ public class StudentService {
                 .totalPage(students.getTotalPages())
                 .body(list)
                 .build();
-        return ApiResponse.success(resPageable);
+        return ApiResponse.success(resPageable, "Success");
 
     }
 
     public ApiResponse<ResStudent> getById(Long id) {
 
         Student student = studentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Student not found"));
-        return ApiResponse.success(studentMapper.toStudentDTO(student));
+        return ApiResponse.success(studentMapper.toStudentDTO(student), "Success");
     }
 
     public ApiResponse<String> delete(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Student not found"));
         studentRepository.delete(student);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Success");
     }
 
     public ApiResponse<String> update(CustomUserDetails user, StudentDTO req) {
@@ -74,9 +74,9 @@ public class StudentService {
                         userDetails.getUsername(),
                         userDetails.getRole()
                 );
-                return ApiResponse.success(token);
+                return ApiResponse.success(token, "Success");
             } else {
-                return ApiResponse.success(null);
+                return ApiResponse.success(null, "Success");
             }
         } else {
             User user1 = userRepository.findByPhone(user.getUsername())
@@ -87,9 +87,9 @@ public class StudentService {
             User save = userRepository.save(user1);
             if (req.getPhone().equals(user.getPhone())) {
                 String token = jwtService.generateToken(save.getPhone(), save.getRole().name());
-                return ApiResponse.success(token);
+                return ApiResponse.success(token, "Success");
             } else {
-                return ApiResponse.success(null);
+                return ApiResponse.success(null, "Success");
             }
         }
     }

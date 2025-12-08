@@ -1,6 +1,5 @@
 package com.example.nazoratv2.entity;
 
-import aj.org.objectweb.asm.ConstantDynamic;
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -24,25 +23,4 @@ public class News extends BaseEntity {
     private LocalDate date;
 
     private boolean active;
-
-    public String getTitle() {
-    }
-
-    public ConstantDynamic getCategory() {
-    }
-
-    public ConstantDynamic getMark() {
-    }
-
-    public ConstantDynamic getGroup() {
-    }
-
-    public void setCategory(Category category) {
-    }
-
-    public void setMark(Mark mark) {
-    }
-
-    public void setGroup(Group group) {
-    }
 }
