@@ -2,6 +2,7 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqCategory;
+import com.example.nazoratv2.dto.request.ReqGroup;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.exception.DataNotFoundException;

@@ -1,5 +1,6 @@
 package com.example.nazoratv2.mapper;
 
+import com.example.nazoratv2.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.example.nazoratv2.dto.request.ReqGroup;
