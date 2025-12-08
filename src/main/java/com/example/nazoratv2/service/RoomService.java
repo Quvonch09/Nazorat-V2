@@ -25,7 +25,7 @@ public class RoomService {
 
         Room room = new Room(roomDTO.getName());
         roomRepository.save(room);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Success");
     }
 
 
@@ -36,7 +36,7 @@ public class RoomService {
 
         room.setName(roomDTO.getName());
         roomRepository.save(room);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Success");
     }
 
 
@@ -46,7 +46,7 @@ public class RoomService {
         );
 
         roomRepository.delete(room);
-        return ApiResponse.success(null);
+        return ApiResponse.success(null, "Success");
     }
 
 
@@ -56,12 +56,12 @@ public class RoomService {
                 () -> new DataNotFoundException("Room not found")
         );
 
-        return ApiResponse.success(roomMapper.roomDTO(room));
+        return ApiResponse.success(roomMapper.roomDTO(room), "Success");
     }
 
 
     public ApiResponse<List<RoomDTO>> getAllRooms(){
         List<RoomDTO> rooms = roomRepository.findAll().stream().map(roomMapper::roomDTO).toList();
-        return ApiResponse.success(rooms);
+        return ApiResponse.success(rooms, "Success");
     }
 }

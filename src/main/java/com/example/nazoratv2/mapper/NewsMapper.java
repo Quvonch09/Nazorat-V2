@@ -24,13 +24,10 @@ public class NewsMapper {
     public ResNews toDto(News news) {
         ResNews res = new ResNews();
         res.setId(news.getId());
-        res.setTitle(news.getTitle());
+        res.setName(news.getName());
         res.setDescription(news.getDescription());
         res.setImgUrl(news.getImgUrl());
         res.setDate(String.valueOf(news.getDate()));
-        res.setCategoryName(news.getCategory().getName());
-        res.setMarkName(news.getMark().getName());
-        res.setGroupName(news.getGroup().getName());
         return res;
     }
 
