@@ -2,6 +2,7 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.IdList;
+import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.dto.request.ReqNotification;
 import com.example.nazoratv2.dto.response.ResNotification;
 import com.example.nazoratv2.dto.response.ResPageable;
@@ -57,6 +58,11 @@ public class NotificationController {
     @GetMapping("/count")
     public ResponseEntity<ApiResponse<Long>> countNotification(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(notificationService.countMyNotifications(customUserDetails));
+    }
+
+    @PostMapping("/withGroup")
+    public ResponseEntity<ApiResponse<String>> createNotificationWithGroup(@RequestBody ReqGroupNotif reqGroupNotif) {
+        return ResponseEntity.ok(notificationService.sendGroupNotification(reqGroupNotif));
     }
 
 }
