@@ -2,14 +2,17 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.IdList;
+import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.dto.request.ReqNotification;
 import com.example.nazoratv2.dto.response.ResNotification;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Notification;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.NotificationMapper;
+import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.NotificationRepository;
 import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
@@ -29,6 +32,7 @@ public class NotificationService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     private final NotificationMapper notificationMapper;
+    private final GroupRepository groupRepository;
 
     public ApiResponse<String> saveNotification(ReqNotification req) {
 
@@ -131,6 +135,26 @@ public class NotificationService {
 
             return ApiResponse.success(notificationRepository.countByStudentIdAndReadFalse(student.getId()), "Success");
         }
+    }
+
+
+    public ApiResponse<String> sendGroupNotification(ReqGroupNotif reqGroupNotif){
+        Group group = groupRepository.findById(reqGroupNotif.getGroupId()).orElseThrow(
+                () -> new DataNotFoundException("Group not found")
+        );
+
+        for (Student student : studentRepository.findAllByGroup_id(group.getId())) {
+            Notification notification = Notification.builder()
+                    .message(reqGroupNotif.getTitle())
+                    .description(reqGroupNotif.getDescription())
+                    .student(student)
+                    .isRead(false)
+                    .parent(null)
+                    .build();
+            notificationRepository.save(notification);
+        }
+
+        return ApiResponse.success(null, "Success");
     }
 
 }
