@@ -33,7 +33,7 @@ public class SwaggerConfig {
                                 .url("https://springdoc.org")))
                 .servers(Arrays.asList(
                         new Server().url("http://5.189.158.5:8082").description("Production server"),
-                        new Server().url("http://localhost:8080").description("Local server")
+                        new Server().url("http://localhost:8082").description("Local server")
                 ))
                 .externalDocs(new ExternalDocumentation()
                         .description("Full Documentation")
