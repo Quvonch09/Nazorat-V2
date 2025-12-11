@@ -5,6 +5,7 @@ import com.example.nazoratv2.entity.enums.AttendaceEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@Where(clause = "active = true")
 public class Attendance extends BaseEntity {
 
     private LocalDate date;

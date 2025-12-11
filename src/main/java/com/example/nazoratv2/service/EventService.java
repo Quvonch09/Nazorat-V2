@@ -2,6 +2,7 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqEvent;
+import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.entity.Event;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -23,6 +24,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final GroupRepository groupRepository;
     private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+    private final NotificationService notificationService;
 
 
     public ApiResponse<String> addEvent(ReqEvent reqEvent){
@@ -44,6 +46,15 @@ public class EventService {
                 .build();
         eventRepository.save(event);
 
+        // Notification yuborish
+        groups.forEach(group -> notificationService.sendGroupNotification(ReqGroupNotif.builder()
+                        .groupId(group.getId())
+                        .title("Sfera Academy xabarnomasi")
+                        .description("Bizda  " + reqEvent.getDate() + " sanada " + reqEvent.getName() + " nomli tadbir bulib o'tadi. " +
+                                " Boshlanish vaqti: " + startTime + " Tugash vaqti: " + endTime)
+                .build()));
+
+        // Real-timega malumot yuborish uchun
         sendToAll(reqEvent());
         return ApiResponse.success(null, "Success");
     }

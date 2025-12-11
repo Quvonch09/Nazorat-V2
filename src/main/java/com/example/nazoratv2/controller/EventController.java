@@ -2,26 +2,18 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqEvent;
-import com.example.nazoratv2.entity.Event;
-import com.example.nazoratv2.entity.Group;
-import com.example.nazoratv2.repository.EventRepository;
 import com.example.nazoratv2.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/event")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    private final EventRepository eventRepository;
 
     @PostMapping
     @Operation(summary = "Event saqlash")

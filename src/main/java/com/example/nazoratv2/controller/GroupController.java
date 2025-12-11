@@ -26,14 +26,14 @@ public class GroupController {
 
     @PostMapping
     @Operation(description = "MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER')")
     public ResponseEntity<ApiResponse<String>> saveGroup(@RequestBody ReqGroup reqGroup){
         return ResponseEntity.ok(groupService.saveGroup(reqGroup));
     }
 
 
     @PutMapping("/{groupId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<ApiResponse<String>> updateGroup(@PathVariable Long groupId,
                                                            @RequestBody ReqGroup reqGroup){
         return ResponseEntity.ok(groupService.updateGroup(groupId, reqGroup));
@@ -41,14 +41,14 @@ public class GroupController {
 
 
     @DeleteMapping("/{groupId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<ApiResponse<String>> deleteGroup(@PathVariable Long groupId){
         return ResponseEntity.ok(groupService.deleteGroup(groupId));
     }
 
 
     @GetMapping("/{groupId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_PARENT')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_PARENT','ROLE_SUPER_ADMIN')")
     @Operation(summary = "Guruhni bittasini kurish")
     public ResponseEntity<ApiResponse<ReqGroup>> getGroup(@PathVariable Long groupId){
         return ResponseEntity.ok(groupService.getGroupById(groupId));
@@ -56,7 +56,7 @@ public class GroupController {
 
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER','ROLE_SUPER_ADMIN')")
     @Operation(summary = "Guruhni filter qilish")
     public ResponseEntity<ApiResponse<ResPageable>> getAllGroup(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                 @RequestParam(required = false) String name,
@@ -69,7 +69,7 @@ public class GroupController {
 
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN','TEACHER', 'ROLE_SUPER_ADMIN')")
     @Operation(summary = "Guruhni hammasini kurish")
     public ResponseEntity<ApiResponse<List<ResGroup>>> getAllGroup(){
         return ResponseEntity.ok(groupService.getAllGroup());

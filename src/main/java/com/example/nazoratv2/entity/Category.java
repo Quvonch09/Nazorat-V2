@@ -3,6 +3,7 @@ package com.example.nazoratv2.entity;
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
@@ -10,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
+@Where(clause = "active = true")
 public class Category  extends BaseEntity {
 
     private String name;
@@ -17,8 +19,6 @@ public class Category  extends BaseEntity {
     private String description;
 
     private Integer duration;
-
-    private boolean active;
 
     private String imgUrl;
 

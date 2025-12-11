@@ -2,13 +2,16 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.StudentDTO;
+import com.example.nazoratv2.dto.request.ReqStudent;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.security.CustomUserDetails;
+import com.example.nazoratv2.service.AuthService;
 import com.example.nazoratv2.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
 
     private final StudentService studentService;
+    private final AuthService authService;
 
     @GetMapping("/get-page-students")
     public ResponseEntity<ApiResponse<ResPageable>> getStudentsByPage(@RequestParam(defaultValue = "0") int page,
@@ -39,6 +43,12 @@ public class StudentController {
                                                       @RequestBody StudentDTO studentDTO){
         return ResponseEntity.ok(studentService.update(customUserDetails, studentDTO));
 
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PostMapping("/saveStudent")
+    public ResponseEntity<ApiResponse<String>> studentLogin(@RequestBody ReqStudent reqStudent){
+        return ResponseEntity.ok(authService.saveStudent(reqStudent));
     }
 
 }

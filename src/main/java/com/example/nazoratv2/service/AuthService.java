@@ -35,6 +35,11 @@ public class AuthService {
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+
+            if (!user.isEnabled()){
+                return ApiResponse.error("User is not enabled");
+            }
+
             if (!passwordEncoder.matches(password, user.getPassword())) {
                 return ApiResponse.error("Invalid password");
             }
@@ -45,7 +50,7 @@ public class AuthService {
                     userDetails.getRole()
             );
 
-            notificationService.saveNotification(new ReqNotification("Sfera xabarnomasi",
+            notificationService.saveNotification(new ReqNotification("Sfera Academy xabarnomasi",
                     "Siz tizimga muvaffaqiyatli kirdingiz!", null, user.getId()));
 
             return ApiResponse.success(token, userDetails.getRole());
@@ -55,6 +60,11 @@ public class AuthService {
 
         if (optionalStudent.isPresent()) {
             Student student = optionalStudent.get();
+
+            if (!student.isActive()){
+                return ApiResponse.error("Student is not active");
+            }
+
             if (!passwordEncoder.matches(password, student.getPassword())) {
                 return ApiResponse.error("Invalid password");
             }
@@ -65,7 +75,7 @@ public class AuthService {
                     userDetails.getRole()
             );
 
-            notificationService.saveNotification(new ReqNotification("Sfera xabarnomasi",
+            notificationService.saveNotification(new ReqNotification("Sfera Academy xabarnomasi",
                     "Siz tizimga muvaffaqiyatli kirdingiz!", student.getId(), null));
             return ApiResponse.success(token, userDetails.getRole());
         }
@@ -80,16 +90,17 @@ public class AuthService {
 
     public ApiResponse<String> saveUser(AuthRegister authRegister, Role role){
 
-        boolean b = userRepository.existsByPhoneAndRole(authRegister.getPhoneNumber(), role);
+        boolean b = userRepository.existsByPhoneAndRole(authRegister.getPhone(), role);
         if (b){
             return ApiResponse.error("Teacher already exists");
         }
 
         User teacher = User.builder()
-                .phone(authRegister.getPhoneNumber())
+                .phone(authRegister.getPhone())
                 .fullName(authRegister.getFullName())
                 .password(passwordEncoder.encode(authRegister.getPassword()))
                 .role(role)
+                .enabled(true)
                 .build();
         userRepository.save(teacher);
         return ApiResponse.success(null, "Successfully added user");
@@ -99,9 +110,8 @@ public class AuthService {
     public ApiResponse<String> saveStudent(ReqStudent reqStudent){
 
         boolean b = studentRepository.existsByPhoneNumber(reqStudent.getPhone());
-        boolean b1 = userRepository.existsByPhone(reqStudent.getPhone());
 
-        if (b || b1){
+        if (b){
             return ApiResponse.error("User already exists");
         }
 

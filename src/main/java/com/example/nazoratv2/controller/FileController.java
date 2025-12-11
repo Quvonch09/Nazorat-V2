@@ -1,8 +1,10 @@
 package com.example.nazoratv2.controller;
 
+import com.example.nazoratv2.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +29,16 @@ public class FileController {
     ) throws IOException {
         String url = cloudService.uploadFile(file);
         return ResponseEntity.ok(url);
+    }
+
+
+    @PostMapping(value = "/pdf", consumes = {"multipart/form-data"})
+    public ResponseEntity<ApiResponse<String>> upload(@RequestParam("file") MultipartFile file) {
+        try {
+            return ResponseEntity.ok(cloudService.uploadFile(file, file.getOriginalFilename()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 }

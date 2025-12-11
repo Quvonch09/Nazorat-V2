@@ -3,6 +3,7 @@ package com.example.nazoratv2.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.example.nazoratv2.entity.base.BaseEntity;
 import com.example.nazoratv2.entity.enums.WeekDays;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity(name = "groups")
+@Where(clause = "active = true")
 public class Group extends BaseEntity {
 
     private String name;

@@ -48,7 +48,7 @@ public class MarkController {
 
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     @Operation(summary = "Faqat admin uchun barcha marklarni kurish")
     public ResponseEntity<ApiResponse<ResPageable>> getForAdmin(@RequestParam(required = false) String keyword,
                                                                 @RequestParam(defaultValue = "0") int page,

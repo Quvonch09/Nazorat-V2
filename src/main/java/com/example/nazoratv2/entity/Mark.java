@@ -8,6 +8,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @Entity
+@Where(clause = "active = true")
 public class Mark extends BaseEntity {
 
     private LocalDate date;

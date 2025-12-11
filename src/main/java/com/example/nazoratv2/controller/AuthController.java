@@ -25,20 +25,4 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(phone, password));
     }
 
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/saveUser")
-    public ResponseEntity<ApiResponse<String>> userLogin(
-            @RequestParam Role role,
-            @RequestBody AuthRegister register
-    ){
-        return ResponseEntity.ok(authService.saveUser(register, role));
-    }
-
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/saveStudent")
-    public ResponseEntity<ApiResponse<String>> studentLogin(@RequestBody ReqStudent reqStudent){
-        return ResponseEntity.ok(authService.saveStudent(reqStudent));
-    }
 }
