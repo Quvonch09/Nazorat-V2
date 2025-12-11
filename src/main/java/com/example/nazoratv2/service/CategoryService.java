@@ -27,7 +27,6 @@ public class CategoryService {
                 .description(reqCategory.getDescription())
                 .duration(reqCategory.getDuration())
                 .imgUrl(reqCategory.getImgUrl())
-                .active(true)
                 .build();
 
         categoryRepository.save(category);

@@ -17,21 +17,21 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> saveRoom(@RequestBody RoomDTO roomDTO){
         return ResponseEntity.ok(roomService.saveRoom(roomDTO));
     }
 
 
     @PutMapping("/{roomId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> updateRoom(@PathVariable Long roomId, @RequestBody RoomDTO roomDTO){
         return ResponseEntity.ok(roomService.updateRoom(roomId, roomDTO));
     }
 
 
     @DeleteMapping("/{roomId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> deleteRoom(@PathVariable Long roomId){
         return ResponseEntity.ok(roomService.deleteRoom(roomId));
     }

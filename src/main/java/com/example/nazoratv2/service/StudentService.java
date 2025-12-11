@@ -64,7 +64,7 @@ public class StudentService {
             Student student = studentRepository.findByPhoneNumber(user.getUsername())
                     .orElseThrow(() -> new RuntimeException("Student topilmadi"));
 
-            student.setPhoneNumber(req.getPhone());
+            student.setPhone(req.getPhone());
             student.setFullName(req.getFullName());
             student.setImgUrl(req.getImgUrl());
             Student save = studentRepository.save(student);

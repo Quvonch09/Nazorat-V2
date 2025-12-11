@@ -3,6 +3,7 @@ package com.example.nazoratv2.entity;
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@Where(clause = "active = true")
 public class News extends BaseEntity {
 
     private String name;
@@ -22,5 +24,4 @@ public class News extends BaseEntity {
 
     private LocalDate date;
 
-    private boolean active;
 }

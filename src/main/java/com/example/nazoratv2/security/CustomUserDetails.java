@@ -30,11 +30,11 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(Student student) {
         this.fullName = student.getFullName();
-        this.phone = student.getPhoneNumber();
+        this.phone = student.getPhone();
         this.password = student.getPassword();
         this.role = "STUDENT"; // Student uchun default role
         this.imgUrl = student.getImgUrl();
-        this.enabled = student.isDeleted();
+        this.enabled = student.isActive();
     }
 
     @Override

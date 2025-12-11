@@ -15,7 +15,7 @@ public class StudentMapper {
                 .id(student.getId())
                 .fulName(student.getFullName())
                 .imgUrl(student.getImgUrl())
-                .phoneNumber(student.getPhoneNumber())
+                .phoneNumber(student.getPhone())
                 .groupId(student.getGroup().getId())
                 .groupName(student.getGroup().getName())
                 .build();

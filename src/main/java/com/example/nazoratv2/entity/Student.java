@@ -4,7 +4,7 @@ import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
-
+import org.hibernate.annotations.Where;
 
 
 @Getter
@@ -13,11 +13,12 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
+@Where(clause = "active = true")
 public class Student extends BaseEntity {
 
     private String fullName;
 
-    private String phoneNumber;
+    private String phone;
 
     private String password;
 
@@ -31,5 +32,4 @@ public class Student extends BaseEntity {
     @ManyToOne
     private Group group;
 
-    private boolean deleted;
 }
