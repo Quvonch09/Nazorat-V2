@@ -45,7 +45,9 @@ public class RoomService {
                 () -> new DataNotFoundException("Room not found")
         );
 
-        roomRepository.delete(room);
+        room.setActive(false);
+
+        roomRepository.save(room);
         return ApiResponse.success(null, "Success");
     }
 

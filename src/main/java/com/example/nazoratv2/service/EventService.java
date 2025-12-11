@@ -88,7 +88,9 @@ public class EventService {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new DataNotFoundException("Event not found")
         );
-        eventRepository.delete(event);
+        event.setActive(false);
+
+        eventRepository.save(event);
         return ApiResponse.success(null, "Success");
     }
 

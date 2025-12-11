@@ -122,7 +122,9 @@ public class GroupService {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
-        groupRepository.delete(group);
+
+        group.setActive(false);
+        groupRepository.save(group);
         return ApiResponse.success(null, "Group successfully deleted");
     }
 
