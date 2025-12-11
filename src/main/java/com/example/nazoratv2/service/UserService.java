@@ -46,9 +46,18 @@ public class UserService {
 //    }
 
 
+
+    public ApiResponse<UserResponse> getProfile(CustomUserDetails currentUser) {
+        User user = userRepository.findByPhone(currentUser.getUsername()).
+                orElseThrow(() -> new DataNotFoundException("User not found"));
+        return ApiResponse.success(mapper.toResponseUser(user),"success");
+    }
+
+
+
     public ApiResponse<UserResponse> getOneUser(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new DataNotFoundException("User topilmadi"));
-        return ApiResponse.success(mapper.toResponse(user), "Success");
+        return ApiResponse.success(mapper.toResponseUser(user), "Success");
     }
 
 //    public ApiResponse<ResPageable> searchUsers(CustomUserDetails currentUser, String name,
@@ -97,44 +106,55 @@ public class UserService {
 //    }
 
 
-    public ApiResponse<String> updateProfile(CustomUserDetails user, UserDTO userDTO){
-        if ("STUDENT".equals(user.getRole())) {
-            Student student = studentRepository.findByPhoneNumber(user.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Student topilmadi"));
-            student.setPhoneNumber(userDTO.getPhone());
-            student.setFullName(userDTO.getFullName());
-            student.setImgUrl(userDTO.getImageUrl());
-            Student save = studentRepository.save(student);
-            if (userDTO.getPhone().equals(user.getPhone())) {
-                CustomUserDetails userDetails = CustomUserDetails.fromStudent(save);
-                String token = jwtService.generateToken(
-                        userDetails.getUsername(),
-                        userDetails.getRole()
-                );
-                return ApiResponse.success(token, "STUDENT");
-            } else {
-                return ApiResponse.success(null, "Success");
-            }
-        } else {
-            User user1 = userRepository.findByPhone(user.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User topilmadi"));
-            user1.setPhone(userDTO.getPhone());
-            user1.setFullName(userDTO.getFullName());
-            user1.setImageUrl(userDTO.getImageUrl());
-            User save = userRepository.save(user1);
-            if (userDTO.getPhone().equals(user.getPhone())) {
-                String token = jwtService.generateToken(save.getPhone(), save.getRole().name());
-                return ApiResponse.success(token, save.getRole().name());
-            } else {
-                return ApiResponse.success(null, "Success");
-            }
-        }
-    }
-
-//    public ApiResponse<ResPageable> getAllUsersPage(int page, int size){
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<User> users = userRepository.findAll(pageable);
-//
-//
+//    public ApiResponse<String> updateProfile(CustomUserDetails user, UserDTO userDTO){
+//        if ("STUDENT".equals(user.getRole())) {
+//            Student student = studentRepository.findByPhoneNumber(user.getUsername())
+//                    .orElseThrow(() -> new RuntimeException("Student topilmadi"));
+//            student.setPhoneNumber(userDTO.getPhone());
+//            student.setFullName(userDTO.getFullName());
+//            student.setImgUrl(userDTO.getImageUrl());
+//            Student save = studentRepository.save(student);
+//            if (userDTO.getPhone().equals(user.getPhone())) {
+//                CustomUserDetails userDetails = CustomUserDetails.fromStudent(save);
+//                String token = jwtService.generateToken(
+//                        userDetails.getUsername(),
+//                        userDetails.getRole()
+//                );
+//                return ApiResponse.success(token, "STUDENT");
+//            } else {
+//                return ApiResponse.success(null, "Success");
+//            }
+//        } else {
+//            User user1 = userRepository.findByPhone(user.getUsername())
+//                    .orElseThrow(() -> new RuntimeException("User topilmadi"));
+//            user1.setPhone(userDTO.getPhone());
+//            user1.setFullName(userDTO.getFullName());
+//            user1.setImageUrl(userDTO.getImageUrl());
+//            User save = userRepository.save(user1);
+//            if (userDTO.getPhone().equals(user.getPhone())) {
+//                String token = jwtService.generateToken(save.getPhone(), save.getRole().name());
+//                return ApiResponse.success(token, save.getRole().name());
+//            } else {
+//                return ApiResponse.success(null, "Success");
+//            }
+//        }
 //    }
+
+    public ApiResponse<ResPageable> getAllUsersPage(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepository.findAll(pageable);
+
+        List<UserResponse> list = users.getContent().stream().map(mapper::toResponseUser).toList();
+
+        ResPageable resPageable = ResPageable.builder()
+                    .page(page)
+                    .size(size)
+                    .totalElements(users.getTotalElements())
+                    .totalPage(users.getTotalPages())
+                    .body(list)
+                    .build();
+            return ApiResponse.success(resPageable, null);
+
+
+    }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-public UserResponse toResponse(User user) {
+public UserResponse toResponseUser(User user) {
     return UserResponse.builder()
             .id(user.getId())
             .fullName(user.getFullName())
@@ -19,7 +19,7 @@ public UserResponse toResponse(User user) {
             .build();
 }
 
-//    public UserResponse toResponseStudent(Student user){
+//    public UserResponse toResponseStudent(Student student){
 //        return new UserResponse(
 //                user.getId(),
 //                user.getFullName(),
