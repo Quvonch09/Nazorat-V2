@@ -143,7 +143,7 @@ public class MarkService {
 
             markPage = markRepository.findAllByCreatedBy(teacher.getFullName(), pageRequest);
         } else {
-            Student student = studentRepository.findByPhoneNumber(customUserDetails.getPhone()).orElseThrow(
+            Student student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Student not found")
             );
 

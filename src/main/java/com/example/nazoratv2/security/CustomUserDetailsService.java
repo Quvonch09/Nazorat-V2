@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         // Agar User topilmasa → Student ni tekshiramiz
-        Student student = studentRepository.findByPhoneNumber(phone).orElse(null);
+        Student student = studentRepository.findByPhone(phone).orElse(null);
         if (student != null) {
             return CustomUserDetails.fromStudent(student);
         }
