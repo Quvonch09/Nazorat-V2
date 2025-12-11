@@ -108,7 +108,8 @@ public class MarkService {
                 () -> new DataNotFoundException("Mark not found")
         );
 
-        markRepository.delete(mark);
+        mark.setActive(false);
+        markRepository.save(mark);
         return ApiResponse.success(null, "Success");
     }
 
