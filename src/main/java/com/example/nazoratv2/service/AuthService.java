@@ -56,7 +56,7 @@ public class AuthService {
             return ApiResponse.success(token, userDetails.getRole());
         }
 
-        Optional<Student> optionalStudent = studentRepository.findByPhoneNumber(phone);
+        Optional<Student> optionalStudent = studentRepository.findByPhone(phone);
 
         if (optionalStudent.isPresent()) {
             Student student = optionalStudent.get();
@@ -109,7 +109,7 @@ public class AuthService {
 
     public ApiResponse<String> saveStudent(ReqStudent reqStudent){
 
-        boolean b = studentRepository.existsByPhoneNumber(reqStudent.getPhone());
+        boolean b = studentRepository.existsByPhone(reqStudent.getPhone());
 
         if (b){
             return ApiResponse.error("User already exists");
@@ -126,7 +126,7 @@ public class AuthService {
         Student student = Student.builder()
                 .fullName(reqStudent.getFullName())
                 .parent(parent)
-                .phoneNumber(reqStudent.getPhone())
+                .phone(reqStudent.getPhone())
                 .password(passwordEncoder.encode(reqStudent.getPassword()))
                 .group(group)
                 .imgUrl(reqStudent.getImgUrl())

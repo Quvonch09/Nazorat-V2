@@ -9,8 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
-    boolean existsByPhoneNumber(String phoneNumber);
-    Optional<Student> findByPhoneNumber(String phoneNumber);
+    boolean existsByPhone(String phoneNumber);
+    Optional<Student> findByPhone(String phoneNumber);
 
     List<Student> findAllByGroup_id(Long group_id);
 //

@@ -98,7 +98,7 @@ public class NotificationService {
                     .map(notificationMapper::toNotificationDTO).toList();
             return ApiResponse.success(list, "Success");
         } else {
-            student = studentRepository.findByPhoneNumber(customUserDetails.getPhone()).orElseThrow(
+            student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Student not found")
             );
 
@@ -129,7 +129,7 @@ public class NotificationService {
 
             return ApiResponse.success(notificationRepository.countByParentIdAndReadFalse(user.getId()), "Success");
         } else {
-            student = studentRepository.findByPhoneNumber(customUserDetails.getPhone()).orElseThrow(
+            student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Student not found")
             );
 

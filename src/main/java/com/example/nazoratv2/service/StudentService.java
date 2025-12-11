@@ -61,7 +61,7 @@ public class StudentService {
     public ApiResponse<String> update(CustomUserDetails user, StudentDTO req) {
 
         if ("STUDENT".equals(user.getRole())) {
-            Student student = studentRepository.findByPhoneNumber(user.getUsername())
+            Student student = studentRepository.findByPhone(user.getUsername())
                     .orElseThrow(() -> new RuntimeException("Student topilmadi"));
 
             student.setPhone(req.getPhone());
