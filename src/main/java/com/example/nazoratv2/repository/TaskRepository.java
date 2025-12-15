@@ -7,18 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    List<Task> findAllByUserId(Long userId);
 
-        @Query("""
-    SELECT t FROM Task t
-    WHERE (:title IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%')))
-    AND (:userName IS NULL OR LOWER(t.user.fullName) LIKE LOWER(CONCAT('%', :userName, '%')))
-    """)
-        Page<Task> searchTasks(
-                @Param("title") String title,
-                @Param("userName") String userName,
-                Pageable pageable
-        );
-    }
+    Optional<Task> findByIdAndUserId(Long taskId, Long userId);
+
+    void deleteByIdAndUserId(Long taskId, Long userId);
+}
 

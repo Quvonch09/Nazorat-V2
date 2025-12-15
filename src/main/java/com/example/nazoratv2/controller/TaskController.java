@@ -1,44 +1,53 @@
 package com.example.nazoratv2.controller;
 
-import com.example.nazoratv2.dto.ApiResponse;
-import com.example.nazoratv2.dto.request.ReqTask;
-import com.example.nazoratv2.dto.response.ResTask;
 import com.example.nazoratv2.service.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<ResTask>> createTask(@RequestBody ReqTask req) {
-        return ResponseEntity.ok(taskService.createTask(req));
+
+    @PostMapping("/{userId}")
+    public Task create(@PathVariable Long userId,
+                       @RequestBody Task task) {
+        return taskService.createTask(task, userId);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ResTask>> getTask(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.getTaskById(id));
+
+    @GetMapping("/{userId}")
+    public List<com.example.nazoratv2.entity.Task> getAll(@PathVariable Long userId) {
+        return taskService.getAllTasks(userId);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ResTask>> updateTask(@PathVariable Long id, @RequestBody ReqTask req) {
-        return ResponseEntity.ok(taskService.updateTask(id, req));
+
+    @GetMapping("/{userId}/{taskId}")
+    public com.example.nazoratv2.entity.Task getOne(@PathVariable Long userId,
+                                                    @PathVariable Long taskId) {
+        return taskService.getOneTask(taskId, userId);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.deleteTask(id));
+
+    @PutMapping("/{userId}/{taskId}")
+    public Task update(@PathVariable Long userId,
+                       @PathVariable Long taskId,
+                       @RequestBody String task) {
+        return taskService.updateTask(taskId, userId, task);
     }
 
-    @GetMapping
-    public ResponseEntity<Page<ResTask>> getAllTasks(@RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(taskService.getAllTasks(page, size));
+    // DELETE
+    @DeleteMapping("/{userId}/{taskId}")
+    public Task delete(@PathVariable Long userId,
+                       @PathVariable Long taskId) {
+        taskService.deleteTask(taskId, userId);
+        return null;
     }
+
 }
