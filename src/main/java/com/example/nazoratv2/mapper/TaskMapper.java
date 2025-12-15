@@ -28,8 +28,6 @@ public class TaskMapper {
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .deadline(LocalDate.parse(task.getDeadline()))
-                .createdAt(LocalDate.from(task.getCreatedAt()))
-                .updatedAt(LocalDate.from(task.getUpdatedAt()))
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package com.example.nazoratv2.entity;
 
 import com.example.nazoratv2.entity.base.BaseEntity;
 import com.example.nazoratv2.exception.BadRequestException;
+import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,7 +31,9 @@ public class Task extends BaseEntity {
 
     private String deadline;
 
-    private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    private LocalDateTime updatedAt;
+
 }
