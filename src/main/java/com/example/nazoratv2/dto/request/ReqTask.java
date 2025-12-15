@@ -11,11 +11,14 @@ import java.time.LocalDate;
 @Builder
 @Data
 public class ReqTask {
+
+    private Long userId;
+
+    private Long groupId;
+
     private String title;
 
-
     private String description;
-
 
     private LocalDate deadline;
 }

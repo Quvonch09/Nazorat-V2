@@ -16,7 +16,9 @@ public class ResTask {
     private String title;
     private String description;
     private LocalDate deadline;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private Long userId;
+    private String userName;
+    private Long groupId;
+    private String groupName;
 
 }

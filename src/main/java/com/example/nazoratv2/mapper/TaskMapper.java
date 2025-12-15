@@ -9,15 +9,6 @@ import java.time.LocalDate;
 
 @Component
 public class TaskMapper {
-    public Task toEntity(ReqTask req) {
-        if (req == null) return null;
-
-        return Task.builder()
-                .title(req.getTitle())
-                .description(req.getDescription())
-                .deadline(String.valueOf(req.getDeadline()))
-                .build();
-    }
 
     // Task → ResTask
     public ResTask toDto(Task task) {
@@ -27,7 +18,11 @@ public class TaskMapper {
                 .id(task.getId())
                 .title(task.getTitle())
                 .description(task.getDescription())
-                .deadline(LocalDate.parse(task.getDeadline()))
+                .deadline(task.getDeadline())
+                .groupId(task.getGroup() != null ? task.getGroup().getId() : null)
+                .groupName(task.getGroup() != null ? task.getGroup().getName() : null)
+                .userId(task.getUser() != null ? task.getUser().getId() : null)
+                .userName(task.getUser() != null ? task.getUser().getFullName():null)
                 .build();
     }
 }

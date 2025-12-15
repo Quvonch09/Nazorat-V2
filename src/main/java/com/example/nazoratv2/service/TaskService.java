@@ -1,11 +1,15 @@
 package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.dto.request.ReqTask;
 import com.example.nazoratv2.dto.response.ResTask;
+import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Task;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.TaskMapper;
+import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.TaskRepository;
 import com.example.nazoratv2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,39 +26,93 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
+    private final TaskMapper taskMapper;
+    private final NotificationService notificationService;
 
-    public Task createTask(Task task, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User topilmadi"));
+    public ApiResponse<String> createTask(ReqTask reqTask){
+        User user = null;
+        Group group = null;
+        if (reqTask.getUserId() != null){
+            user = userRepository.findById(reqTask.getUserId()).orElseThrow(
+                    () -> new DataNotFoundException("User topilmadi")
+            );
+        } else if (reqTask.getGroupId() != null) {
+            group = groupRepository.findById(reqTask.getGroupId()).orElseThrow(
+                    () -> new DataNotFoundException("Group topilmadi")
+            );
+        }
 
-        task.setId(null);
+        Task task = Task.builder()
+                .title(reqTask.getTitle())
+                .description(reqTask.getDescription())
+                .deadline(reqTask.getDeadline())
+                .group(group)
+                .user(user)
+                .build();
+        taskRepository.save(task);
+
+        if (group != null){
+            notificationService.sendGroupNotification(ReqGroupNotif.builder()
+                    .groupId(group.getId())
+                    .title("Sfera Academy xabarnomasi")
+                    .description("Sizga " + task.getTitle() + " nomli vazifa yuklandi! " +
+                            "Siz " + task.getDeadline() + " sanagacha taskni tugatishingiz kerak")
+                    .build());
+        }
+        return ApiResponse.success(null, "Task created");
+    }
+
+
+
+    public ApiResponse<String> updateTask(Long taskId, ReqTask reqTask){
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new DataNotFoundException("Task topilmadi")
+        );
+
+        User user = null;
+        Group group = null;
+        if (reqTask.getUserId() != null){
+            user = userRepository.findById(reqTask.getUserId()).orElseThrow(
+                    () -> new DataNotFoundException("User topilmadi")
+            );
+        } else if (reqTask.getGroupId() != null) {
+            group = groupRepository.findById(reqTask.getGroupId()).orElseThrow(
+                    () -> new DataNotFoundException("Group topilmadi")
+            );
+        }
+
+        task.setTitle(reqTask.getTitle());
+        task.setDescription(reqTask.getDescription());
+        task.setDeadline(reqTask.getDeadline());
+        task.setGroup(group);
         task.setUser(user);
-        return taskRepository.save(task);
+        taskRepository.save(task);
+        return ApiResponse.success(null, "Task updated");
     }
 
 
-    public List<Task> getAllTasks(Long userId) {
-        return taskRepository.findAllByUserId(userId);
+    public ApiResponse<String> deleteTask(Long taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new DataNotFoundException("Task topilmadi")
+        );
+        taskRepository.delete(task);
+        return ApiResponse.success(null, "Task deleted");
     }
 
 
-    public Task getOneTask(Long taskId, Long userId) {
-        return taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new RuntimeException("Task topilmadi"));
+    public ApiResponse<ResTask> getTask(Long taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new DataNotFoundException("Task topilmadi")
+        );
+
+        return ApiResponse.success(taskMapper.toDto(task), "Task found");
     }
 
 
-    public Task updateTask(Long taskId, Long userId, Task newTask) {
-        Task task = getOneTask(taskId, userId);
-
-        task.setTitle(newTask.getTitle());
-        task.setDescription(newTask.getDescription());
-
-        return taskRepository.save(task);
+    public ApiResponse<List<ResTask>> getAllTasks(){
+        List<ResTask> list = taskRepository.findAll().stream().map(taskMapper::toDto).toList();
+        return ApiResponse.success(list, "Tasks found");
     }
 
-    // DELETE
-    public void deleteTask(Long taskId, Long userId) {
-        taskRepository.deleteByIdAndUserId(taskId, userId);
-    }
 }

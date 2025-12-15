@@ -1,7 +1,11 @@
 package com.example.nazoratv2.controller;
 
+import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.request.ReqTask;
+import com.example.nazoratv2.dto.response.ResTask;
 import com.example.nazoratv2.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,39 +19,34 @@ public class TaskController {
     private final TaskService taskService;
 
 
-    @PostMapping("/{userId}")
-    public Task create(@PathVariable Long userId,
-                       @RequestBody Task task) {
-        return taskService.createTask(task, userId);
-    }
+   @PostMapping
+    public ResponseEntity<ApiResponse<String>> saveTask(@RequestBody ReqTask reqTask){
+       return ResponseEntity.ok(taskService.createTask(reqTask));
+   }
 
 
-    @GetMapping("/{userId}")
-    public List<com.example.nazoratv2.entity.Task> getAll(@PathVariable Long userId) {
-        return taskService.getAllTasks(userId);
-    }
+   @PutMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<String>> updateTask(@PathVariable Long taskId, @RequestBody ReqTask reqTask){
+       return ResponseEntity.ok(taskService.updateTask(taskId, reqTask));
+   }
 
 
-    @GetMapping("/{userId}/{taskId}")
-    public com.example.nazoratv2.entity.Task getOne(@PathVariable Long userId,
-                                                    @PathVariable Long taskId) {
-        return taskService.getOneTask(taskId, userId);
-    }
+   @DeleteMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<String>> deleteTask(@PathVariable Long taskId){
+       return ResponseEntity.ok(taskService.deleteTask(taskId));
+   }
 
 
-    @PutMapping("/{userId}/{taskId}")
-    public Task update(@PathVariable Long userId,
-                       @PathVariable Long taskId,
-                       @RequestBody String task) {
-        return taskService.updateTask(taskId, userId, task);
-    }
+   @GetMapping
+    public ResponseEntity<ApiResponse<List<ResTask>>> getAllTasks(){
+       return ResponseEntity.ok(taskService.getAllTasks());
+   }
 
-    // DELETE
-    @DeleteMapping("/{userId}/{taskId}")
-    public Task delete(@PathVariable Long userId,
-                       @PathVariable Long taskId) {
-        taskService.deleteTask(taskId, userId);
-        return null;
-    }
+
+   @GetMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<ResTask>> getTask(@PathVariable Long taskId){
+       return ResponseEntity.ok(taskService.getTask(taskId));
+   }
+
 
 }

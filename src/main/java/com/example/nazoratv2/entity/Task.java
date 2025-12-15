@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -29,11 +30,13 @@ public class Task extends BaseEntity {
 
     private String description;
 
-    private String deadline;
+    private LocalDate deadline;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    private Group group;
 
 
 }
