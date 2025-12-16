@@ -7,12 +7,15 @@ import com.example.nazoratv2.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/teacher")
+@RequestMapping("/user")
 @RequiredArgsConstructor
-public class TeacherController {
+public class UserController {
     private final AuthService authService;
 
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
@@ -20,6 +23,6 @@ public class TeacherController {
     public ResponseEntity<ApiResponse<String>> userLogin(
             @RequestBody AuthRegister register
     ){
-        return ResponseEntity.ok(authService.saveUser(register, Role.ROLE_TEACHER));
+        return ResponseEntity.ok(authService.saveUser(register, Role.ROLE_ADMIN));
     }
 }
