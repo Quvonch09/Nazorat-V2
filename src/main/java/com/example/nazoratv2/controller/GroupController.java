@@ -26,14 +26,14 @@ public class GroupController {
 
     @PostMapping
     @Operation(description = "MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> saveGroup(@RequestBody ReqGroup reqGroup){
         return ResponseEntity.ok(groupService.saveGroup(reqGroup));
     }
 
 
     @PutMapping("/{groupId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> updateGroup(@PathVariable Long groupId,
                                                            @RequestBody ReqGroup reqGroup){
         return ResponseEntity.ok(groupService.updateGroup(groupId, reqGroup));
@@ -41,7 +41,7 @@ public class GroupController {
 
 
     @DeleteMapping("/{groupId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> deleteGroup(@PathVariable Long groupId){
         return ResponseEntity.ok(groupService.deleteGroup(groupId));
     }
