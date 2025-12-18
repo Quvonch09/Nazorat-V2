@@ -20,5 +20,8 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
     Page<Result> findAllByCategoryIdAndDeletedFalse(Long categoryId, Pageable pageable);
 
     Page<Result> findAllByDeletedFalse(Pageable pageable);
+    Optional<Result> findTopByStudentIdAndCategoryIdOrderByAttemptNumberDesc(
+            Long studentId,
+            Long categoryId);
 
 }

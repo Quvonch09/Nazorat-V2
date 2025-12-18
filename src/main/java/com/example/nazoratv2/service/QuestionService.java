@@ -27,7 +27,7 @@ import java.util.List;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
-    private final QuestionMapper questionMapper;
+
 
     public ApiResponse<String> createQuestion(ReqQuestion req) {
 
@@ -66,23 +66,6 @@ public class QuestionService {
     }
 
 
-    public ApiResponse<ResPageable> getQuestionsByPage(int page,int size) {
-
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Question> questionsPage = questionRepository.findAllByDeletedFalse(pageRequest);
-
-        List<ResQuestion> list = questionsPage.stream().map(questionMapper::toResponse).toList();
-
-        ResPageable resPageable = ResPageable.builder()
-                .page(page)
-                .size(size)
-                .totalElements(questionsPage.getTotalElements())
-                .totalPage(questionsPage.getTotalPages())
-                .body(list)
-                .build();
-        return ApiResponse.success(resPageable, "Success");
-
-    }
 
     public ApiResponse<String> updateQuestion(ReqQuestionDTO req) {
 
