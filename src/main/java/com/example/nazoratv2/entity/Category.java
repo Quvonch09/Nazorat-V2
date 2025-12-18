@@ -20,6 +20,8 @@ public class Category  extends BaseEntity {
 
     private Integer duration;
 
+    private int questionLimit;
+
     private String imgUrl;
 
 

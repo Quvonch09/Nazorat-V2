@@ -4,6 +4,7 @@ import com.example.nazoratv2.entity.base.BaseEntity;
 import com.example.nazoratv2.entity.enums.QuestionDifficulty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@Where(clause = "active = true")
 public class Question extends BaseEntity {
 
     @Column(nullable = false, length = 1000)

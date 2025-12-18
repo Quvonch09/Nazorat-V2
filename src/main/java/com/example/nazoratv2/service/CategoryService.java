@@ -49,6 +49,7 @@ public class CategoryService {
                 .description(reqCategory.getDescription())
                 .duration(reqCategory.getDuration())
                 .imgUrl(reqCategory.getImgUrl())
+                .questionLimit(reqCategory.getQuestionLimit())
                 .build();
 
         categoryRepository.save(category);
@@ -63,6 +64,9 @@ public class CategoryService {
 
         category.setName(reqCategory.getName());
         category.setDescription(reqCategory.getDescription());
+        category.setDuration(reqCategory.getDuration());
+        category.setImgUrl(reqCategory.getImgUrl());
+        category.setQuestionLimit(reqCategory.getQuestionLimit());
 
         categoryRepository.save(category);
 
@@ -82,7 +86,7 @@ public class CategoryService {
 
 
     public ApiResponse<ResCategory> getCategoryById(Long id) {
-        Category category = categoryRepository.findByIdAndActiveTrue(id).orElseThrow(
+        Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Category not found")
         );
 
@@ -91,7 +95,7 @@ public class CategoryService {
 
 
     public ApiResponse<List<ResCategory>> getAllCategory() {
-        List<Category> list = categoryRepository.findAllByActiveTrue();
+        List<Category> list = categoryRepository.findAll();
 
         if (list.isEmpty()) {
             return ApiResponse.error("Category not found");
@@ -123,11 +127,11 @@ public class CategoryService {
             Result r = lastResult.get();
 
             if (r.getStatus() == ResultStatus.PASSED) {
-                throw new BadRequestException("You already passed this quiz");
+                return ApiResponse.error("You already passed this quiz");
             }
 
             if (!r.isRetakePermission()) {
-                throw new BadRequestException("Retake not allowed yet");
+                return ApiResponse.error("Retake not allowed yet");
             }
         }
 
@@ -144,6 +148,7 @@ public class CategoryService {
                 .attemptNumber(attemptNumber)
                 .startTime(LocalDateTime.now())
                 .retakePermission(false)
+                .questionCount(0)
                 .build();
 
         resultRepository.save(result);

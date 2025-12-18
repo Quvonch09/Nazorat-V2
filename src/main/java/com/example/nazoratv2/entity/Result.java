@@ -4,6 +4,7 @@ import com.example.nazoratv2.entity.base.BaseEntity;
 import com.example.nazoratv2.entity.enums.ResultStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -13,17 +14,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@Where(clause = "active = true")
 public class Result extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
     private  Category category;
 
-    @Column(nullable = false)
     private Integer questionCount;
 
     private Integer totalScore;
