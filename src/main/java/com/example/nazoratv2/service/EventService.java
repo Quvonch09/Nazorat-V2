@@ -1,10 +1,12 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqEvent;
 import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.entity.Event;
 import com.example.nazoratv2.entity.Group;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.repository.EventRepository;
 import com.example.nazoratv2.repository.GroupRepository;
@@ -27,6 +29,10 @@ public class EventService {
     private final NotificationService notificationService;
 
 
+    @TrackAction(
+            type = ActionType.EVENT_CREATED,
+            description = "Event yaratildi"
+    )
     public ApiResponse<String> addEvent(ReqEvent reqEvent){
         List<Group> groups = groupRepository.findAllById(reqEvent.getGroupIds());
         if (groups.isEmpty()) {

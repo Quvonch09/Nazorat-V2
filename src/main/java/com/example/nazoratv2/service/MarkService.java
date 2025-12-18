@@ -1,5 +1,6 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqMark;
 import com.example.nazoratv2.dto.response.ResMark;
@@ -7,6 +8,7 @@ import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.entity.Mark;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
 import com.example.nazoratv2.entity.enums.MarkStatus;
 import com.example.nazoratv2.entity.enums.Role;
@@ -31,6 +33,11 @@ public class MarkService {
     private final MarkMapper markMapper;
     private final UserRepository userRepository;
 
+
+    @TrackAction(
+            type = ActionType.MARK_CREATED,
+            description = "Baho quyildi"
+    )
     public ApiResponse<String> saveMark(ReqMark reqMark){
         Student student = studentRepository.findById(reqMark.getStudentId()).orElseThrow(
                 () -> new DataNotFoundException("Student not found")
