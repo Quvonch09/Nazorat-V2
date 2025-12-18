@@ -1,6 +1,8 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.request.ReqNotification;
+import com.example.nazoratv2.entity.enums.ActionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -107,6 +109,10 @@ public class AuthService {
     }
 
 
+    @TrackAction(
+            type = ActionType.STUDENT_CREATED,
+            description = "Student yaratildi"
+    )
     public ApiResponse<String> saveStudent(ReqStudent reqStudent){
 
         boolean b = studentRepository.existsByPhone(reqStudent.getPhone());

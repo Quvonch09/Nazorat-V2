@@ -1,7 +1,9 @@
 package com.example.nazoratv2.controller;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.AuthRegister;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final AuthService authService;
 
+    @TrackAction(
+            type = ActionType.ADMIN_CREATED,
+            description = "Admin yaratildi"
+    )
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @PostMapping("/saveUser")
     public ResponseEntity<ApiResponse<String>> userLogin(

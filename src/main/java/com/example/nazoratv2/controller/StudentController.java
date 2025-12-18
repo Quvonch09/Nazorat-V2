@@ -1,5 +1,6 @@
 package com.example.nazoratv2.controller;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.StudentDTO;
 import com.example.nazoratv2.dto.request.AuthRegister;
@@ -7,6 +8,7 @@ import com.example.nazoratv2.dto.request.ReqStudent;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.entity.Student;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.AuthService;
@@ -53,6 +55,11 @@ public class StudentController {
         return ResponseEntity.ok(authService.saveStudent(reqStudent));
     }
 
+
+    @TrackAction(
+            type = ActionType.PARENT_CREATED,
+            description = "Ota-ona yaratildi"
+    )
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     @PostMapping("/saveParent")
     public ResponseEntity<ApiResponse<String>> parentLogin(

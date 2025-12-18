@@ -1,8 +1,10 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.RoomDTO;
 import com.example.nazoratv2.entity.Room;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.RoomMapper;
 import com.example.nazoratv2.repository.RoomRepository;
@@ -18,6 +20,10 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
 
+    @TrackAction(
+            type = ActionType.ROOM_CREATED,
+            description = "Xona yaratildi"
+    )
     public ApiResponse<String> saveRoom(RoomDTO roomDTO){
         if (roomRepository.existsByName(roomDTO.getName())) {
             return ApiResponse.error("Name already exists");
