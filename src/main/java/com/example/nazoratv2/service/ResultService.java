@@ -1,13 +1,13 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.dto.AnswerDTO;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqResult;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResResult;
-import com.example.nazoratv2.entity.Category;
-import com.example.nazoratv2.entity.Result;
-import com.example.nazoratv2.entity.Student;
+import com.example.nazoratv2.entity.*;
 import com.example.nazoratv2.entity.enums.ResultStatus;
+import com.example.nazoratv2.exception.BadRequestException;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.ResultMapper;
 import com.example.nazoratv2.repository.*;
@@ -24,53 +24,74 @@ import java.util.List;
 public class ResultService {
 
     private final ResultRepository resultRepository;
-    private final StudentRepository studentRepository;
-    private final CategoryRepository categoryRepository;
     private final QuestionRepository questionRepository;
+    private final OptionRepository optionRepository;
     private final ResultMapper resultMapper;
 
     public ApiResponse<ResResult> submitQuiz(ReqResult req) {
 
-        Student student = studentRepository.findById(req.getStudentId())
-                .orElseThrow(() -> new DataNotFoundException("Student not found"));
+        Result result = resultRepository.findById(req.getResultId())
+                .orElseThrow(() -> new DataNotFoundException("Result not found"));
 
-        Category category = categoryRepository.findById(req.getCategoryId())
-                .orElseThrow(() -> new DataNotFoundException("Category not found"));
+        if (result.getStatus() != ResultStatus.STARTED) {
+            throw new BadRequestException("Test already finished");
+        }
 
-        int totalScore = questionRepository.getTotalScoreByCategory(req.getCategoryId());
-        int earnedScore = req.getEarnedScore();
+        int earnedScore = 0;
+
+        for (AnswerDTO answer : req.getAnswers()) {
+
+            Question question = questionRepository.findByIdAndDeletedFalse(
+                            answer.getQuestionId())
+                    .orElseThrow(() -> new DataNotFoundException("Question not found"));
+
+            if (!question.getCategory().getId()
+                    .equals(result.getCategory().getId())) {
+                throw new BadRequestException("Question does not belong to this test");
+            }
+
+            Option option = optionRepository.findByIdAndDeletedFalse(
+                            answer.getOptionId())
+                    .orElseThrow(() ->
+                            new DataNotFoundException("Option not found"));
+
+            if (!option.getQuestion().getId()
+                    .equals(question.getId())) {
+                throw new BadRequestException("Option does not belong to this question");
+            }
+
+            if (option.isCorrect()) {
+                earnedScore += question.getScore();
+            }
+        }
+
+        int totalScore =
+                questionRepository.getTotalScoreByCategory(
+                        result.getCategory().getId()
+                );
 
         double percentage = totalScore == 0
                 ? 0
                 : ((double) earnedScore / totalScore) * 100;
 
-        ResultStatus status = percentage >= 70
-                ? ResultStatus.PASSED
-                : ResultStatus.FAILED;
+        ResultStatus status =
+                percentage >= 70
+                        ? ResultStatus.PASSED
+                        : ResultStatus.FAILED;
 
-        int attemptNumber =
-                resultRepository.countByStudentIdAndCategoryId(
-                        req.getStudentId(),
-                        req.getCategoryId()
-                ) + 1;
+        result.setEarnedScore(earnedScore);
+        result.setTotalScore(totalScore);
+        result.setPercentage(percentage);
+        result.setStatus(status);
+        result.setEndTime(LocalDateTime.now());
+        result.setRetakePermission(false);
 
-        Result result = Result.builder()
-                .student(student)
-                .category(category)
-                .totalScore(totalScore)
-                .earnedScore(earnedScore)
-                .percentage(percentage)
-                .status(status)
-                .attemptNumber(attemptNumber)
-                .startTime(LocalDateTime.now())
-                .endTime(LocalDateTime.now())
-                .retakePermission(false)
-                .build();
         resultRepository.save(result);
 
         ResResult response = resultMapper.toResponse(result);
         return ApiResponse.success(response, "success");
     }
+
 
     public ApiResponse<ResResult> getResultById(Long resultId) {
 

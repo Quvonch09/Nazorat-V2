@@ -2,24 +2,49 @@ package com.example.nazoratv2.mapper;
 
 import com.example.nazoratv2.dto.response.ResOption;
 import com.example.nazoratv2.dto.response.ResQuestion;
+import com.example.nazoratv2.entity.Option;
 import com.example.nazoratv2.entity.Question;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class QuestionMapper {
 
-    public ResQuestion toResponse(Question question) {
+//    public ResQuestion toResponse(Question question) {
+//
+//        List<ResOption> options = question.getOptions().stream()
+//                .map(o -> new ResOption(
+//                        o.getId(),
+//                        o.getText(),
+//                        o.getFile()
+//                ))
+//                .toList();
+//
+//        return new ResQuestion(
+//                question.getId(),
+//                question.getText(),
+//                question.getDifficulty(),
+//                question.getScore(),
+//                question.getFile(),
+//                options
+//        );
+//    }
 
-        List<ResOption> options = question.getOptions().stream()
-                .map(o -> new ResOption(
-                        o.getId(),
-                        o.getText(),
-                        o.getFile()
-                ))
+    public ResQuestion toQuestionResponse(Question question) {
+
+        List<Option> options = question.getOptions().stream()
+                .filter(o -> !o.isDeleted())
+                .collect(Collectors.toList());
+
+        Collections.shuffle(options);
+
+        List<ResOption> resOptions = options.stream()
+                .map(o -> new ResOption(o.getId(), o.getText(), o.getFile()))
                 .toList();
 
         return new ResQuestion(
@@ -28,8 +53,7 @@ public class QuestionMapper {
                 question.getDifficulty(),
                 question.getScore(),
                 question.getFile(),
-                options
-        );
+                resOptions);
     }
 
 }

@@ -43,7 +43,7 @@ public class ResultController {
         return ResponseEntity.ok(resultService.grantRetake(resultId));
     }
 
-    @GetMapping
+    @GetMapping("/get-page")
     public ResponseEntity<ApiResponse<ResPageable>> getAllResults(@RequestParam(defaultValue = "0")int page,
                                                                   @RequestParam(defaultValue = "10")int size){
         return ResponseEntity.ok(resultService.getAllResults(page,size));
@@ -55,7 +55,5 @@ public class ResultController {
                                                                          @RequestParam(defaultValue = "10")int size){
         return ResponseEntity.ok(resultService.getResultsByCategory(categoryId,page,size));
     }
-
-
 
 }

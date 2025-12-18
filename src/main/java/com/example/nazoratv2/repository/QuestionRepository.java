@@ -9,10 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     Page<Question> findAllByDeletedFalse(Pageable pageable);
+    Optional<Question> findByIdAndDeletedFalse(Long id);
 
     @Query("""
         SELECT COALESCE(SUM(q.score), 0)
@@ -21,4 +25,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           AND q.deleted = false
     """)
     Integer getTotalScoreByCategory(@Param("categoryId") Long categoryId);
+
+    List<Question> findAllByCategoryIdAndDeletedFalse(Long categoryId);
 }

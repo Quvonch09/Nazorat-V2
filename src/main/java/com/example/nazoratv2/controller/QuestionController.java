@@ -20,11 +20,11 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.createQuestion(req));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<ResPageable>> getAllQuestionsByPage(@RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(questionService.getQuestionsByPage(page, size));
-    }
+//    @GetMapping
+//    public ResponseEntity<ApiResponse<ResPageable>> getAllQuestionsByPage(@RequestParam(defaultValue = "0") int page,
+//                                                                          @RequestParam(defaultValue = "10") int size) {
+//        return ResponseEntity.ok(questionService.getQuestionsByPage(page, size));
+//    }
 
     @PutMapping
     public ResponseEntity<ApiResponse<String>> updateQuestion(@RequestBody ReqQuestionDTO req) {
@@ -35,5 +35,8 @@ public class QuestionController {
     public ResponseEntity<ApiResponse<String>> deleteQuestion(@PathVariable Long questionId) {
         return ResponseEntity.ok(questionService.deleteQuestion(questionId));
     }
+
+
+
 
 }

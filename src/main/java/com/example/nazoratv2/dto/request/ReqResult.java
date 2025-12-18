@@ -10,9 +10,6 @@ import java.util.List;
 @Getter
 @Setter
 public class ReqResult {
-    Long studentId;
-    Long categoryId;
-    int earnedScore;
-    private LocalDateTime startTime;
+    private Long resultId;
     private List<AnswerDTO> answers;
 }
