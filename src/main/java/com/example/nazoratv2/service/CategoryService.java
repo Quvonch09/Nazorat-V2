@@ -116,8 +116,7 @@ public class CategoryService {
         Optional<Result> lastResult =
                 resultRepository.findTopByStudentIdAndCategoryIdOrderByAttemptNumberDesc(
                         req.getStudentId(),
-                        req.getCategoryId()
-                );
+                        req.getCategoryId());
 
         if (lastResult.isPresent()) {
             Result r = lastResult.get();
