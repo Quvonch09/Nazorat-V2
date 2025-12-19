@@ -1,11 +1,13 @@
 package com.example.nazoratv2.controller;
 
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqCategory;
 import com.example.nazoratv2.dto.request.ReqStartTest;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.dto.response.ResQuestion;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.service.CategoryService;
 import com.example.nazoratv2.service.ResultService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,10 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    @TrackAction(
+            type = ActionType.CATEGORY_CREATED,
+            description = "Category yaratildi"
+    )
     @PostMapping
     public ResponseEntity<ApiResponse<String>> saveCategory(@RequestBody ReqCategory reqCategory){
         return ResponseEntity.ok(categoryService.saveCategory(reqCategory));

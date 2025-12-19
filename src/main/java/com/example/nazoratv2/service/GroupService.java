@@ -1,5 +1,6 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqGroup;
 import com.example.nazoratv2.dto.response.ResGroup;
@@ -8,6 +9,7 @@ import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Room;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.entity.enums.WeekDays;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -39,6 +41,10 @@ public class GroupService {
     private final CategoryRepository categoryRepository;
 
 
+    @TrackAction(
+            type = ActionType.GROUP_CREATED,
+            description = "Group yaratildi"
+    )
     public ApiResponse<String> saveGroup(ReqGroup reqGroup){
         User teacher = userRepository.findById(reqGroup.getTeacherId()).orElseThrow(
                 () -> new DataNotFoundException("Teacher not found")

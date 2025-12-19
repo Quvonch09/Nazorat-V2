@@ -17,6 +17,8 @@ public class ResCategory {
 
     private int duration;
 
+    private int questionLimit;
+
     private String imgUrl;
 
 }

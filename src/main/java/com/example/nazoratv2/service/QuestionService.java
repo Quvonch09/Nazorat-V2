@@ -1,5 +1,6 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.ReqOptionDTO;
 import com.example.nazoratv2.dto.ReqQuestionDTO;
@@ -10,6 +11,7 @@ import com.example.nazoratv2.dto.response.ResQuestion;
 import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.entity.Option;
 import com.example.nazoratv2.entity.Question;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.QuestionMapper;
 import com.example.nazoratv2.repository.CategoryRepository;
@@ -29,6 +31,10 @@ public class QuestionService {
     private final CategoryRepository categoryRepository;
 
 
+    @TrackAction(
+            type = ActionType.QUESTION_CREATED,
+            description = "Savol yaratildi"
+    )
     public ApiResponse<String> createQuestion(ReqQuestion req) {
 
         Category category = categoryRepository.findById(req.getCategoryId()).

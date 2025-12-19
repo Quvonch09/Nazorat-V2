@@ -18,6 +18,8 @@ public class ReqCategory {
 
     private int duration;
 
+    private int questionLimit;
+
     private String imgUrl;
 
 }

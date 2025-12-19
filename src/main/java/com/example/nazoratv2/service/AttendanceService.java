@@ -1,10 +1,12 @@
 package com.example.nazoratv2.service;
 
+import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.AttendanceDto;
 import com.example.nazoratv2.entity.Attendance;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Student;
+import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.AttendaceEnum;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.AttendanceMapper;
@@ -29,6 +31,10 @@ public class AttendanceService {
 
 
 
+    @TrackAction(
+            type = ActionType.ATTENDANCE_TAKEN,
+            description = "Davomat olindi"
+    )
     public ApiResponse<String> saveAttendance(Long groupId, List<AttendanceDto> attendanceDtoList){
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new DataNotFoundException("Group not found")

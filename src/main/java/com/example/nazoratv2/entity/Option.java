@@ -3,6 +3,7 @@ package com.example.nazoratv2.entity;
 import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "options")
@@ -11,6 +12,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@Where(clause = "active = true")
 public class Option extends BaseEntity {
 
     @Column(nullable = false)

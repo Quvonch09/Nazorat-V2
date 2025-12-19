@@ -25,6 +25,7 @@ public class CategoryMapper {
                 .description(category.getDescription())
                 .imgUrl(category.getImgUrl())
                 .duration(category.getDuration())
+                .questionLimit(category.getQuestionLimit())
                 .build();
     }
 
@@ -39,13 +40,5 @@ public class CategoryMapper {
 //        return category;
 //    }
 
-
-    public void update(Category category, ReqCategory req) {
-        if (req.getName() != null)
-            category.setName(req.getName());
-
-        if (req.getImgUrl() != null)
-            category.setImgUrl(req.getImgUrl());
-    }
 
 }
