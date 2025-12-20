@@ -1,6 +1,7 @@
 package com.example.nazoratv2.dto.response;
 
 import com.example.nazoratv2.entity.enums.ResultStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class ResResult {
     private ResultStatus status;
     private Integer attemptNumber;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 }

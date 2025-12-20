@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class ResultController {
     private final ResultService resultService;
 
-    @PostMapping
+    @PostMapping("/submit-test")
     public ResponseEntity<ApiResponse<ResResult>> subMitQuestion(@RequestBody ReqResult req){
         return ResponseEntity.ok(resultService.submitQuiz(req));
     }

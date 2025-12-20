@@ -2,17 +2,14 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqCategory;
-import com.example.nazoratv2.dto.request.ReqGroup;
-import com.example.nazoratv2.dto.request.ReqStartTest;
 import com.example.nazoratv2.dto.response.ResCategory;
-import com.example.nazoratv2.dto.response.ResPageable;
-import com.example.nazoratv2.dto.response.ResQuestion;
+import com.example.nazoratv2.dto.response.ResOption;
+import com.example.nazoratv2.dto.response.ResponseQuestion;
 import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.entity.Question;
 import com.example.nazoratv2.entity.Result;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.enums.ResultStatus;
-import com.example.nazoratv2.exception.BadRequestException;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.CategoryMapper;
 import com.example.nazoratv2.mapper.QuestionMapper;
@@ -20,16 +17,15 @@ import com.example.nazoratv2.repository.CategoryRepository;
 import com.example.nazoratv2.repository.QuestionRepository;
 import com.example.nazoratv2.repository.ResultRepository;
 import com.example.nazoratv2.repository.StudentRepository;
+import com.example.nazoratv2.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,10 +33,8 @@ public class CategoryService {
 
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
-    private final StudentRepository studentRepository;
     private final ResultRepository resultRepository;
     private final QuestionRepository questionRepository;
-    private final QuestionMapper questionMapper;
 
     public ApiResponse<String> saveCategory(ReqCategory reqCategory) {
 
@@ -109,19 +103,21 @@ public class CategoryService {
     }
 
 
-    public ApiResponse<Long> startTest(ReqStartTest req) {
+    public ApiResponse<List<ResponseQuestion>> startTest(CustomUserDetails currentUser, Long categoryId) {
 
-        Student student = studentRepository.findById(req.getStudentId())
-                .orElseThrow(() -> new DataNotFoundException("Student not found"));
+        if (!currentUser.isStudent()) {
+            return ApiResponse.error("Only students can start tests");
+        }
 
-        Category category = categoryRepository.findById(req.getCategoryId())
-                .orElseThrow(() -> new DataNotFoundException("Category not found"));
+        Student student = currentUser.getStudent();
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new DataNotFoundException("Category not found"));
+
+        int limit = category.getQuestionLimit();
 
         Optional<Result> lastResult =
-                resultRepository.findTopByStudentIdAndCategoryIdOrderByAttemptNumberDesc(
-                        req.getStudentId(),
-                        req.getCategoryId());
-
+                resultRepository.findTopByStudentIdAndCategoryIdOrderByAttemptNumberDesc(student.getId(),categoryId);
         if (lastResult.isPresent()) {
             Result r = lastResult.get();
 
@@ -134,11 +130,7 @@ public class CategoryService {
             }
         }
 
-        int attemptNumber =
-                resultRepository.countByStudentIdAndCategoryId(
-                        req.getStudentId(),
-                        req.getCategoryId()
-                ) + 1;
+        int attemptNumber = resultRepository.countByStudentIdAndCategoryId(student.getId(),categoryId) + 1;
 
         Result result = Result.builder()
                 .student(student)
@@ -147,32 +139,41 @@ public class CategoryService {
                 .attemptNumber(attemptNumber)
                 .startTime(LocalDateTime.now())
                 .retakePermission(false)
-                .questionCount(0)
+                .questionCount(limit)
                 .build();
+        Result save = resultRepository.save(result);
 
-        resultRepository.save(result);
+        List<Question> allQuestions = questionRepository.findAllByCategoryIdAndDeletedFalse(categoryId);
+        if (allQuestions.size() < category.getQuestionLimit()) {
+            return ApiResponse.error("Savollar Kategoriya buyicha yetarli emas, savol qo‘shing.");
+        }
 
-        return ApiResponse.success(result.getId(), "Test started");
-    }
-
-
-    public ApiResponse<List<ResQuestion>> getRandomQuestionsByCategory(Long categoryId, int limit) {
-
-        List<Question> questions = questionRepository.findAllByCategoryIdAndDeletedFalse(categoryId);
-
-        if (questions.isEmpty()) {
+        if (allQuestions.isEmpty()) {
             throw new DataNotFoundException("No questions found");
         }
 
-        Collections.shuffle(questions);
+        Collections.shuffle(allQuestions);
 
-        List<ResQuestion> list = questions.stream()
-                .limit(limit)
-                .map(questionMapper::toQuestionResponse)
-                .toList();
+        List<ResponseQuestion> responseQuestions = allQuestions.stream().map(question -> {
+            List<ResOption> options = question.getOptions().stream().map(option -> ResOption.builder()
+                    .id(option.getId())
+                    .text(option.getText())
+                    .file(option.getFile())
+                    .build()).collect(Collectors.toList());
 
-        return ApiResponse.success(list, "Success");
+            Collections.shuffle(options);
+
+            return ResponseQuestion.builder()
+                    .id(question.getId())
+                    .resultId(save.getId())
+                    .text(question.getText())
+                    .difficulty(question.getDifficulty())
+                    .categoryId(category.getId())
+                    .file(question.getFile())
+                    .options(options)
+                    .build();
+        }).collect(Collectors.toList());
+        return ApiResponse.success(responseQuestions, "Category successfully started");
     }
-
 
 }
