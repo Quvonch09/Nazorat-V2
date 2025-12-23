@@ -30,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
         this.password = user.getPassword();
         this.role = user.getRole().name();
         this.imgUrl = user.getImageUrl();
-        this.enabled = user.isEnabled();
+        this.enabled = user.isActive();
     }
 
     public CustomUserDetails(Student student) {

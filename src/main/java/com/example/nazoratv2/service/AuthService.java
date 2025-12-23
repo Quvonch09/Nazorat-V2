@@ -102,7 +102,6 @@ public class AuthService {
                 .fullName(authRegister.getFullName())
                 .password(passwordEncoder.encode(authRegister.getPassword()))
                 .role(role)
-                .enabled(true)
                 .build();
         userRepository.save(teacher);
         return ApiResponse.success(null, "Successfully added user");
