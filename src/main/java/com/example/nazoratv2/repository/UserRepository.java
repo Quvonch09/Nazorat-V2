@@ -1,7 +1,10 @@
 package com.example.nazoratv2.repository;
 
+import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +18,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByPhoneAndRole(String phone, Role role);
     boolean existsByPhone(String phone);
 
-
-
+//    Page<User> findAllAndEnabledTrue(Pageable pageable);
 }

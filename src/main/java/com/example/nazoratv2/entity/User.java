@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "users")
+@Where(clause = "enabled = true")
 public class User extends BaseEntity implements UserDetails {
 
     private String phone;
