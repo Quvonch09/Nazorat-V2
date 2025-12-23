@@ -12,6 +12,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     boolean existsByPhone(String phoneNumber);
     Optional<Student> findByPhone(String phoneNumber);
 
+
     List<Student> findAllByGroup_id(Long group_id);
 //
 //    Optional<Student> findByParent_Phone(String phone);
