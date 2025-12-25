@@ -32,7 +32,7 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     private String imageUrl;
-    boolean enabled;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -55,6 +55,6 @@ public class User extends BaseEntity implements UserDetails {
     public boolean isAccountNonLocked() { return true; }
     @Override
     public boolean isCredentialsNonExpired() { return true; }
-    @Override
-    public boolean isEnabled() { return enabled; }
+//    @Override
+//    public boolean isEnabled() { return enabled; }
 }

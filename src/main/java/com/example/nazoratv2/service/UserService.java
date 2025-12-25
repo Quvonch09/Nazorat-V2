@@ -60,7 +60,7 @@ public class UserService {
 
     public ApiResponse<String> deleteById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("user not found"));
-        user.setEnabled(false);
+        user.setActive(false);
         userRepository.save(user);
         return ApiResponse.success(null,"success");
     }
