@@ -80,7 +80,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(List.of(
-                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:5174",
                 "http://127.0.0.1:5500",
                 "http://167.86.121.42/",
                 "https://nazorat.sferaacademy.uz/"

@@ -39,7 +39,7 @@ public class CustomUserDetails implements UserDetails {
         this.fullName = student.getFullName();
         this.phone = student.getPhone();
         this.password = student.getPassword();
-        this.role = "STUDENT";
+        this.role = "ROLE_STUDENT";
         this.imgUrl = student.getImgUrl();
         this.enabled = student.isActive();
     }
