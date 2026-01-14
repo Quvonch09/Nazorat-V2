@@ -2,11 +2,10 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
-import com.example.nazoratv2.dto.request.ReqStudent;
 import com.example.nazoratv2.dto.response.ResPageable;
-import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.UserMapper;
 import com.example.nazoratv2.repository.UserRepository;
@@ -15,7 +14,6 @@ import com.example.nazoratv2.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,19 +69,42 @@ public class UserService {
     }
 
 
-    public ApiResponse<ResPageable> getAllUsersPage(int page, int size){
-        Pageable pageable = PageRequest.of(page, size);
-        Page<User> users = userRepository.findAll(pageable);
+//    public ApiResponse<ResPageable> getAllUsersPage(int page, int size){
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<User> users = userRepository.findAll(pageable);
+//
+//        List<UserResponse> list = users.getContent().stream().map(mapper::toResponseUser).toList();
+//
+//        ResPageable resPageable = ResPageable.builder()
+//                    .page(page)
+//                    .size(size)
+//                    .totalElements(users.getTotalElements())
+//                    .totalPage(users.getTotalPages())
+//                    .body(list)
+//                    .build();
+//            return ApiResponse.success(resPageable, null);
+//    }
 
-        List<UserResponse> list = users.getContent().stream().map(mapper::toResponseUser).toList();
+
+    public ApiResponse<ResPageable> getAllUsersSearch(String name,
+                                                      String phone, Role role, int page, int size){
+        if (!(role.equals(Role.ROLE_TEACHER) || role.equals(Role.ROLE_PARENT))) {
+            return ApiResponse.error("Notugri role");
+        }
+
+        Page<User> users = userRepository.searchUser(role, name, phone, PageRequest.of(page, size));
+        if (users.getTotalElements() == 0) {
+            return ApiResponse.error("Foydalanuvchilar topilmadi");
+        }
 
         ResPageable resPageable = ResPageable.builder()
                     .page(page)
                     .size(size)
                     .totalElements(users.getTotalElements())
                     .totalPage(users.getTotalPages())
-                    .body(list)
+                    .body(users)
                     .build();
-            return ApiResponse.success(resPageable, null);
+
+        return ApiResponse.success(resPageable,"succsess");
     }
 }
