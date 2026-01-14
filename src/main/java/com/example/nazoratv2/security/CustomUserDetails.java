@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
     private final String role;
     private final String imgUrl;
-    private final boolean enabled;
+    private final boolean active;
 
     public CustomUserDetails(User user) {
         this.user = user;
@@ -30,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
         this.password = user.getPassword();
         this.role = user.getRole().name();
         this.imgUrl = user.getImageUrl();
-        this.enabled = user.isActive();
+        this.active = user.isActive();
     }
 
     public CustomUserDetails(Student student) {
@@ -39,9 +39,9 @@ public class CustomUserDetails implements UserDetails {
         this.fullName = student.getFullName();
         this.phone = student.getPhone();
         this.password = student.getPassword();
-        this.role = "STUDENT";
+        this.role = "ROLE_STUDENT";
         this.imgUrl = student.getImgUrl();
-        this.enabled = student.isActive();
+        this.active = student.isActive();
     }
 
     public boolean isUser() {
@@ -62,7 +62,7 @@ public class CustomUserDetails implements UserDetails {
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return enabled; }
+    @Override public boolean isEnabled() { return active; }
 
     public static CustomUserDetails fromUser(User user) {
         return new CustomUserDetails(user);
