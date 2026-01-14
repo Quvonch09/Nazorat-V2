@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "users")
-@Where(clause = "enabled = true")
+@Where(clause = "active = true")
 public class User extends BaseEntity implements UserDetails {
 
     private String phone;

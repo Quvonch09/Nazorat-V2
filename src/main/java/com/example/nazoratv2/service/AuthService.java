@@ -38,7 +38,7 @@ public class AuthService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            if (!user.isEnabled()){
+            if (!user.isActive()){
                 return ApiResponse.error("User is not enabled");
             }
 
