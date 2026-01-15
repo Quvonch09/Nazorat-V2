@@ -39,8 +39,10 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<ResPageable>> getAllUsersPage(@RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(userService.getAllUsersPage(page, size));
+                                                                    @RequestParam(defaultValue = "10") int size,
+                                                                    @RequestParam(required = false) String name,
+                                                                    @RequestParam(required = false) String phone){
+        return ResponseEntity.ok(userService.getAllUsersSearch(name,phone,page,size));
     }
 
     @GetMapping("/me")
