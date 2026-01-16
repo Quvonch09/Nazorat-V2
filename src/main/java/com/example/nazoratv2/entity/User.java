@@ -2,10 +2,7 @@ package com.example.nazoratv2.entity;
 
 import com.example.nazoratv2.entity.base.BaseEntity;
 import com.example.nazoratv2.entity.enums.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +24,7 @@ public class User extends BaseEntity implements UserDetails {
 
     private String phone;
     private String password;
+    @Column(name = "full_name")
     private String fullName;
 
     @Enumerated(EnumType.STRING)
