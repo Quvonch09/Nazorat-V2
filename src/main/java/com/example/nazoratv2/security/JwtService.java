@@ -1,6 +1,7 @@
 package com.example.nazoratv2.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -59,7 +60,7 @@ public class JwtService {
 
 
     // 🔒 Token muddati tugaganmi?
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         Date expirationDate = extractClaim(token, Claims::getExpiration);
         return expirationDate.before(new Date());
     }
@@ -70,7 +71,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()

@@ -1,17 +1,14 @@
 package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.configuration.TrackAction;
-import com.example.nazoratv2.entity.enums.ActionType;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import com.example.nazoratv2.dto.ApiResponse;
-import com.example.nazoratv2.dto.request.AuthRegister;
-import com.example.nazoratv2.dto.request.ReqStudent;
-import com.example.nazoratv2.entity.enums.Role;
+import com.example.nazoratv2.dto.request.Token;
+import com.example.nazoratv2.entity.enums.ActionType;
+import com.example.nazoratv2.security.JwtService;
 import com.example.nazoratv2.service.AuthService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,6 +16,7 @@ import com.example.nazoratv2.service.AuthService;
 @CrossOrigin
 public class AuthController {
     private final AuthService authService;
+    private final JwtService jwtService;
 
     @TrackAction(
             type = ActionType.LOGIN,
@@ -30,6 +28,12 @@ public class AuthController {
             @RequestParam String password
     ){
         return ResponseEntity.ok(authService.login(phone, password));
+    }
+
+
+    @PostMapping("/verify")
+    public ResponseEntity<ApiResponse<String>> checkToken(@RequestBody Token token){
+        return ResponseEntity.ok(authService.validate(token));
     }
 
 }
