@@ -2,7 +2,11 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.request.ReqNotification;
+import com.example.nazoratv2.dto.request.Token;
 import com.example.nazoratv2.entity.enums.ActionType;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -139,4 +143,42 @@ public class AuthService {
         studentRepository.save(student);
         return ApiResponse.success(null, "Successfully saved student");
     }
+
+
+    public ApiResponse<String> validate(Token token) {
+        if (token.getToken() == null || token.getToken().trim().isEmpty()) {
+            return ApiResponse.error("Token is required");
+        }
+
+        try {
+            // Tokenni parsing
+            Claims claims = jwtService.extractAllClaims(token.getToken());
+
+            // Token muddati tugaganini tekshirish
+            if (jwtService.isTokenExpired(token.getToken())) {
+                return ApiResponse.error("Token expired");
+            }
+
+            // Token ichidagi username/phone
+            String phone = claims.getSubject();
+            if (phone == null || phone.isEmpty()) {
+                return ApiResponse.error("Invalid token");
+            }
+
+            // DB da bormi tekshirish
+            if (!userRepository.existsByPhone(phone)) {
+                return ApiResponse.error("User not found");
+            }
+
+            // Hammasi to‘g‘ri
+            return ApiResponse.success(phone, "Token is valid");
+
+        } catch (ExpiredJwtException e) {
+            return ApiResponse.error("Token expired");
+        } catch (Exception e) {
+            // Shu yerda token parsingda xatolik bo‘lsa
+            return ApiResponse.error("Invalid token");
+        }
+    }
+
 }
