@@ -59,39 +59,42 @@ public class StudentService {
         return ApiResponse.success(null, "Success");
     }
 
-    public ApiResponse<String> update(CustomUserDetails user, StudentDTO req) {
+    public ApiResponse<String> update(CustomUserDetails current, StudentDTO req) {
 
-        if ("STUDENT".equals(user.getRole())) {
-            Student student = studentRepository.findByPhone(user.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Student topilmadi"));
+        boolean isAdmin = "ROLE_ADMIN".equals(current.getRole()) || "ROLE_SUPER_ADMIN".equals(current.getRole());
 
-            student.setPhone(req.getPhone());
-            student.setFullName(req.getFullName());
-            student.setImgUrl(req.getImgUrl());
-            Student save = studentRepository.save(student);
-            if (req.getPhone().equals(user.getPhone())) {
-                CustomUserDetails userDetails = CustomUserDetails.fromStudent(save);
-                String token = jwtService.generateToken(
-                        userDetails.getUsername(),
-                        userDetails.getRole()
-                );
-                return ApiResponse.success(token, "Success");
-            } else {
-                return ApiResponse.success(null, "Success");
-            }
+        Student targetStudent;
+
+        if (req.getId() == null) {
+            targetStudent = studentRepository.findByPhone(current.getUsername())
+                    .orElseThrow(() -> new DataNotFoundException("Student topilmadi"));
         } else {
-            User user1 = userRepository.findByPhone(user.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User topilmadi"));
-            user1.setPhone(req.getPhone());
-            user1.setFullName(req.getFullName());
-            user1.setImageUrl(req.getImgUrl());
-            User save = userRepository.save(user1);
-            if (req.getPhone().equals(user.getPhone())) {
-                String token = jwtService.generateToken(save.getPhone(), save.getRole().name());
-                return ApiResponse.success(token, "Success");
-            } else {
-                return ApiResponse.success(null, "Success");
+            if (!isAdmin) {
+                return ApiResponse.error("Siz boshqa studentni update qila olmaysiz!");
             }
+
+            targetStudent = studentRepository.findById(req.getId())
+                    .orElseThrow(() -> new DataNotFoundException("Student topilmadi: "));
         }
+
+        String oldPhone = targetStudent.getPhone();
+
+        if (req.getPhone() != null) targetStudent.setPhone(req.getPhone());
+        if (req.getFullName() != null) targetStudent.setFullName(req.getFullName());
+        if (req.getImgUrl() != null) targetStudent.setImgUrl(req.getImgUrl());
+
+        Student saved = studentRepository.save(targetStudent);
+
+        String token = null;
+
+        if (req.getPhone() != null && !req.getPhone().equals(oldPhone)) {
+            CustomUserDetails userDetails = CustomUserDetails.fromStudent(saved);
+            token = jwtService.generateToken(
+                    userDetails.getUsername(),
+                    userDetails.getRole()
+            );
+        }
+
+        return ApiResponse.success(token, "Success");
     }
 }
