@@ -2,6 +2,7 @@ package com.example.nazoratv2.repository;
 
 import com.example.nazoratv2.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,6 +19,12 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 //    Optional<Student> findByParent_Phone(String phone);
 //
     long countByGroup_Id(Long groupId);
+
+
+    @Query(value = """
+    select s.* from student s join groups g on s.group_id = g.id join users u on g.teacher_id = u.id where u.id = ?1
+    """, nativeQuery = true)
+    List<Student> findAllByTeacher(Long teacherId);
 //
 //    @Query(value = """
 //    select s.* from student s join groups g on g.id = s.group_id join users u on u.id = g.teacher_id where

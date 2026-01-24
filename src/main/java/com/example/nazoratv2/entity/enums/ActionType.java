@@ -21,4 +21,6 @@ public enum ActionType {
     TEACHER_CREATED,
     ADMIN_CREATED,
     PARENT_CREATED,
+    MARK_UPDATED,
+    ROOM_UPDATED
 }

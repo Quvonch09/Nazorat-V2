@@ -3,6 +3,7 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqMark;
+import com.example.nazoratv2.dto.request.ReqMarkDTO;
 import com.example.nazoratv2.dto.response.ResMark;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.entity.Mark;
@@ -74,32 +75,36 @@ public class MarkService {
     }
 
 
-    public ApiResponse<String> updateMark(Long markId, ReqMark reqMark){
-        Mark mark = markRepository.findById(markId).orElseThrow(
+    @TrackAction(
+            type = ActionType.MARK_UPDATED,
+            description = "Baho tahrirlandi"
+    )
+    public ApiResponse<String> updateMark(ReqMarkDTO reqMarkDTO ){
+        Mark mark = markRepository.findById(reqMarkDTO.getId()).orElseThrow(
                 () -> new DataNotFoundException("Mark not found")
         );
 
-        Student student = studentRepository.findById(reqMark.getStudentId()).orElseThrow(
+        Student student = studentRepository.findById(reqMarkDTO.getStudentId()).orElseThrow(
                 () -> new DataNotFoundException("Student not found")
         );
 
-        if (reqMark.getMarkStatus().equals(MarkStatus.KUNLIK_BAHO)){
-            int score = (reqMark.getActivityScore()+ reqMark.getHomeworkScore())/2;
-            mark.setStatus(reqMark.getMarkStatus());
-            mark.setHomeworkScore(reqMark.getHomeworkScore());
-            mark.setActiveScore(reqMark.getActivityScore());
-            mark.setDate(reqMark.getDate());
+        if (reqMarkDTO.getMarkStatus().equals(MarkStatus.KUNLIK_BAHO)){
+            int score = (reqMarkDTO.getActivityScore()+ reqMarkDTO.getHomeworkScore())/2;
+            mark.setStatus(reqMarkDTO.getMarkStatus());
+            mark.setHomeworkScore(reqMarkDTO.getHomeworkScore());
+            mark.setActiveScore(reqMarkDTO.getActivityScore());
+            mark.setDate(reqMarkDTO.getDate());
             mark.setTotalScore(score);
             mark.setMarkCategoryStatus(markCategoryStatus(score));
             mark.setStudent(student);
         } else {
-            mark.setStatus(reqMark.getMarkStatus());
+            mark.setStatus(reqMarkDTO.getMarkStatus());
             mark.setActiveScore(null);
             mark.setHomeworkScore(null);
-            mark.setDate(reqMark.getDate());
-            mark.setTotalScore(reqMark.getTotalScore());
+            mark.setDate(reqMarkDTO.getDate());
+            mark.setTotalScore(reqMarkDTO.getTotalScore());
             mark.setStudent(student);
-            mark.setMarkCategoryStatus(markCategoryStatus(reqMark.getTotalScore()));
+            mark.setMarkCategoryStatus(markCategoryStatus(reqMarkDTO.getTotalScore()));
         }
 
         plusCoin(mark.getTotalScore(), student);

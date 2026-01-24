@@ -2,6 +2,7 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqMark;
+import com.example.nazoratv2.dto.request.ReqMarkDTO;
 import com.example.nazoratv2.dto.response.ResMark;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.security.CustomUserDetails;
@@ -29,12 +30,12 @@ public class MarkController {
 
 
 
-    @PutMapping("/{markId}")
+    @PutMapping("/update")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @Operation(description = "MarkStatus = KUNLIK_BAHO, IMTIHON_BAHO\n " +
             "Agar imtihon baho bulsa faqat totalScore tuldiriladi, qolgani keremas")
-    public ResponseEntity<ApiResponse<String>> updateMark(@PathVariable Long markId, @RequestBody ReqMark reqMark){
-        return ResponseEntity.ok(markService.updateMark(markId, reqMark));
+    public ResponseEntity<ApiResponse<String>> updateMark(@RequestBody ReqMarkDTO reqMarkDTO){
+        return ResponseEntity.ok(markService.updateMark(reqMarkDTO));
     }
 
 

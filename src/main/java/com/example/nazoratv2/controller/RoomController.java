@@ -2,6 +2,8 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.RoomDTO;
+import com.example.nazoratv2.dto.request.ReqRoom;
+import com.example.nazoratv2.dto.response.ResRoom;
 import com.example.nazoratv2.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,10 @@ public class RoomController {
     }
 
 
-    @PutMapping("/{roomId}")
+    @PutMapping("/update")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
-    public ResponseEntity<ApiResponse<String>> updateRoom(@PathVariable Long roomId, @RequestBody RoomDTO roomDTO){
-        return ResponseEntity.ok(roomService.updateRoom(roomId, roomDTO));
+    public ResponseEntity<ApiResponse<String>> updateRoom(@RequestBody ReqRoom reqRoom){
+        return ResponseEntity.ok(roomService.updateRoom(reqRoom));
     }
 
 
@@ -45,7 +47,7 @@ public class RoomController {
 
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(@PathVariable Long roomId){
+    public ResponseEntity<ApiResponse<ResRoom>> getRoomById(@PathVariable Long roomId){
         return ResponseEntity.ok(roomService.getRoom(roomId));
     }
 }

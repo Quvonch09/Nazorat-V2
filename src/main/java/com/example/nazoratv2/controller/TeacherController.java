@@ -3,9 +3,13 @@ package com.example.nazoratv2.controller;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.AuthRegister;
+import com.example.nazoratv2.dto.response.ResTask;
+import com.example.nazoratv2.dto.response.ResTeacher;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.service.AuthService;
+import com.example.nazoratv2.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TeacherController {
     private final AuthService authService;
+    private final UserService userService;
 
     @TrackAction(
             type = ActionType.TEACHER_CREATED,
@@ -27,5 +32,12 @@ public class TeacherController {
             @RequestBody AuthRegister register
     ){
         return ResponseEntity.ok(authService.saveUser(register, Role.ROLE_TEACHER));
+    }
+
+
+    @GetMapping("/getOne")
+    @Operation(summary = "Teacherlarni bittasini kurish")
+    public ResponseEntity<ApiResponse<ResTeacher>> getOneTeacher(@RequestParam Long id){
+        return ResponseEntity.ok(userService.getOneTeacher(id));
     }
 }

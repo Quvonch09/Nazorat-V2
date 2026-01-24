@@ -3,6 +3,7 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqEvent;
+import com.example.nazoratv2.dto.request.ReqEventDTO;
 import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.entity.Event;
 import com.example.nazoratv2.entity.Group;
@@ -66,22 +67,22 @@ public class EventService {
     }
 
 
-    public ApiResponse<String> updateEvent(Long eventId,ReqEvent reqEvent){
-        Event event = eventRepository.findById(eventId).orElseThrow(
+    public ApiResponse<String> updateEvent(ReqEventDTO reqEventDTO){
+        Event event = eventRepository.findById(reqEventDTO.getId()).orElseThrow(
                 () -> new DataNotFoundException("Event not found")
         );
 
-        List<Group> groups = groupRepository.findAllById(reqEvent.getGroupIds());
+        List<Group> groups = groupRepository.findAllById(reqEventDTO.getGroupIds());
         if (groups.isEmpty()) {
             return ApiResponse.error("Group not found");
         }
 
-        LocalTime startTime = LocalTime.parse(reqEvent.getStartTime());
-        LocalTime endTime = LocalTime.parse(reqEvent.getEndTime());
+        LocalTime startTime = LocalTime.parse(reqEventDTO.getStartTime());
+        LocalTime endTime = LocalTime.parse(reqEventDTO.getEndTime());
 
-        event.setName(reqEvent.getName());
-        event.setDescription(reqEvent.getDescription());
-        event.setDate(reqEvent.getDate());
+        event.setName(reqEventDTO.getName());
+        event.setDescription(reqEventDTO.getDescription());
+        event.setDate(reqEventDTO.getDate());
         event.setStartTime(startTime);
         event.setEndTime(endTime);
         event.setGroupList(groups);
@@ -128,11 +129,11 @@ public class EventService {
 
 
 
-    public List<ReqEvent> reqEvent(){
-        List<ReqEvent> reqEvents = new ArrayList<>();
+    public List<ReqEventDTO> reqEvent(){
+        List<ReqEventDTO> reqEvents = new ArrayList<>();
         for (Event event : eventRepository.findAll()) {
             List<String> groupNames = event.getGroupList().stream().map(Group::getName).toList();
-            ReqEvent reqEvent = ReqEvent.builder()
+            ReqEventDTO reqEvent = ReqEventDTO.builder()
                     .id(event.getId())
                     .name(event.getName())
                     .description(event.getDescription())
