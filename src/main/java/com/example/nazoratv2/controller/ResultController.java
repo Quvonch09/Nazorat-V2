@@ -25,7 +25,7 @@ public class ResultController {
         return ResponseEntity.ok(resultService.getResultById(resultId));
     }
 
-    @GetMapping("/{studentId}")
+    @GetMapping("/byStudent/{studentId}")
     public ResponseEntity<ApiResponse<ResPageable>> getResultsByStudent(@PathVariable Long studentId,
                                                                         @RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "10") int size){
@@ -49,7 +49,7 @@ public class ResultController {
         return ResponseEntity.ok(resultService.getAllResults(page,size));
     }
 
-    @GetMapping("/{categoryId}")
+    @GetMapping("/byCategory/{categoryId}")
     public ResponseEntity<ApiResponse<ResPageable>> getResultsByCategory(@PathVariable Long categoryId,
                                                                          @RequestParam(defaultValue = "0")int page,
                                                                          @RequestParam(defaultValue = "10")int size){

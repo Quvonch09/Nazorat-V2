@@ -5,6 +5,7 @@ import com.example.nazoratv2.dto.ReqQuestionDTO;
 import com.example.nazoratv2.dto.request.ReqQuestion;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.service.QuestionService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping
+    @Operation(description = "Difficulty -> EASY, MEDIUM, HARD")
     public ResponseEntity<ApiResponse<String>> addQuestion(@RequestBody ReqQuestion req) {
         return ResponseEntity.ok(questionService.createQuestion(req));
     }
