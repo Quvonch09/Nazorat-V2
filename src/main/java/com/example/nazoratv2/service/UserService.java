@@ -3,10 +3,8 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.response.ResPageable;
-import com.example.nazoratv2.dto.response.ResUser;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.User;
-import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.UserMapper;
 import com.example.nazoratv2.repository.UserRepository;
@@ -18,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -97,7 +94,7 @@ public class UserService {
 
         Page<User> users = userRepository.searchUser(name, phone, pageable);
 
-        List<UserResponse> list = users.stream().map(mapper::toResponseUser).toList();;
+        List<UserResponse> list = users.stream().map(mapper::toResponseUser).toList();
 
         if (users.isEmpty()) {
             return ApiResponse.error("Foydalanuvchilar topilmadi");
@@ -113,5 +110,6 @@ public class UserService {
 
         return ApiResponse.success(resPageable, "success");
     }
+
 
 }
