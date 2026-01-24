@@ -9,7 +9,6 @@ import lombok.*;
 @Setter
 @Builder
 public class UserDTO {
-    @Schema(hidden = true)
     private Long id;
     private String fullName;
     private String phone;

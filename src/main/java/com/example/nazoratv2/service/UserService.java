@@ -45,25 +45,44 @@ public class UserService {
 
     public ApiResponse<String> update(CustomUserDetails current , UserDTO req) {
 
-        User user = current.getUser();
-        String oldPhone = user.getPhone();
+        User currentUser = current.getUser();
+        Long targetId = req.getId();
+
+        User targetUser;
+
+        if (targetId == null) {
+            targetUser = currentUser;
+        } else {
+            if (targetId.equals(currentUser.getId())) {
+                targetUser = currentUser;
+            } else {
+                if (!currentUser.getRole().name().equals("ROLE_ADMIN") &&
+                        !currentUser.getRole().name().equals("ROLE_SUPER_ADMIN")) {
+                    return ApiResponse.error("Siz boshqa userni update qila olmaysiz!");
+                }
+                targetUser = userRepository.findById(targetId)
+                        .orElseThrow(() -> new DataNotFoundException("User topilmadi"));
+            }
+        }
+        String oldPhone = targetUser.getPhone();
         String newPhone = req.getPhone();
 
         if (req.getFullName() != null)
-            user.setFullName(req.getFullName());
+            targetUser.setFullName(req.getFullName());
 
         if (req.getImageUrl() != null)
-            user.setImageUrl(req.getImageUrl());
+            targetUser.setImageUrl(req.getImageUrl());
 
         String newToken = null;
 
         if (newPhone != null && !newPhone.equals(oldPhone)) {
-            user.setPhone(newPhone);
-            newToken = jwtService.generateToken(newPhone, user.getRole().name());
+            targetUser.setPhone(newPhone);
+            newToken = jwtService.generateToken(newPhone, targetUser.getRole().name());
         }
-        userRepository.save(user);
 
-        return ApiResponse.success(newToken,"success");
+        userRepository.save(targetUser);
+
+        return ApiResponse.success(newToken, "success");
 
     }
 
