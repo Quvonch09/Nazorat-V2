@@ -52,4 +52,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     Page<Group> searchByGroup(@Param("name") String name,
                               @Param("teacherName") String teacherName,
                               @Param("roomName") String roomName, Pageable pageable);
+
+    List<Group> findAllByTeacherId(Long teacherId);
 }

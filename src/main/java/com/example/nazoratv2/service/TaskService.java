@@ -65,8 +65,8 @@ public class TaskService {
 
 
 
-    public ApiResponse<String> updateTask(Long taskId, ReqTask reqTask){
-        Task task = taskRepository.findById(taskId).orElseThrow(
+    public ApiResponse<String> updateTask(ReqTask reqTask){
+        Task task = taskRepository.findById(reqTask.getTaskId()).orElseThrow(
                 () -> new DataNotFoundException("Task topilmadi")
         );
 

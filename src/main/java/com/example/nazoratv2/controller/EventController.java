@@ -2,6 +2,7 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqEvent;
+import com.example.nazoratv2.dto.request.ReqEventDTO;
 import com.example.nazoratv2.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,10 @@ public class EventController {
     }
 
 
-    @PutMapping("/{eventId}")
+    @PutMapping("/update")
     @Operation(summary = "Eventni update qilish")
-    public ResponseEntity<ApiResponse<String>> updateEvent(@PathVariable Long eventId, @RequestBody ReqEvent reqEvent){
-        return ResponseEntity.ok(eventService.updateEvent(eventId, reqEvent));
+    public ResponseEntity<ApiResponse<String>> updateEvent(@RequestBody ReqEventDTO reqEventDTO){
+        return ResponseEntity.ok(eventService.updateEvent(reqEventDTO));
     }
 
 

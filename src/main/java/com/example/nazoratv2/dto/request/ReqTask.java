@@ -12,6 +12,8 @@ import java.time.LocalDate;
 @Data
 public class ReqTask {
 
+    private Long taskId;
+
     private Long userId;
 
     private Long groupId;

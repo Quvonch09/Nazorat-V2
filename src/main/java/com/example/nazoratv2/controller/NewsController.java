@@ -2,6 +2,7 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqNews;
+import com.example.nazoratv2.dto.request.ReqNewsDTO;
 import com.example.nazoratv2.dto.response.ResNews;
 import com.example.nazoratv2.service.NewsService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,11 @@ public class NewsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> delete(@PathVariable Long id) {
         return ResponseEntity.ok(newsService.delete(id));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<String >> updateNews(@RequestBody ReqNewsDTO reqNewsDTO){
+        return ResponseEntity.ok(newsService.updateNews(reqNewsDTO));
     }
 
 }

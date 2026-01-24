@@ -25,9 +25,9 @@ public class TaskController {
    }
 
 
-   @PutMapping("/{taskId}")
-    public ResponseEntity<ApiResponse<String>> updateTask(@PathVariable Long taskId, @RequestBody ReqTask reqTask){
-       return ResponseEntity.ok(taskService.updateTask(taskId, reqTask));
+   @PutMapping("/update")
+    public ResponseEntity<ApiResponse<String>> updateTask(@RequestBody ReqTask reqTask){
+       return ResponseEntity.ok(taskService.updateTask(reqTask));
    }
 
 
