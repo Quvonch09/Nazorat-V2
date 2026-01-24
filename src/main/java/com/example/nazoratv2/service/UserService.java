@@ -2,13 +2,18 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
-import com.example.nazoratv2.dto.response.ResPageable;
-import com.example.nazoratv2.dto.response.ResUser;
-import com.example.nazoratv2.dto.response.UserResponse;
+import com.example.nazoratv2.dto.request.ReqGroupDTO;
+import com.example.nazoratv2.dto.response.*;
+import com.example.nazoratv2.entity.Group;
+import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
+import com.example.nazoratv2.mapper.GroupMapper;
+import com.example.nazoratv2.mapper.StudentMapper;
 import com.example.nazoratv2.mapper.UserMapper;
+import com.example.nazoratv2.repository.GroupRepository;
+import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.security.JwtService;
@@ -28,7 +33,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
     private final JwtService jwtService;
-
+    private final GroupRepository groupRepository;
+    private final StudentRepository studentRepository;
+    private final GroupMapper groupMapper;
+    private final StudentMapper studentMapper;
 
     public ApiResponse<UserResponse> getProfile(CustomUserDetails currentUser) {
         User user = currentUser.getUser();
@@ -93,6 +101,21 @@ public class UserService {
                 .build();
 
         return ApiResponse.success(resPageable, "success");
+    }
+
+
+
+    public ApiResponse<ResTeacher> getOneTeacher(Long id){
+        User teacher = userRepository.findByIdAndActiveTrue(id).orElseThrow(
+                () -> new DataNotFoundException("Teacher not found")
+        );
+
+        List<ResStudent> studentList = studentRepository.findAllByTeacher(teacher.getId())
+                .stream().map(studentMapper::toStudentDTO).toList();
+        List<ReqGroupDTO> groupList = groupRepository.findAllByTeacherId(teacher.getId())
+                .stream().map(groupMapper::toReq).toList();
+
+        return ApiResponse.success(mapper.resTeacher(teacher,studentList,groupList), "Success");
     }
 
 }

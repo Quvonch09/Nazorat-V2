@@ -1,11 +1,11 @@
 package com.example.nazoratv2.dto.request;
 
+
+import com.example.nazoratv2.dto.response.ResStudent;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -13,11 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqEvent {
+public class ReqGroupDTO {
+
+    private Long id;
+
     private String name;
-    private String description;
-    private LocalDate date;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private String startTime;
@@ -25,8 +25,20 @@ public class ReqEvent {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private String endTime;
 
-    private List<Long> groupIds;
+    private List<String> weekDays;
+
+    private Long teacherId;
+
+    private Long categoryId;
+
+    private Long roomId;
 
     @Schema(hidden = true)
-    private List<String> groupNames;
+    private String roomName;
+
+    @Schema(hidden = true)
+    private String teacherName;
+
+    @Schema(hidden = true)
+    private String categoryName;
 }

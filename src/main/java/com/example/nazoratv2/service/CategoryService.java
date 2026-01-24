@@ -2,6 +2,7 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqCategory;
+import com.example.nazoratv2.dto.request.ReqCategoryDTO;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.dto.response.ResOption;
 import com.example.nazoratv2.dto.response.ResponseQuestion;
@@ -51,16 +52,16 @@ public class CategoryService {
     }
 
 
-    public ApiResponse<String> updateCategory(Long id, ReqCategory reqCategory) {
-        Category category = categoryRepository.findById(id).orElseThrow(
+    public ApiResponse<String> updateCategory(ReqCategoryDTO reqCategoryDTO) {
+        Category category = categoryRepository.findById(reqCategoryDTO.getId()).orElseThrow(
                 () -> new DataNotFoundException("Category not found")
         );
 
-        category.setName(reqCategory.getName());
-        category.setDescription(reqCategory.getDescription());
-        category.setDuration(reqCategory.getDuration());
-        category.setImgUrl(reqCategory.getImgUrl());
-        category.setQuestionLimit(reqCategory.getQuestionLimit());
+        category.setName(reqCategoryDTO.getName());
+        category.setDescription(reqCategoryDTO.getDescription());
+        category.setDuration(reqCategoryDTO.getDuration());
+        category.setImgUrl(reqCategoryDTO.getImgUrl());
+        category.setQuestionLimit(reqCategoryDTO.getQuestionLimit());
 
         categoryRepository.save(category);
 

@@ -2,6 +2,7 @@ package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqGroup;
+import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.ResGroup;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.security.CustomUserDetails;
@@ -32,11 +33,10 @@ public class GroupController {
     }
 
 
-    @PutMapping("/{groupId}")
+    @PutMapping("/update")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
-    public ResponseEntity<ApiResponse<String>> updateGroup(@PathVariable Long groupId,
-                                                           @RequestBody ReqGroup reqGroup){
-        return ResponseEntity.ok(groupService.updateGroup(groupId, reqGroup));
+    public ResponseEntity<ApiResponse<String>> updateGroup(@RequestBody ReqGroupDTO reqGroupDTO){
+        return ResponseEntity.ok(groupService.updateGroup(reqGroupDTO));
     }
 
 

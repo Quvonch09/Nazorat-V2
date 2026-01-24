@@ -3,6 +3,7 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqGroup;
+import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.ResGroup;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.entity.Category;
@@ -84,38 +85,38 @@ public class GroupService {
 
 
 
-    public ApiResponse<String> updateGroup(Long groupId, ReqGroup reqGroup){
-        Group group = groupRepository.findById(groupId).orElseThrow(
+    public ApiResponse<String> updateGroup(ReqGroupDTO reqGroupDTO){
+        Group group = groupRepository.findById(reqGroupDTO.getId()).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
 
-        LocalTime startTime = LocalTime.parse(reqGroup.getStartTime());
-        LocalTime endTime = LocalTime.parse(reqGroup.getEndTime());
+        LocalTime startTime = LocalTime.parse(reqGroupDTO.getStartTime());
+        LocalTime endTime = LocalTime.parse(reqGroupDTO.getEndTime());
 
-        if (groupRepository.existsByGroupForUpdate(reqGroup.getWeekDays(),
-                reqGroup.getRoomId(), startTime, endTime, group.getId())) {
+        if (groupRepository.existsByGroupForUpdate(reqGroupDTO.getWeekDays(),
+                reqGroupDTO.getRoomId(), startTime, endTime, group.getId())) {
             return ApiResponse.error("There is no room for the group at this time");
         }
 
-        User teacher = userRepository.findById(reqGroup.getTeacherId()).orElseThrow(
+        User teacher = userRepository.findById(reqGroupDTO.getTeacherId()).orElseThrow(
                 () -> new DataNotFoundException("Teacher not found")
         );
 
-        Category category = categoryRepository.findById(reqGroup.getCategoryId()).orElseThrow(
+        Category category = categoryRepository.findById(reqGroupDTO.getCategoryId()).orElseThrow(
                 () -> new DataNotFoundException("Category not found")
         );
 
-        Room room = roomRepository.findById(reqGroup.getRoomId()).orElseThrow(
+        Room room = roomRepository.findById(reqGroupDTO.getRoomId()).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
         );
 
-        List<WeekDays> weekdays = reqGroup.getWeekDays().stream().map(WeekDays::valueOf).toList();
+        List<WeekDays> weekdays = reqGroupDTO.getWeekDays().stream().map(WeekDays::valueOf).toList();
 
         group.setStartTime(startTime);
         group.setEndTime(endTime);
         group.setTeacher(teacher);
         group.setRoom(room);
-        group.setName(reqGroup.getName());
+        group.setName(reqGroupDTO.getName());
         group.setWeekDays(weekdays);
         group.setCategory(category);
         groupRepository.save(group);

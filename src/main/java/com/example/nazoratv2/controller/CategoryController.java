@@ -4,6 +4,7 @@ package com.example.nazoratv2.controller;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqCategory;
+import com.example.nazoratv2.dto.request.ReqCategoryDTO;
 import com.example.nazoratv2.dto.request.ReqStartTest;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.dto.response.ResQuestion;
@@ -36,9 +37,9 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.saveCategory(reqCategory));
     }
 
-    @PutMapping("/{categoryId}")
-    public ResponseEntity<ApiResponse<String>> updateCategory(@PathVariable Long categoryId, @RequestBody ReqCategory reqCategory){
-        return ResponseEntity.ok(categoryService.updateCategory(categoryId, reqCategory));
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<String>> updateCategory(@RequestBody ReqCategoryDTO reqCategoryDTO){
+        return ResponseEntity.ok(categoryService.updateCategory(reqCategoryDTO));
     }
 
     @DeleteMapping("/{categoryId}")

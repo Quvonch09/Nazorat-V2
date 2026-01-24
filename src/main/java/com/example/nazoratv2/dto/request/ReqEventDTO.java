@@ -14,7 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqEvent {
+public class ReqEventDTO {
+    private Long id;
     private String name;
     private String description;
     private LocalDate date;

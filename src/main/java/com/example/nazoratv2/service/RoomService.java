@@ -3,6 +3,7 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.RoomDTO;
+import com.example.nazoratv2.dto.request.ReqRoom;
 import com.example.nazoratv2.entity.Room;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -35,12 +36,12 @@ public class RoomService {
     }
 
 
-    public ApiResponse<String> updateRoom(Long id,RoomDTO roomDTO){
-        Room room = roomRepository.findById(id).orElseThrow(
+    public ApiResponse<String> updateRoom(ReqRoom reqRoom){
+        Room room = roomRepository.findById(reqRoom.getId()).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
         );
 
-        room.setName(roomDTO.getName());
+        room.setName(reqRoom.getName());
         roomRepository.save(room);
         return ApiResponse.success(null, "Success");
     }

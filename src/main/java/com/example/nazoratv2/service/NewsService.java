@@ -3,6 +3,7 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqNews;
+import com.example.nazoratv2.dto.request.ReqNewsDTO;
 import com.example.nazoratv2.dto.response.ResNews;
 import com.example.nazoratv2.entity.News;
 import com.example.nazoratv2.entity.enums.ActionType;
@@ -12,6 +13,7 @@ import com.example.nazoratv2.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -57,6 +59,20 @@ public class NewsService {
         news.setActive(false);
         newsRepository.save(news);
         return ApiResponse.success(null,"Deleted");
+    }
+
+
+    public ApiResponse<String> updateNews(ReqNewsDTO reqNewsDTO){
+        News news = newsRepository.findById(reqNewsDTO.getId()).orElseThrow(
+                () -> new DataNotFoundException("News not found")
+        );
+
+        news.setName(reqNewsDTO.getTitle());
+        news.setImgUrl(reqNewsDTO.getImgUrl());
+        news.setDescription(reqNewsDTO.getDescription());
+        news.setDate(LocalDate.parse(reqNewsDTO.getDate()));
+        newsRepository.save(news);
+        return ApiResponse.success(null, "News successfully updated");
     }
 
 }
