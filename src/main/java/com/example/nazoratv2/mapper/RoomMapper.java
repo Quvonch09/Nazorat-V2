@@ -1,5 +1,6 @@
 package com.example.nazoratv2.mapper;
 
+import com.example.nazoratv2.dto.DayStat;
 import com.example.nazoratv2.dto.RoomDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.ResRoom;
@@ -19,11 +20,12 @@ public class RoomMapper {
     }
 
 
-    public ResRoom resRoom(Room room, List<ReqGroupDTO> schedules) {
+    public ResRoom resRoom(Room room, List<ReqGroupDTO> schedules, List<DayStat> weeklyStats) {
         return ResRoom.builder()
                 .id(room.getId())
                 .name(room.getName())
                 .schedules(schedules)
+                .weeklyStats(weeklyStats)
                 .build();
     }
 }

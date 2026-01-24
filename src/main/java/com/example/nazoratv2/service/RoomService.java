@@ -2,10 +2,12 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.DayStat;
 import com.example.nazoratv2.dto.RoomDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.request.ReqRoom;
 import com.example.nazoratv2.dto.response.ResRoom;
+import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Room;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -74,11 +76,14 @@ public class RoomService {
         Room room = roomRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
         );
+        List<Group> groups = groupRepository.findAllByRoomIdAndActiveTrue(room.getId());
 
-        List<ReqGroupDTO> schedules = groupRepository.findAllByRoomIdAndActiveTrue(room.getId())
-                .stream().map(groupMapper::toReq).toList();
+        List<ReqGroupDTO> schedules = groups.stream().map(groupMapper::toReq).toList();
 
-        return ApiResponse.success(roomMapper.resRoom(room, schedules), "Success");
+        List<DayStat> weeklyStats = RoomScheduleStats.buildWeeklyStats(groups);
+
+
+        return ApiResponse.success(roomMapper.resRoom(room, schedules,weeklyStats), "Success");
     }
 
 

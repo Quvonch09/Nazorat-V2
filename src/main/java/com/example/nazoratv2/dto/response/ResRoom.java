@@ -1,5 +1,6 @@
 package com.example.nazoratv2.dto.response;
 
+import com.example.nazoratv2.dto.DayStat;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -17,4 +18,6 @@ public class ResRoom {
     private String name;
 
     private List<ReqGroupDTO> schedules;
+
+    private List<DayStat> weeklyStats;
 }
