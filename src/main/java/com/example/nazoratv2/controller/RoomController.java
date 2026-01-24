@@ -3,6 +3,7 @@ package com.example.nazoratv2.controller;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.RoomDTO;
 import com.example.nazoratv2.dto.request.ReqRoom;
+import com.example.nazoratv2.dto.response.ResRoom;
 import com.example.nazoratv2.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class RoomController {
 
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(@PathVariable Long roomId){
+    public ResponseEntity<ApiResponse<ResRoom>> getRoomById(@PathVariable Long roomId){
         return ResponseEntity.ok(roomService.getRoom(roomId));
     }
 }
