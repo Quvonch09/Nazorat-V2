@@ -3,11 +3,15 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.RoomDTO;
+import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.request.ReqRoom;
+import com.example.nazoratv2.dto.response.ResRoom;
 import com.example.nazoratv2.entity.Room;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.exception.DataNotFoundException;
+import com.example.nazoratv2.mapper.GroupMapper;
 import com.example.nazoratv2.mapper.RoomMapper;
+import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
+    private final GroupRepository groupRepository;
+    private final GroupMapper groupMapper;
 
     @TrackAction(
             type = ActionType.ROOM_CREATED,
@@ -36,6 +42,10 @@ public class RoomService {
     }
 
 
+    @TrackAction(
+            type = ActionType.ROOM_UPDATED,
+            description = "Xona yaratildi"
+    )
     public ApiResponse<String> updateRoom(ReqRoom reqRoom){
         Room room = roomRepository.findById(reqRoom.getId()).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
@@ -60,12 +70,15 @@ public class RoomService {
 
 
 
-    public ApiResponse<RoomDTO> getRoom(Long id){
+    public ApiResponse<ResRoom> getRoom(Long id){
         Room room = roomRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Room not found")
         );
 
-        return ApiResponse.success(roomMapper.roomDTO(room), "Success");
+        List<ReqGroupDTO> schedules = groupRepository.findAllByRoomIdAndActiveTrue(room.getId())
+                .stream().map(groupMapper::toReq).toList();
+
+        return ApiResponse.success(roomMapper.resRoom(room, schedules), "Success");
     }
 
 
