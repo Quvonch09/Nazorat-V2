@@ -3,11 +3,11 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
-import com.example.nazoratv2.dto.response.*;
-import com.example.nazoratv2.entity.Group;
-import com.example.nazoratv2.entity.Student;
+import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.dto.response.ResStudent;
+import com.example.nazoratv2.dto.response.ResTeacher;
+import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.User;
-import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.GroupMapper;
 import com.example.nazoratv2.mapper.StudentMapper;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

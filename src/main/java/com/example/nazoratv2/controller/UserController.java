@@ -25,18 +25,6 @@ public class UserController {
     private final AuthService authService;
     private final UserService userService;
 
-    @TrackAction(
-            type = ActionType.ADMIN_CREATED,
-            description = "Admin yaratildi"
-    )
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
-    @PostMapping("/saveUser")
-    public ResponseEntity<ApiResponse<String>> userLogin(
-            @RequestBody AuthRegister register
-    ){
-        return ResponseEntity.ok(authService.saveUser(register, Role.ROLE_ADMIN));
-    }
-
     @GetMapping
     public ResponseEntity<ApiResponse<ResPageable>> getAllUsersPage(@RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "10") int size,
@@ -48,22 +36,6 @@ public class UserController {
     @GetMapping("/me")
     public ApiResponse<UserResponse> getProfile(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return userService.getProfile(currentUser);
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getOneUser(userId));
-    }
-
-    @PutMapping
-    public ResponseEntity<ApiResponse<String>> updateUser(@AuthenticationPrincipal CustomUserDetails current,
-                                                          @RequestBody UserDTO req){
-        return ResponseEntity.ok(userService.update(current, req));
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse<String>> delete(@PathVariable Long userId){
-        return ResponseEntity.ok(userService.deleteById(userId));
     }
 
 
