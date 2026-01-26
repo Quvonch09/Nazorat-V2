@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/question")
 @RequiredArgsConstructor
 public class QuestionController {
+
     private final QuestionService questionService;
 
     @PostMapping
@@ -22,11 +23,12 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.createQuestion(req));
     }
 
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<ResPageable>> getAllQuestionsByPage(@RequestParam(defaultValue = "0") int page,
-//                                                                          @RequestParam(defaultValue = "10") int size) {
-//        return ResponseEntity.ok(questionService.getQuestionsByPage(page, size));
-//    }
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<ApiResponse<ResPageable>> getAllQuestionsByCategoryId(@RequestParam(defaultValue = "0") int page,
+                                                                                @RequestParam(defaultValue = "10") int size,
+                                                                                @PathVariable Long categoryId) {
+        return ResponseEntity.ok(questionService.getAllQuestions(categoryId,page,size));
+    }
 
     @PutMapping
     public ResponseEntity<ApiResponse<String>> updateQuestion(@RequestBody ReqQuestionDTO req) {

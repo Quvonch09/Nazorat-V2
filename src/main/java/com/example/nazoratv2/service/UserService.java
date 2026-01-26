@@ -98,13 +98,15 @@ public class UserService {
     }
 
 
-    public ApiResponse<ResPageable> getAllUsersSearch(String name, String phone, int page, int size) {
+    public ApiResponse<ResPageable> getAllUsersSearch(String name, String phone, Role role, int page, int size) {
 
         PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<User> users = userRepository.searchUser(name, phone, pageable);
+        Page<User> users = userRepository.searchUser(name, phone, role, pageable);
 
-        List<UserResponse> list = users.stream().map(mapper::toResponseUser).toList();;
+        List<UserResponse> list = users.stream()
+                .map(mapper::toResponseUser)
+                .toList();
 
         if (users.isEmpty()) {
             return ApiResponse.error("Foydalanuvchilar topilmadi");

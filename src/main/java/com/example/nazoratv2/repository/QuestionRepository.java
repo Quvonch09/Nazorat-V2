@@ -25,6 +25,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           AND q.deleted = false
     """)
     Integer getTotalScoreByCategory(@Param("categoryId") Long categoryId);
+    Page<Question> findAllByCategoryId(Long categoryId, Pageable pageable);
 
     List<Question> findAllByCategoryIdAndDeletedFalse(Long categoryId);
+    long countByCategoryId(Long categoryId);
+
 }

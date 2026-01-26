@@ -15,6 +15,7 @@ import com.example.nazoratv2.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +26,12 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
-    private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public ApiResponse<ResPageable> getStudents(int page, int size) {
+    public ApiResponse<ResPageable> getStudents(String name,String phone,int page, int size) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Student> students = studentRepository.findAll(pageRequest);
+        PageRequest pageRequest = PageRequest.of(page, size,Sort.by("id").descending());
+        Page<Student> students = studentRepository.searchStudents(name,phone,pageRequest);
 
         List<ResStudent> list = students.stream().map(studentMapper::toStudentDTO).toList();
 
@@ -43,7 +43,6 @@ public class StudentService {
                 .body(list)
                 .build();
         return ApiResponse.success(resPageable, "Success");
-
     }
 
     public ApiResponse<ResStudent> getById(Long id) {
