@@ -170,6 +170,7 @@ public class CategoryService {
                     .text(question.getText())
                     .difficulty(question.getDifficulty())
                     .categoryId(category.getId())
+                    .categoryName(category.getName())
                     .file(question.getFile())
                     .options(options)
                     .build();

@@ -11,6 +11,7 @@ import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.AuthService;
 import com.example.nazoratv2.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,11 +39,13 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(description = "ROLE_TEACHER , ROLE_ADMIN , ROLE_PARENT")
     public ResponseEntity<ApiResponse<ResPageable>> getAllUsersPage(@RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                    @RequestParam(required = false) Role role,
                                                                     @RequestParam(required = false) String name,
                                                                     @RequestParam(required = false) String phone){
-        return ResponseEntity.ok(userService.getAllUsersSearch(name,phone,page,size));
+        return ResponseEntity.ok(userService.getAllUsersSearch(name,phone,role,page,size));
     }
 
     @GetMapping("/me")

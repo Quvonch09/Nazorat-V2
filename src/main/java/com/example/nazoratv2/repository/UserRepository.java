@@ -21,33 +21,14 @@ public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByPhoneAndRole(String phone, Role role);
     boolean existsByPhone(String phone);
 
-    @Query(
-            value = """
-        SELECT *
-        FROM users u
-        WHERE u.active = true
-          AND u.role IN ('ROLE_PARENT', 'ROLE_TEACHER','ROLE_ADMIN')
-          AND (:name IS NULL 
-               OR LOWER(u.full_name) LIKE LOWER(CONCAT('%', :name, '%')))
-          AND (:phone IS NULL 
-               OR u.phone LIKE CONCAT('%', :phone, '%'))
-        """,
-            countQuery = """
-        SELECT COUNT(*)
-        FROM users u
-        WHERE u.active = true
-          AND u.role IN ('ROLE_PARENT', 'ROLE_TEACHER','ROLE_ADMIN')
-          AND (:name IS NULL 
-               OR LOWER(u.full_name) LIKE LOWER(CONCAT('%', :name, '%')))
-          AND (:phone IS NULL 
-               OR u.phone LIKE CONCAT('%', :phone, '%'))
-        """,
-            nativeQuery = true
-    )
-    Page<User> searchUser(
-            @Param("name") String name,
-            @Param("phone") String phone,
-            Pageable pageable
-    );
-//    Page<User> findAllAndEnabledTrue(Pageable pageable);
+    @Query("""
+    select u from User u
+    where (:name is null or :name = '' or lower(u.fullName) like lower(concat('%', :name, '%')))
+      and (:phone is null or :phone = '' or u.phone like concat('%', :phone, '%'))
+      and (:role is null or u.role = :role)
+""")
+    Page<User> searchUser(@Param("name") String name,
+                          @Param("phone") String phone,
+                          @Param("role") Role role,
+                          Pageable pageable);
 }

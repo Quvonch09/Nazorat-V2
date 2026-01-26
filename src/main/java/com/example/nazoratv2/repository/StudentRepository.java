@@ -1,8 +1,11 @@
 package com.example.nazoratv2.repository;
 
 import com.example.nazoratv2.entity.Student;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -209,6 +212,15 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 //    GROUP BY c.level, t.total_students
 //    """, nativeQuery = true)
 //    List<DashboardDTO> getDashboard();
+
+@Query("""
+    select s from Student s
+    where (:name is null or :name = '' or lower(s.fullName) like lower(concat('%', :name, '%')))
+      and (:phone is null or :phone = '' or s.phone like concat('%', :phone, '%'))
+""")
+Page<Student> searchStudents(@Param("name") String name,
+                             @Param("phone") String phone,
+                             Pageable pageable);
 
 
 

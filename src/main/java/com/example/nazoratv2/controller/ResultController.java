@@ -4,16 +4,23 @@ import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqResult;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResResult;
+import com.example.nazoratv2.dto.response.ResponseQuestion;
+import com.example.nazoratv2.security.CustomUserDetails;
+import com.example.nazoratv2.service.CategoryService;
 import com.example.nazoratv2.service.ResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/result")
 @RequiredArgsConstructor
 public class ResultController {
     private final ResultService resultService;
+    private final CategoryService categoryService;
 
     @PostMapping("/submit-test")
     public ResponseEntity<ApiResponse<ResResult>> subMitQuestion(@RequestBody ReqResult req){
@@ -54,6 +61,12 @@ public class ResultController {
                                                                          @RequestParam(defaultValue = "0")int page,
                                                                          @RequestParam(defaultValue = "10")int size){
         return ResponseEntity.ok(resultService.getResultsByCategory(categoryId,page,size));
+    }
+
+    @PostMapping("/start-test/{categoryId}")
+    public ResponseEntity<ApiResponse<List<ResponseQuestion>>> startTest(@AuthenticationPrincipal CustomUserDetails student,
+                                                                         @PathVariable Long categoryId) {
+        return ResponseEntity.ok(categoryService.startTest(student,categoryId));
     }
 
 }
