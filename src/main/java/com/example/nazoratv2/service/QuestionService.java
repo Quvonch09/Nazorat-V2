@@ -29,6 +29,7 @@ import java.util.List;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
+    private final QuestionMapper questionMapper;
 
 
     @TrackAction(
@@ -40,16 +41,31 @@ public class QuestionService {
         Category category = categoryRepository.findById(req.getCategoryId()).
                 orElseThrow(() -> new DataNotFoundException("Category not found"));
 
-        if (req.getOptions() == null || req.getOptions().size() < 2) {
-            throw new IllegalArgumentException("Kamida 2 ta option bulishi kerak");
+        int limit = category.getQuestionLimit();
+
+        if (limit <= 0) {
+            return ApiResponse.error("Bu kategoriyaga savol qo‘shib bo‘lmaydi ");
         }
+
+        long currentCount = questionRepository.countByCategoryId(category.getId());
+
+        if (currentCount >= limit) {
+            return ApiResponse.error("Bu kategoriyada savollar soni limitga yetgan: "
+                    + currentCount + "/" + limit);
+        }
+
+        if (req.getOptions() == null || req.getOptions().size() < 2) {
+            return ApiResponse.error("Kamida 2 ta option bulishi kerak");
+        }
+
         long correctCount = req.getOptions()
                 .stream()
                 .filter(ReqOption::isCorrect)
                 .count();
         if (correctCount != 1) {
-            throw new IllegalArgumentException("Faqat bitta tugri javob bulishi kerak");
+            return ApiResponse.error("Faqat bitta tugri javob bulishi kerak");
         }
+
         Question question = Question.builder()
                 .text(req.getText())
                 .difficulty(req.getDifficulty())
@@ -126,6 +142,40 @@ public class QuestionService {
         question.getOptions().forEach(option -> option.setDeleted(true));
         questionRepository.save(question);
         return ApiResponse.success(null,"success");
+    }
+
+    public ApiResponse<ResPageable> getAllQuestions(Long categoryId, int page, int size) {
+        if (categoryId == null) {
+            return ApiResponse.error("category Id null bo‘lishi mumkin emas");
+        }
+
+        boolean exists = categoryRepository.existsById(categoryId);
+        if (!exists) {
+            return ApiResponse.error("Category topilmadi !!!");
+        }
+
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<Question> questions = questionRepository.findAllByCategoryId(categoryId, pageable);
+
+        if (questions.isEmpty()) {
+            return ApiResponse.error("Savollar topilmadi");
+        }
+
+        List<ResQuestion> list = questions.stream()
+                .map(questionMapper::toQuestionResponse)
+                .toList();
+
+        ResPageable res = ResPageable.builder()
+                .page(page)
+                .size(size)
+                .totalElements(questions.getTotalElements())
+                .totalPage(questions.getTotalPages())
+                .body(list)
+                .build();
+
+        return ApiResponse.success(res, "success");
+
     }
 
 }

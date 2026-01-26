@@ -57,10 +57,10 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
     }
 
-    @PostMapping("/start-test/{categoryId}")
-    public ResponseEntity<ApiResponse<List<ResponseQuestion>>> startTest(@AuthenticationPrincipal CustomUserDetails student,
-                                                                         @PathVariable Long categoryId) {
-        return ResponseEntity.ok(categoryService.startTest(student,categoryId));
-    }
+//    @PostMapping("/start-test/{categoryId}")
+//    public ResponseEntity<ApiResponse<List<ResponseQuestion>>> startTest(@AuthenticationPrincipal CustomUserDetails student,
+//                                                                         @PathVariable Long categoryId) {
+//        return ResponseEntity.ok(categoryService.startTest(student,categoryId));
+//    }
 
 }

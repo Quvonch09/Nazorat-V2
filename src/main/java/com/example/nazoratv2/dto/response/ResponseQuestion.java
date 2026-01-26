@@ -17,6 +17,7 @@ public class ResponseQuestion {
     private Integer score;
     private QuestionDifficulty difficulty;
     private Long categoryId;
+    private String categoryName;
     private String file;
     private List<ResOption> options;
 

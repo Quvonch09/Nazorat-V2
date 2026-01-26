@@ -29,8 +29,10 @@ public class StudentController {
 
     @GetMapping("/get-page-students")
     public ResponseEntity<ApiResponse<ResPageable>> getStudentsByPage(@RequestParam(defaultValue = "0") int page,
-                                                                      @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(studentService.getStudents(page, size));
+                                                                      @RequestParam(defaultValue = "10") int size,
+                                                                      @RequestParam(required = false) String name,
+                                                                      @RequestParam(required = false) String phone) {
+        return ResponseEntity.ok(studentService.getStudents(name,phone,page,size));
     }
 
     @GetMapping("/{studentId}")

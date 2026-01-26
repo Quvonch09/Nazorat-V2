@@ -3,9 +3,10 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
-import com.example.nazoratv2.dto.response.*;
-import com.example.nazoratv2.entity.Group;
-import com.example.nazoratv2.entity.Student;
+import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.dto.response.ResStudent;
+import com.example.nazoratv2.dto.response.ResTeacher;
+import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -99,13 +99,15 @@ public class UserService {
     }
 
 
-    public ApiResponse<ResPageable> getAllUsersSearch(String name, String phone, int page, int size) {
+    public ApiResponse<ResPageable> getAllUsersSearch(String name, String phone, Role role, int page, int size) {
 
         PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<User> users = userRepository.searchUser(name, phone, pageable);
+        Page<User> users = userRepository.searchUser(name, phone, role, pageable);
 
-        List<UserResponse> list = users.stream().map(mapper::toResponseUser).toList();;
+        List<UserResponse> list = users.stream()
+                .map(mapper::toResponseUser)
+                .toList();
 
         if (users.isEmpty()) {
             return ApiResponse.error("Foydalanuvchilar topilmadi");

@@ -15,7 +15,9 @@ public class ResResult {
     private Long resultId;
 
     private Long studentId;
+    private String studentName;
     private Long categoryId;
+    private String categoryName;
 
     private Integer totalScore;
     private Integer earnedScore;
