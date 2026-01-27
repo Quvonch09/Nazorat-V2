@@ -3,11 +3,15 @@ package com.example.nazoratv2.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.nazoratv2.dto.ApiResponse;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -56,6 +60,25 @@ public class GlobalExceptionHandler {
         logError(e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(getMessage(e)));
+    }
+
+
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ApiResponse<?>> handleHandlerMethodValidation(HandlerMethodValidationException e) {
+        logError(e);
+
+        String msg = e.getAllErrors().stream()
+                .map(err -> {
+                    if (err instanceof FieldError fe) {
+                        return fe.getField() + ": " + fe.getDefaultMessage();
+                    }
+                    return err.getDefaultMessage();
+                })
+                .distinct()
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        return ResponseEntity.badRequest().body(ApiResponse.error(msg));
     }
 
     // ===== Helper methods =====

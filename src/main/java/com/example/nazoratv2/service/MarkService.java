@@ -150,7 +150,7 @@ public class MarkService {
         Page<Mark> markPage;
         PageRequest pageRequest = PageRequest.of(page, size);
         if (customUserDetails.getRole().equals(Role.ROLE_TEACHER.name())){
-            User teacher = userRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
+            User teacher = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Teacher not found")
             );
 

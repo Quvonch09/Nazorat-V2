@@ -8,6 +8,7 @@ import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.dto.response.ResTeacher;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.GroupMapper;
 import com.example.nazoratv2.mapper.StudentMapper;
@@ -136,6 +137,12 @@ public class UserService {
                 .stream().map(groupMapper::toReq).toList();
 
         return ApiResponse.success(mapper.resTeacher(teacher,studentList,groupList), "Success");
+    }
+
+
+    public ApiResponse<List<UserResponse>> getAllList(Role role) {
+        List<UserResponse> list = userRepository.findAllByRole(role).stream().map(mapper::toResponseUser).toList();
+        return ApiResponse.success(list, "success");
     }
 
 }

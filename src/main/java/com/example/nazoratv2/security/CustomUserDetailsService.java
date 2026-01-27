@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         // Avval User ni tekshiramiz
-        User user = userRepository.findByPhone(phone).orElse(null);
+        User user = userRepository.findByPhoneAndActiveTrue(phone).orElse(null);
         if (user != null) {
             return CustomUserDetails.fromUser(user);
         }

@@ -1,18 +1,15 @@
 package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.configuration.TrackAction;
-import com.example.nazoratv2.dto.request.ReqNotification;
-import com.example.nazoratv2.dto.request.Token;
+import com.example.nazoratv2.dto.request.*;
 import com.example.nazoratv2.entity.enums.ActionType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.nazoratv2.dto.ApiResponse;
-import com.example.nazoratv2.dto.request.AuthRegister;
-import com.example.nazoratv2.dto.request.ReqStudent;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
@@ -37,7 +34,7 @@ public class AuthService {
     private final NotificationService notificationService;
 
     public ApiResponse<String> login(String phone, String password) {
-        Optional<User> optionalUser = userRepository.findByPhone(phone);
+        Optional<User> optionalUser = userRepository.findByPhoneAndActiveTrue(phone);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -116,6 +113,8 @@ public class AuthService {
             type = ActionType.STUDENT_CREATED,
             description = "Student yaratildi"
     )
+
+
     public ApiResponse<String> saveStudent(ReqStudent reqStudent){
 
         boolean b = studentRepository.existsByPhone(reqStudent.getPhone());
@@ -145,6 +144,80 @@ public class AuthService {
     }
 
 
+
+    public ApiResponse<String> updatePassword(ReqPassword reqPassword){
+        Optional<User> optionalUser = userRepository.findByPhoneAndActiveTrue(reqPassword.getPhone());
+
+        if (optionalUser.isPresent()){
+            User user = optionalUser.get();
+            user.setPassword(passwordEncoder.encode(reqPassword.getPassword()));
+            userRepository.save(user);
+
+            CustomUserDetails userDetails = CustomUserDetails.fromUser(user);
+            String token = jwtService.generateToken(
+                    userDetails.getUsername(),
+                    userDetails.getRole()
+            );
+
+            return ApiResponse.success(token, "Successfully updated password");
+        }
+
+        Optional<Student> optionalStudent = studentRepository.findByPhone(reqPassword.getPhone());
+        if (optionalStudent.isPresent()){
+            Student student = optionalStudent.get();
+            student.setPassword(passwordEncoder.encode(reqPassword.getPassword()));
+            studentRepository.save(student);
+            CustomUserDetails userDetails = CustomUserDetails.fromStudent(student);
+            String token = jwtService.generateToken(
+                    userDetails.getUsername(),
+                    userDetails.getRole()
+            );
+
+            return ApiResponse.success(token, "Successfully updated password");
+        }
+        throw new DataNotFoundException("User not found");
+
+    }
+
+
+    public ApiResponse<String> registerUser(ReqStudent reqStudent){
+        boolean b = userRepository.existsByPhoneAndActiveTrue(reqStudent.getParentPhone());
+        if (!b){
+
+            boolean b1 = studentRepository.existsByPhone(reqStudent.getPhone());
+            if (!b1){
+                User parent = User.builder()
+                        .fullName(reqStudent.getParentName())
+                        .role(Role.ROLE_PARENT)
+                        .phone(reqStudent.getParentPhone())
+                        .password(passwordEncoder.encode(reqStudent.getParentPhone().substring(8,12)))
+                        .build();
+                userRepository.save(parent);
+
+                Group group = groupRepository.findById(reqStudent.getGroupId()).orElseThrow(
+                        () -> new DataNotFoundException("Group not found")
+                );
+
+                Student student = Student.builder()
+                        .fullName(reqStudent.getFullName())
+                        .parent(parent)
+                        .phone(reqStudent.getPhone())
+                        .password(passwordEncoder.encode(reqStudent.getPassword()))
+                        .group(group)
+                        .imgUrl(reqStudent.getImgUrl())
+                        .build();
+                studentRepository.save(student);
+                return ApiResponse.success(null, "Successfully registered user");
+            }
+
+            return ApiResponse.error("Student already exists");
+        }
+
+        return ApiResponse.error("User already exists");
+
+    }
+
+
     public ApiResponse<String> validate(Token token) {
         if (token.getToken() == null || token.getToken().trim().isEmpty()) {
             return ApiResponse.error("Token is required");
@@ -166,8 +239,8 @@ public class AuthService {
             }
 
             // DB da bormi tekshirish
-            if (!userRepository.existsByPhone(phone)) {
-                return ApiResponse.error("User not found");
+            if (!userRepository.existsByPhoneAndActiveTrue(phone)) {
+                throw new DataNotFoundException("User not found");
             }
 
             // Hammasi to‘g‘ri
