@@ -13,6 +13,7 @@ import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.AuthService;
 import com.example.nazoratv2.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ public class StudentController {
     private final StudentService studentService;
     private final AuthService authService;
 
-    @GetMapping("/get-page-students")
+    @GetMapping
     public ResponseEntity<ApiResponse<ResPageable>> getStudentsByPage(@RequestParam(defaultValue = "0") int page,
                                                                       @RequestParam(defaultValue = "10") int size,
                                                                       @RequestParam(required = false) String name,
@@ -65,7 +66,7 @@ public class StudentController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     @PostMapping("/saveParent")
     public ResponseEntity<ApiResponse<String>> parentLogin(
-            @RequestBody AuthRegister register
+            @Valid @RequestBody AuthRegister register
     ){
         return ResponseEntity.ok(authService.saveUser(register, Role.ROLE_PARENT));
     }

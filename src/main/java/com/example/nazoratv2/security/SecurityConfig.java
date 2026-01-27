@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/event/stream",
                                 "/action/**",
+                                "/group/all",
                                 "/attendance/stream/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",

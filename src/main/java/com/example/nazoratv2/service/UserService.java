@@ -139,4 +139,10 @@ public class UserService {
         return ApiResponse.success(mapper.resTeacher(teacher,studentList,groupList), "Success");
     }
 
+
+    public ApiResponse<List<UserResponse>> getAllList(Role role) {
+        List<UserResponse> list = userRepository.findAllByRole(role).stream().map(mapper::toResponseUser).toList();
+        return ApiResponse.success(list, "success");
+    }
+
 }

@@ -90,7 +90,7 @@ public class NotificationService {
         User user = null;
         Student student = null;
         if (!customUserDetails.getRole().equals("STUDENT")){
-            user = userRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
+            user = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("User not found")
             );
 
@@ -123,7 +123,7 @@ public class NotificationService {
         User user = null;
         Student student = null;
         if (!customUserDetails.getRole().equals("STUDENT")){
-            user = userRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
+            user = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("User not found")
             );
 
