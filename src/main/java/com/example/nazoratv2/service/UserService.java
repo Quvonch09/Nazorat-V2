@@ -7,6 +7,7 @@ import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.dto.response.ResTeacher;
 import com.example.nazoratv2.dto.response.UserResponse;
+import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -39,8 +40,13 @@ public class UserService {
     private final StudentMapper studentMapper;
 
     public ApiResponse<UserResponse> getProfile(CustomUserDetails currentUser) {
-        User user = currentUser.getUser();
-        return ApiResponse.success(mapper.toResponseUser(user),"success");
+        if (currentUser.getRole().equals("ROLE_STUDENT")){
+            Student student = currentUser.getStudent();
+            return ApiResponse.success(studentMapper.toResponseUser(student),"Success");
+        } else {
+            User user = currentUser.getUser();
+            return ApiResponse.success(mapper.toResponseUser(user),"success");
+        }
     }
 
     public ApiResponse<String> update(CustomUserDetails current , UserDTO req) {
