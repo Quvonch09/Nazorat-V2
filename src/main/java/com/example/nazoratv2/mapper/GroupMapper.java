@@ -58,7 +58,7 @@ public class GroupMapper {
         return ResGroup.builder()
                 .id(group.getId())
                 .name(group.getName())
-                .teacherName(group.getTeacher().getFullName())
+                .teacherName(group.getTeacher() != null ? group.getTeacher().getFullName() : null)
                 .studentCount(studentRepository.countByGroup_Id(group.getId()))
                 .categoryName(group.getCategory().getName())
                 .build();

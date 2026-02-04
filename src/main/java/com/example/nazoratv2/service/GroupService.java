@@ -149,7 +149,8 @@ public class GroupService {
         Page<Group> groups;
 
         if (userDetails.getRole().equals(Role.ROLE_TEACHER.name())){
-            groups = groupRepository.searchByGroup(name, userDetails.getFullName(), roomName, PageRequest.of(page, size));
+            User teacher = userDetails.getUser();
+            groups = groupRepository.searchByGroup(name, teacher.getFullName(), roomName, PageRequest.of(page, size));
         } else {
             groups = groupRepository.searchByGroup(name, teacherName, roomName, PageRequest.of(page, size));
         }
