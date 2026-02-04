@@ -38,7 +38,10 @@ public class RoomService {
             return ApiResponse.error("Name already exists");
         }
 
-        Room room = new Room(roomDTO.getName());
+        Room room = Room.builder()
+                .name(roomDTO.getName())
+
+                .build();
         roomRepository.save(room);
         return ApiResponse.success(null, "Success");
     }
