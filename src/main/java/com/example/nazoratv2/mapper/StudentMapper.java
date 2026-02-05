@@ -28,7 +28,7 @@ public class StudentMapper {
                 .id(user.getId())
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
-                .imageUrl(user.getImgUrl())
+                .imgUrl(user.getImgUrl())
                 .role("ROLE_STUDENT")
                 .build();
     }
