@@ -23,6 +23,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 //
     long countByGroup_Id(Long groupId);
 
+    List<Student> findAllByParent_Id(Long parent_id);
+
 
     @Query(value = """
     select s.* from student s join groups g on s.group_id = g.id join users u on g.teacher_id = u.id where u.id = ?1

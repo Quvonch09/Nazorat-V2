@@ -67,7 +67,12 @@ public class RoomService {
                 () -> new DataNotFoundException("Room not found")
         );
 
-        room.setActive(false);
+        int size = groupRepository.findAllByRoomIdAndActiveTrue(room.getId()).size();
+        if (size == 0){
+            room.setActive(false);
+        } else {
+            return ApiResponse.error("Cannot delete room");
+        }
 
         roomRepository.save(room);
         return ApiResponse.success(null, "Success");

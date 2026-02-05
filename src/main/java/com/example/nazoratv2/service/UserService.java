@@ -94,7 +94,24 @@ public class UserService {
 
     public ApiResponse<String> deleteById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("user not found"));
-        user.setActive(false);
+        if (user.getRole().name().equals("ROLE_TEACHER")) {
+            int size = groupRepository.findAllByTeacherIdAndActiveTrue(user.getId()).size();
+            if (size == 0) {
+                user.setActive(false);
+            } else {
+                return ApiResponse.error("Cannot delete teacher");
+            }
+        } else if (user.getRole().name().equals("ROLE_PARENT")) {
+            int size = studentRepository.findAllByParent_Id(user.getId()).size();
+            if (size == 0) {
+                user.setActive(false);
+            } else {
+                return ApiResponse.error("Cannot delete parent");
+            }
+        } else {
+            user.setActive(false);
+        }
+
         userRepository.save(user);
         return ApiResponse.success(null,"success");
     }
@@ -139,7 +156,7 @@ public class UserService {
 
         List<ResStudent> studentList = studentRepository.findAllByTeacher(teacher.getId())
                 .stream().map(studentMapper::toStudentDTO).toList();
-        List<ReqGroupDTO> groupList = groupRepository.findAllByTeacherId(teacher.getId())
+        List<ReqGroupDTO> groupList = groupRepository.findAllByTeacherIdAndActiveTrue(teacher.getId())
                 .stream().map(groupMapper::toReq).toList();
 
         return ApiResponse.success(mapper.resTeacher(teacher,studentList,groupList), "Success");
