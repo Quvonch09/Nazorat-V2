@@ -14,10 +14,7 @@ import com.example.nazoratv2.entity.enums.ResultStatus;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.CategoryMapper;
 import com.example.nazoratv2.mapper.QuestionMapper;
-import com.example.nazoratv2.repository.CategoryRepository;
-import com.example.nazoratv2.repository.QuestionRepository;
-import com.example.nazoratv2.repository.ResultRepository;
-import com.example.nazoratv2.repository.StudentRepository;
+import com.example.nazoratv2.repository.*;
 import com.example.nazoratv2.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +33,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ResultRepository resultRepository;
     private final QuestionRepository questionRepository;
+    private final GroupRepository groupRepository;
 
     public ApiResponse<String> saveCategory(ReqCategory reqCategory) {
 
@@ -74,7 +72,14 @@ public class CategoryService {
                 () -> new DataNotFoundException("Category not found")
         );
 
-        category.setActive(false);
+        int size = questionRepository.findAllByCategoryIdAndDeletedFalse(category.getId()).size();
+        int size1 = groupRepository.findAllByCategoryIdAndActiveTrue(category.getId()).size();
+        if (size1 == 0 && size == 0) {
+            category.setActive(false);
+        } else {
+            return ApiResponse.error("Cannot delete category");
+        }
+
         categoryRepository.save(category);
         return ApiResponse.success(null, "Category successfully deleted");
     }
