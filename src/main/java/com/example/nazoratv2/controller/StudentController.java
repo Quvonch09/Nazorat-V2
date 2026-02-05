@@ -59,16 +59,6 @@ public class StudentController {
     }
 
 
-    @TrackAction(
-            type = ActionType.PARENT_CREATED,
-            description = "Ota-ona yaratildi"
-    )
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
-    @PostMapping("/saveParent")
-    public ResponseEntity<ApiResponse<String>> parentLogin(
-            @Valid @RequestBody AuthRegister register
-    ){
-        return ResponseEntity.ok(authService.saveUser(register, Role.ROLE_PARENT));
-    }
+
 
 }
