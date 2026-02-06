@@ -110,15 +110,19 @@ public class GroupService {
                 () -> new DataNotFoundException("Room not found")
         );
 
-        List<WeekDays> weekdays = reqGroupDTO.getWeekDays().stream().map(WeekDays::valueOf).toList();
+        List<WeekDays> weekdays = reqGroupDTO.getWeekDays().stream()
+                .map(WeekDays::valueOf)
+                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+        // yoki: new ArrayList<>( ...collect(Collectors.toList()) )
 
         group.setStartTime(startTime);
         group.setEndTime(endTime);
         group.setTeacher(teacher);
         group.setRoom(room);
         group.setName(reqGroupDTO.getName());
-        group.setWeekDays(weekdays);
+        group.setWeekDays(weekdays); // endi immutable emas
         group.setCategory(category);
+
         groupRepository.save(group);
         return ApiResponse.success(null, "Group successfully updated");
     }
