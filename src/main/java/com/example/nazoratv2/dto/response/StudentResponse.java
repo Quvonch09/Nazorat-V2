@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserResponse {
+public class StudentResponse {
     private Long id;
     private String fullName;
     private String phone;
@@ -17,6 +17,6 @@ public class UserResponse {
     private String parentName;
     private String level;
     private Long groupId;
-    private String imageUrl;
+    private String imgUrl;
     private String role;
 }

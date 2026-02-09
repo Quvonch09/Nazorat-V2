@@ -27,8 +27,11 @@ public class FileController {
     public ResponseEntity<String> uploadFile(
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        String url = cloudService.uploadFile(file);
-        return ResponseEntity.ok(url);
+//        String url = cloudService.uploadFile(file);
+//        return ResponseEntity.ok(url);
+        ApiResponse<String> stringApiResponse = cloudService.uploadFile(file, file.getOriginalFilename());
+        String data = stringApiResponse.getData();
+        return ResponseEntity.ok(data);
     }
 
 

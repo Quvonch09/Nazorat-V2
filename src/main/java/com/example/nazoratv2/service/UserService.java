@@ -3,10 +3,7 @@ package com.example.nazoratv2.service;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
-import com.example.nazoratv2.dto.response.ResPageable;
-import com.example.nazoratv2.dto.response.ResStudent;
-import com.example.nazoratv2.dto.response.ResTeacher;
-import com.example.nazoratv2.dto.response.UserResponse;
+import com.example.nazoratv2.dto.response.*;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.Role;
@@ -39,7 +36,7 @@ public class UserService {
     private final GroupMapper groupMapper;
     private final StudentMapper studentMapper;
 
-    public ApiResponse<UserResponse> getProfile(CustomUserDetails currentUser) {
+    public ApiResponse<?> getProfile(CustomUserDetails currentUser) {
         if (currentUser.getRole().equals("ROLE_STUDENT")){
             Student student = currentUser.getStudent();
             return ApiResponse.success(studentMapper.toResponseUser(student),"Success");
