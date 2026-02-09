@@ -1,6 +1,7 @@
 package com.example.nazoratv2.mapper;
 
 import com.example.nazoratv2.dto.response.ResStudent;
+import com.example.nazoratv2.dto.response.StudentResponse;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
@@ -23,13 +24,16 @@ public class StudentMapper {
                 .build();
     }
 
-    public UserResponse toResponseUser(Student user) {
-        return UserResponse.builder()
+    public StudentResponse toResponseUser(Student user) {
+        return StudentResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
                 .imgUrl(user.getImgUrl())
                 .role("ROLE_STUDENT")
+                .groupId(user.getGroup() != null ? user.getGroup().getId() : null)
+                .groupName(user.getGroup() != null ? user.getGroup().getName() : null)
+                .parentName(user.getParent() != null ? user.getParent().getFullName() : null)
                 .build();
     }
 }

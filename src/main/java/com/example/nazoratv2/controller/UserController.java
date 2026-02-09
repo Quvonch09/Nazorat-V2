@@ -6,6 +6,7 @@ import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.AuthRegister;
 import com.example.nazoratv2.dto.request.ReqPassword;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.dto.response.StudentResponse;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ApiResponse<UserResponse> getProfile(@AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ApiResponse<?> getProfile(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return userService.getProfile(currentUser);
     }
 

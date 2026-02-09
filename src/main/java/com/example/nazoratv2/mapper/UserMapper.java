@@ -20,7 +20,7 @@ public class UserMapper {
             .id(user.getId())
             .fullName(user.getFullName())
             .phone(user.getPhone())
-            .imgUrl(user.getImageUrl())
+            .imageUrl(user.getImageUrl())
             .role(user.getRole().name())
             .build();
     }
