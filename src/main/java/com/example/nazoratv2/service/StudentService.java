@@ -4,10 +4,12 @@ import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.StudentDTO;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
+import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.StudentMapper;
+import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
 import com.example.nazoratv2.security.CustomUserDetails;
@@ -27,6 +29,8 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final JwtService jwtService;
+    private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
 
     public ApiResponse<ResPageable> getStudents(String name,String phone,int page, int size) {
 
@@ -81,6 +85,10 @@ public class StudentService {
         if (req.getPhone() != null) targetStudent.setPhone(req.getPhone());
         if (req.getFullName() != null) targetStudent.setFullName(req.getFullName());
         if (req.getImgUrl() != null) targetStudent.setImgUrl(req.getImgUrl());
+        User parent = userRepository.findByPhoneAndActiveTrue(req.getParentPhone()).orElseThrow(
+                () -> new DataNotFoundException("Parent not founda")
+        );
+        targetStudent.setParent(parent);
 
         Student saved = studentRepository.save(targetStudent);
 
@@ -95,5 +103,20 @@ public class StudentService {
         }
 
         return ApiResponse.success(token, "Success");
+    }
+
+
+    public ApiResponse<String> updateGroup(Long studentId, Long groupId){
+        Student student = studentRepository.findById(studentId).orElseThrow(
+                () -> new DataNotFoundException("Student not found")
+        );
+
+        Group group = groupRepository.findByIdAndActiveTrue(groupId).orElseThrow(
+                () -> new DataNotFoundException("Group id not found")
+        );
+
+        student.setGroup(group);
+        studentRepository.save(student);
+        return ApiResponse.success(null, "Success");
     }
 }

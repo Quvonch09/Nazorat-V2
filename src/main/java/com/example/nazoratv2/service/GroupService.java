@@ -177,7 +177,7 @@ public class GroupService {
 
 
     public ApiResponse<List<ResGroup>> getAllGroup(){
-        List<Group> groups = groupRepository.findAll();
+        List<Group> groups = groupRepository.findAllByActiveTrue();
         List<ResGroup> list = groups.stream().map(groupMapper::toDtoRes).toList();
         return ApiResponse.success(list, "Success");
     }
