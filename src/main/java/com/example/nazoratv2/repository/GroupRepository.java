@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
@@ -46,7 +47,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Query(value = """
            select g.* from groups g join users u on u.id = g.teacher_id join room r on g.room_id = r.id where
             (:name IS NULL OR LOWER(g.name) LIKE LOWER(CONCAT('%',:name,'%'))) and
-            (:teacherName IS NULL OR LOWER(u.full_name)LIKE LOWER(CONCAT('%',:teacherName,'%'))) and
+            (:teacherName IS NULL OR LOWER(u.full_name)LIKE LOWER(CONCAT('%',:teacherName,'%'))) and g.active = true and
             (:roomName IS NULL OR LOWER(r.name) LIKE LOWER(CONCAT('%',:roomName,'%'))) order by g.created_at desc
     """, nativeQuery = true)
     Page<Group> searchByGroup(@Param("name") String name,
@@ -58,4 +59,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     List<Group> findAllByRoomIdAndActiveTrue(Long roomId);
 
     List<Group> findAllByCategoryIdAndActiveTrue(Long roomId);
+
+    List<Group> findAllByActiveTrue();
+
+    Optional<Group> findByIdAndActiveTrue(Long id);
 }

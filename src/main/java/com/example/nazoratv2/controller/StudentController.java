@@ -52,6 +52,13 @@ public class StudentController {
 
     }
 
+    @PutMapping("/update-group")
+    public ResponseEntity<ApiResponse<String>> updateGroup(@RequestParam Long studentId,
+                                                           @RequestParam Long groupId){
+        return ResponseEntity.ok(studentService.updateGroup(studentId, groupId));
+    }
+
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     @PostMapping("/saveStudent")
     public ResponseEntity<ApiResponse<String>> studentLogin(@RequestBody ReqStudent reqStudent){
