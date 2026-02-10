@@ -16,5 +16,8 @@ public class ResStudent {
     private String phoneNumber;
     private Long groupId;
     private String groupName;
+    private Long parentId;
+    private String parentName;
+    private String parentPhone;
 
 }

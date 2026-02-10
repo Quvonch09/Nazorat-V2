@@ -21,6 +21,9 @@ public class StudentMapper {
                 .phoneNumber(student.getPhone())
                 .groupId(student.getGroup().getId())
                 .groupName(student.getGroup().getName())
+                .parentId(student.getParent().getId())
+                .parentName(student.getParent().getFullName())
+                .parentPhone(student.getParent().getPhone())
                 .build();
     }
 
