@@ -30,6 +30,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     select s.* from student s join groups g on s.group_id = g.id join users u on g.teacher_id = u.id where u.id = ?1
     """, nativeQuery = true)
     List<Student> findAllByTeacher(Long teacherId);
+
+    List<Student> findAllByActiveTrue();
 //
 //    @Query(value = """
 //    select s.* from student s join groups g on g.id = s.group_id join users u on u.id = g.teacher_id where

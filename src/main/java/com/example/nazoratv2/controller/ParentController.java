@@ -5,6 +5,7 @@ import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.AuthRegister;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.dto.response.ResUser;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/parent")
@@ -68,5 +71,11 @@ public class ParentController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getParentById(@PathVariable Long id){
         return ResponseEntity.ok(userService.getOneUser(id));
+    }
+
+
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllParents(){
+        return ResponseEntity.ok(userService.getAllList(Role.ROLE_PARENT));
     }
 }
