@@ -19,7 +19,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     JOIN groups_week_days w ON g.id = w.groups_id
     WHERE g.room_id = :roomId
       AND w.week_days IN (:weekdays)
-      AND (:startTime < g.end_time AND :endTime > g.start_time)
+      AND (:startTime < g.end_time AND :endTime > g.start_time) AND g.active = true
 """, nativeQuery = true)
     boolean existsByGroup(@Param("weekdays") List<String> weekdays,
                           @Param("roomId") Long roomId,
