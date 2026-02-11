@@ -49,6 +49,12 @@ public class StudentService {
         return ApiResponse.success(resPageable, "Success");
     }
 
+
+    public ApiResponse<List<ResStudent>> getStudentList(){
+        List<ResStudent> list = studentRepository.findAllByActiveTrue().stream().map(studentMapper::toStudentDTO).toList();
+        return ApiResponse.success(list, "Success");
+    }
+
     public ApiResponse<ResStudent> getById(Long id) {
 
         Student student = studentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Student not found"));

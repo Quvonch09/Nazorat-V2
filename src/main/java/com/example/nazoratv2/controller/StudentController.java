@@ -20,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/student")
 @RequiredArgsConstructor
@@ -67,5 +69,8 @@ public class StudentController {
 
 
 
-
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<ResStudent>>> getList(){
+        return ResponseEntity.ok(studentService.getStudentList());
+    }
 }
