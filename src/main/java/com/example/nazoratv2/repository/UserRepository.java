@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByPhoneAndActiveTrue(String phone);
 
     Optional<User> findByIdAndActiveTrue(Long id);
-    boolean existsByPhoneAndRole(String phone, Role role);
+    boolean existsByPhone(String phone);
     boolean existsByPhoneAndActiveTrue(String phone);
 
     @Query("""

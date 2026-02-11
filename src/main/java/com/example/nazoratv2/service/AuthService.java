@@ -5,7 +5,6 @@ import com.example.nazoratv2.dto.request.*;
 import com.example.nazoratv2.entity.enums.ActionType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -93,7 +92,7 @@ public class AuthService {
 
     public ApiResponse<String> saveUser(AuthRegister authRegister, Role role){
 
-        boolean b = userRepository.existsByPhoneAndRole(authRegister.getPhone(), role);
+        boolean b = userRepository.existsByPhone(authRegister.getPhone());
         if (b){
             return ApiResponse.error("Teacher already exists");
         }
