@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>SSE Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom: 12px; }
+        button { padding: 8px 12px; cursor: pointer; }
+        input { padding: 8px; width: 320px; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .ok { background:#e7f7ea; color:#1e7a2f; border:1px solid #bfe6c7; }
+        .bad { background:#fde8e8; color:#b42318; border:1px solid #f5b5b5; }
+        pre { background:#111; color:#0f0; padding: 12px; border-radius: 8px; overflow:auto; max-height: 60vh; }
+        .hint { color:#666; font-size: 13px; }
+    </style>
+</head>
+<body>
+<h2>SSE Frontend Test (/stream)</h2>
+
+<div class="row">
+    <label>Backend URL:</label>
+    <input id="baseUrl" value="http://localhost:8080" />
+    <button id="connectBtn">Connect</button>
+    <button id="disconnectBtn" disabled>Disconnect</button>
+    <span id="status" class="badge bad">DISCONNECTED</span>
+</div>
+
+<div class="hint">
+    Eshitiladigan event nomi: <b>events</b> (backend: <code>.name("events")</code>)<br/>
+    Agar server boshqa domen/portda bo‘lsa CORS yoqilgan bo‘lishi kerak.
+</div>
+
+<h3>Kelgan eventlar</h3>
+<pre id="log"></pre>
+
+<script>
+    let es = null;
+    let reconnectTimer = null;
+
+    const logEl = document.getElementById("log");
+    const statusEl = document.getElementById("status");
+    const connectBtn = document.getElementById("connectBtn");
+    const disconnectBtn = document.getElementById("disconnectBtn");
+    const baseUrlEl = document.getElementById("baseUrl");
+
+    function setStatus(connected) {
+        statusEl.textContent = connected ? "CONNECTED" : "DISCONNECTED";
+        statusEl.className = "badge " + (connected ? "ok" : "bad");
+        connectBtn.disabled = connected;
+        disconnectBtn.disabled = !connected;
+    }
+
+    function appendLog(line) {
+        const time = new Date().toLocaleTimeString();
+        logEl.textContent += `[${time}] ${line}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function safeJsonParse(text) {
+        try { return JSON.parse(text); } catch { return null; }
+    }
+
+    function connect() {
+        const BASE_URL = baseUrlEl.value.trim().replace(/\/$/, "");
+        const STREAM_URL = `${BASE_URL}/stream`;
+
+        if (es) {
+            es.close();
+            es = null;
+        }
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
+
+        appendLog(`Connecting to ${STREAM_URL} ...`);
+
+        // ✅ SSE ulanish
+        es = new EventSource(STREAM_URL);
+
+        es.onopen = () => {
+            setStatus(true);
+            appendLog("SSE connection opened.");
+        };
+
+        // ✅ Sizning event nomingiz: "events"
+        es.addEventListener("events", (evt) => {
+            // evt.data string bo'ladi (JSON bo'lishi mumkin)
+            const parsed = safeJsonParse(evt.data);
+            if (parsed) {
+                appendLog("EVENT(events): " + JSON.stringify(parsed, null, 2));
+            } else {
+                appendLog("EVENT(events): " + evt.data);
+            }
+        });
+
+        // Agar server default message yuborsa (name bermasa) shu tushadi
+        es.onmessage = (evt) => {
+            appendLog("EVENT(message): " + evt.data);
+        };
+
+        es.onerror = (err) => {
+            appendLog("SSE error. Will try to reconnect in 2s...");
+            setStatus(false);
+
+            // EventSource ko'pincha o'zi reconnect qiladi,
+            // lekin ba'zi holatlarda qo'lda ham qayta ulab turamiz.
+            if (es) {
+                es.close();
+                es = null;
+            }
+            reconnectTimer = setTimeout(connect, 2000);
+        };
+    }
+
+    function disconnect() {
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
+        if (es) {
+            es.close();
+            es = null;
+        }
+        setStatus(false);
+        appendLog("Disconnected.");
+    }
+
+    connectBtn.addEventListener("click", connect);
+    disconnectBtn.addEventListener("click", disconnect);
+
+    // ixtiyoriy: sahifa ochilganda avtomatik connect
+    // connect();
+</script>
+</body>
+</html>
