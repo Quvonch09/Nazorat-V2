@@ -6,9 +6,12 @@ import com.example.nazoratv2.dto.request.ReqEventDTO;
 import com.example.nazoratv2.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/event")
@@ -37,19 +40,25 @@ public class EventController {
     }
 
 
-    @GetMapping("/stream")
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream() {
         SseEmitter emitter = eventService.addEmitter();
 
         try {
             emitter.send(SseEmitter.event()
                     .name("events")
-                    .data(eventService.reqEvent()));
+                    .data(eventService.reqEvent().getData()));
         } catch (Exception e) {
             emitter.completeWithError(e);
         }
 
         return emitter;
+    }
+
+
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<ReqEventDTO>>> getEventList(){
+        return ResponseEntity.ok(eventService.reqEvent());
     }
 
 }

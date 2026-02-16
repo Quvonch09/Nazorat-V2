@@ -63,7 +63,7 @@ public class EventService {
                 .build()));
 
         // Real-timega malumot yuborish uchun
-        sendToAll(reqEvent());
+        sendToAll(reqEvent().getData());
         return ApiResponse.success(null, "Success");
     }
 
@@ -130,7 +130,7 @@ public class EventService {
 
 
 
-    public List<ReqEventDTO> reqEvent(){
+    public ApiResponse<List<ReqEventDTO>> reqEvent(){
         List<ReqEventDTO> reqEvents = new ArrayList<>();
         for (Event event : eventRepository.findAll()) {
             List<String> groupNames = event.getGroupList().stream().map(Group::getName).toList();
@@ -145,7 +145,7 @@ public class EventService {
                     .build();
             reqEvents.add(reqEvent);
         }
-        return reqEvents;
+        return ApiResponse.success(reqEvents, "Success");
     }
 
 
