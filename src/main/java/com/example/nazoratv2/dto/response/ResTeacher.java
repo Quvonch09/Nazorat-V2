@@ -16,5 +16,5 @@ public class ResTeacher {
     private String phone;
     private String imageUrl;
     private List<ResStudent> studentList;
-    private List<ReqGroupDTO> groupList;
+    private List<ResGroupDTO> groupList;
 }

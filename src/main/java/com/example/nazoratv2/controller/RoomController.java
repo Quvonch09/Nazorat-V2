@@ -3,6 +3,7 @@ package com.example.nazoratv2.controller;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.RoomDTO;
 import com.example.nazoratv2.dto.request.ReqRoom;
+import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResRoom;
 import com.example.nazoratv2.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,14 @@ public class RoomController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<RoomDTO>>> getAllRooms(){
         return ResponseEntity.ok(roomService.getAllRooms());
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<ResPageable>> searchRooms(@RequestParam(required = false) String name,
+                                                                @RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(roomService.searchRooms(name, page, size));
     }
 
 

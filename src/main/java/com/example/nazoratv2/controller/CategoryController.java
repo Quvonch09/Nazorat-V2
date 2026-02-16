@@ -7,6 +7,7 @@ import com.example.nazoratv2.dto.request.ReqCategory;
 import com.example.nazoratv2.dto.request.ReqCategoryDTO;
 import com.example.nazoratv2.dto.request.ReqStartTest;
 import com.example.nazoratv2.dto.response.ResCategory;
+import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResQuestion;
 import com.example.nazoratv2.dto.response.ResponseQuestion;
 import com.example.nazoratv2.entity.Student;
@@ -50,6 +51,13 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<ResCategory>>> getCategories(){
         return ResponseEntity.ok(categoryService.getAllCategory());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<ResPageable>> searchCategory(@RequestParam(required = false) String name,
+                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(categoryService.searchCategory(name, page, size));
     }
 
     @GetMapping("/{categoryId}")

@@ -2,6 +2,7 @@ package com.example.nazoratv2.dto.request;
 
 
 import com.example.nazoratv2.dto.response.ResStudent;
+import com.example.nazoratv2.entity.enums.GroupEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -25,7 +26,7 @@ public class ReqGroupDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private String endTime;
 
-    private List<String> weekDays;
+    private GroupEnum weekDays;
 
     private Long teacherId;
 

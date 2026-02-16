@@ -1,6 +1,8 @@
 package com.example.nazoratv2.mapper;
 
+import com.example.nazoratv2.dto.GroupDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
+import com.example.nazoratv2.dto.response.ResGroupDTO;
 import com.example.nazoratv2.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,8 +18,8 @@ public class GroupMapper {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-    public ReqGroup toDto(Group group) {
-        return ReqGroup.builder()
+    public GroupDTO groupDTO(Group group) {
+        return GroupDTO.builder()
                 .id(group.getId())
                 .name(group.getName())
                 .startTime(group.getStartTime().toString())
@@ -35,9 +37,8 @@ public class GroupMapper {
     }
 
 
-
-    public ReqGroupDTO toReq(Group group) {
-        return ReqGroupDTO.builder()
+    public ResGroupDTO toRes(Group group) {
+        return ResGroupDTO.builder()
                 .id(group.getId())
                 .name(group.getName())
                 .startTime(group.getStartTime().toString())
@@ -51,7 +52,6 @@ public class GroupMapper {
                 .weekDays(group.getWeekDays().stream().map(Enum::toString).toList())
                 .build();
     }
-
 
 
     public ResGroup toDtoRes(Group group) {

@@ -1,8 +1,6 @@
-package com.example.nazoratv2.dto.request;
+package com.example.nazoratv2.dto.response;
 
 
-import com.example.nazoratv2.dto.StudentDTO;
-import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.entity.enums.GroupEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,9 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReqGroup {
+public class ResGroupDTO {
 
-    @Schema(hidden = true)
     private Long id;
 
     private String name;
@@ -28,7 +25,7 @@ public class ReqGroup {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private String endTime;
 
-    private GroupEnum weekDays;
+    private List<String> weekDays;
 
     private Long teacherId;
 
@@ -44,7 +41,4 @@ public class ReqGroup {
 
     @Schema(hidden = true)
     private String categoryName;
-
-    @Schema(hidden = true)
-    private List<ResStudent> students;
 }

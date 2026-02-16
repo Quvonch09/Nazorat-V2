@@ -32,6 +32,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> findAllByTeacher(Long teacherId);
 
     List<Student> findAllByActiveTrue();
+    long countByActiveTrue();
 //
 //    @Query(value = """
 //    select s.* from student s join groups g on g.id = s.group_id join users u on u.id = g.teacher_id where

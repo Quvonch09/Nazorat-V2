@@ -5,6 +5,7 @@ import com.example.nazoratv2.dto.request.ReqCategory;
 import com.example.nazoratv2.dto.request.ReqCategoryDTO;
 import com.example.nazoratv2.dto.response.ResCategory;
 import com.example.nazoratv2.dto.response.ResOption;
+import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResponseQuestion;
 import com.example.nazoratv2.entity.Category;
 import com.example.nazoratv2.entity.Question;
@@ -17,6 +18,8 @@ import com.example.nazoratv2.mapper.QuestionMapper;
 import com.example.nazoratv2.repository.*;
 import com.example.nazoratv2.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -106,6 +109,25 @@ public class CategoryService {
                 .toList();
 
         return ApiResponse.success(res, "Success");
+    }
+
+
+    public ApiResponse<ResPageable> searchCategory(String name, int page, int size) {
+        Page<Category> categoryPage = categoryRepository.searchCategory(name, PageRequest.of(page, size));
+
+        if (categoryPage.getTotalElements() == 0) {
+            return ApiResponse.error("Category not found");
+        }
+
+        List<ResCategory> categoryList = categoryPage.getContent().stream().map(categoryMapper::toRes).toList();
+        ResPageable resPageable = ResPageable.builder()
+                .page(page)
+                .size(size)
+                .totalElements(categoryPage.getTotalElements())
+                .totalElements(categoryPage.getTotalPages())
+                .body(categoryList)
+                .build();
+        return ApiResponse.success(resPageable, "Success");
     }
 
 
