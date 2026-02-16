@@ -34,4 +34,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
 
     List<User> findAllByRole(Role role);
+
+    long countUserByActiveTrueAndRole(Role role);
 }

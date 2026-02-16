@@ -2,10 +2,7 @@ package com.example.nazoratv2.mapper;
 
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
-import com.example.nazoratv2.dto.response.ResGroup;
-import com.example.nazoratv2.dto.response.ResStudent;
-import com.example.nazoratv2.dto.response.ResTeacher;
-import com.example.nazoratv2.dto.response.UserResponse;
+import com.example.nazoratv2.dto.response.*;
 import com.example.nazoratv2.entity.User;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -34,7 +31,7 @@ public class UserMapper {
 //            .build();
 //    }
 
-    public ResTeacher resTeacher(User teacher, List<ResStudent> studentList, List<ReqGroupDTO> groupList) {
+    public ResTeacher resTeacher(User teacher, List<ResStudent> studentList, List<ResGroupDTO> groupList) {
         return ResTeacher.builder()
                 .id(teacher.getId())
                 .fullName(teacher.getFullName())

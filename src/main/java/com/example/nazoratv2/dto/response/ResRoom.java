@@ -17,7 +17,7 @@ public class ResRoom {
 
     private String name;
 
-    private List<ReqGroupDTO> schedules;
+    private List<ResGroupDTO> schedules;
 
     private List<DayStat> weeklyStats;
 }

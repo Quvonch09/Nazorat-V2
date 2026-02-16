@@ -2,6 +2,7 @@ package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.GroupDTO;
 import com.example.nazoratv2.dto.request.ReqGroup;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.ResGroup;
@@ -11,6 +12,7 @@ import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Room;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.ActionType;
+import com.example.nazoratv2.entity.enums.GroupEnum;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.entity.enums.WeekDays;
 import com.example.nazoratv2.exception.DataNotFoundException;
@@ -62,12 +64,11 @@ public class GroupService {
         LocalTime startTime = LocalTime.parse(reqGroup.getStartTime());
         LocalTime endTime = LocalTime.parse(reqGroup.getEndTime());
 
-        if (groupRepository.existsByGroup(reqGroup.getWeekDays(),room.getId(),startTime, endTime)) {
+        List<String> list = weekDays(reqGroup.getWeekDays()).stream().map(WeekDays::name).toList();
+
+        if (groupRepository.existsByGroup(list,room.getId(),startTime, endTime)) {
             return ApiResponse.error("There is no room for the group at this time");
         }
-
-
-        List<WeekDays> weekdays = reqGroup.getWeekDays().stream().map(WeekDays::valueOf).toList();
 
         Group group = Group.builder()
                 .name(reqGroup.getName())
@@ -75,7 +76,7 @@ public class GroupService {
                 .endTime(endTime)
                 .teacher(teacher)
                 .room(room)
-                .weekDays(weekdays)
+                .weekDays(weekDays(reqGroup.getWeekDays()))
                 .category(category)
                 .build();
         groupRepository.save(group);
@@ -93,7 +94,9 @@ public class GroupService {
         LocalTime startTime = LocalTime.parse(reqGroupDTO.getStartTime());
         LocalTime endTime = LocalTime.parse(reqGroupDTO.getEndTime());
 
-        if (groupRepository.existsByGroupForUpdate(reqGroupDTO.getWeekDays(),
+        List<String> list = weekDays(reqGroupDTO.getWeekDays()).stream().map(WeekDays::name).toList();
+
+        if (groupRepository.existsByGroupForUpdate(list,
                 reqGroupDTO.getRoomId(), startTime, endTime, group.getId())) {
             return ApiResponse.error("There is no room for the group at this time");
         }
@@ -110,17 +113,13 @@ public class GroupService {
                 () -> new DataNotFoundException("Room not found")
         );
 
-        List<WeekDays> weekdays = reqGroupDTO.getWeekDays().stream()
-                .map(WeekDays::valueOf)
-                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
-        // yoki: new ArrayList<>( ...collect(Collectors.toList()) )
 
         group.setStartTime(startTime);
         group.setEndTime(endTime);
         group.setTeacher(teacher);
         group.setRoom(room);
         group.setName(reqGroupDTO.getName());
-        group.setWeekDays(weekdays); // endi immutable emas
+        group.setWeekDays(weekDays(reqGroupDTO.getWeekDays())); // endi immutable emas
         group.setCategory(category);
 
         groupRepository.save(group);
@@ -139,11 +138,11 @@ public class GroupService {
         return ApiResponse.success(null, "Group successfully deleted");
     }
 
-    public ApiResponse<ReqGroup> getGroupById(Long id){
+    public ApiResponse<GroupDTO> getGroupById(Long id){
         Group group = groupRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
-        return ApiResponse.success(groupMapper.toDto(group), "Success");
+        return ApiResponse.success(groupMapper.groupDTO(group), "Success");
     }
 
 
@@ -206,6 +205,29 @@ public class GroupService {
         }
 
         return ApiResponse.success(lessonDates, "Success");
+    }
+
+
+    public List<WeekDays> weekDays(GroupEnum groupEnum){
+        List<WeekDays> weekDays = new ArrayList<>();
+
+        if (groupEnum.equals(GroupEnum.TOQ_KUNLAR)){
+            weekDays.add(WeekDays.MONDAY);
+            weekDays.add(WeekDays.WEDNESDAY);
+            weekDays.add(WeekDays.FRIDAY);
+        } else if (groupEnum.equals(GroupEnum.JUFT_KUNLAR)){
+            weekDays.add(WeekDays.TUESDAY);
+            weekDays.add(WeekDays.THURSDAY);
+            weekDays.add(WeekDays.SATURDAY);
+        } else {
+            weekDays.add(WeekDays.MONDAY);
+            weekDays.add(WeekDays.TUESDAY);
+            weekDays.add(WeekDays.WEDNESDAY);
+            weekDays.add(WeekDays.THURSDAY);
+            weekDays.add(WeekDays.FRIDAY);
+            weekDays.add(WeekDays.SATURDAY);
+        }
+        return weekDays;
     }
 
 }

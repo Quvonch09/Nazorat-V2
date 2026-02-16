@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -62,5 +63,18 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     List<Group> findAllByActiveTrue();
 
+    long countAllByActiveTrue();
+
     Optional<Group> findByIdAndActiveTrue(Long id);
+
+    @Query(value = """
+   SELECT COALESCE(SUM(
+       EXTRACT(EPOCH FROM (g.end_time - g.start_time)) / 3600
+   ), 0)
+   FROM groups g
+   JOIN groups_week_days w ON g.id = w.groups_id
+   WHERE w.week_days = :today
+""", nativeQuery = true)
+    Long getTodayLessonHours(@Param("today") String today);
+
 }

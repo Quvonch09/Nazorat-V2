@@ -1,6 +1,7 @@
 package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.GroupDTO;
 import com.example.nazoratv2.dto.request.ReqGroup;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.ResGroup;
@@ -26,7 +27,7 @@ public class GroupController {
 
 
     @PostMapping
-    @Operation(description = "MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY")
+    @Operation(description = "JUFT_KUNLAR, TOQ_KUNLAR, BOSHQA_KUNLAR")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> saveGroup(@RequestBody ReqGroup reqGroup){
         return ResponseEntity.ok(groupService.saveGroup(reqGroup));
@@ -34,6 +35,7 @@ public class GroupController {
 
 
     @PutMapping("/update")
+    @Operation(description = "JUFT_KUNLAR, TOQ_KUNLAR, BOSHQA_KUNLAR")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<String>> updateGroup(@RequestBody ReqGroupDTO reqGroupDTO){
         return ResponseEntity.ok(groupService.updateGroup(reqGroupDTO));
@@ -50,7 +52,7 @@ public class GroupController {
     @GetMapping("/{groupId}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_PARENT','ROLE_SUPER_ADMIN')")
     @Operation(summary = "Guruhni bittasini kurish")
-    public ResponseEntity<ApiResponse<ReqGroup>> getGroup(@PathVariable Long groupId){
+    public ResponseEntity<ApiResponse<GroupDTO>> getGroup(@PathVariable Long groupId){
         return ResponseEntity.ok(groupService.getGroupById(groupId));
     }
 

@@ -6,6 +6,8 @@ import com.example.nazoratv2.dto.DayStat;
 import com.example.nazoratv2.dto.RoomDTO;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.request.ReqRoom;
+import com.example.nazoratv2.dto.response.ResGroupDTO;
+import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResRoom;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Room;
@@ -16,6 +18,8 @@ import com.example.nazoratv2.mapper.RoomMapper;
 import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -86,7 +90,7 @@ public class RoomService {
         );
         List<Group> groups = groupRepository.findAllByRoomIdAndActiveTrue(room.getId());
 
-        List<ReqGroupDTO> schedules = groups.stream().map(groupMapper::toReq).toList();
+        List<ResGroupDTO> schedules = groups.stream().map(groupMapper::toRes).toList();
 
         List<DayStat> weeklyStats = RoomScheduleStats.buildWeeklyStats(groups);
 
@@ -98,5 +102,23 @@ public class RoomService {
     public ApiResponse<List<RoomDTO>> getAllRooms(){
         List<RoomDTO> rooms = roomRepository.findAll().stream().map(roomMapper::roomDTO).toList();
         return ApiResponse.success(rooms, "Success");
+    }
+
+
+    public ApiResponse<ResPageable> searchRooms(String name, int page, int size){
+        Page<Room> rooms = roomRepository.searchRooms(name, PageRequest.of(page, size));
+        if (rooms.getTotalElements() == 0){
+            return ApiResponse.error("Room not found");
+        }
+
+        List<RoomDTO> list = rooms.getContent().stream().map(roomMapper::roomDTO).toList();
+        ResPageable resPageable = ResPageable.builder()
+                .page(page)
+                .size(size)
+                .totalElements(rooms.getTotalElements())
+                .totalPage(rooms.getTotalPages())
+                .body(list)
+                .build();
+        return ApiResponse.success(resPageable, "Success");
     }
 }

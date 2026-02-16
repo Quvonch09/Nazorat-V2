@@ -153,8 +153,8 @@ public class UserService {
 
         List<ResStudent> studentList = studentRepository.findAllByTeacher(teacher.getId())
                 .stream().map(studentMapper::toStudentDTO).toList();
-        List<ReqGroupDTO> groupList = groupRepository.findAllByTeacherIdAndActiveTrue(teacher.getId())
-                .stream().map(groupMapper::toReq).toList();
+        List<ResGroupDTO> groupList = groupRepository.findAllByTeacherIdAndActiveTrue(teacher.getId())
+                .stream().map(groupMapper::toRes).toList();
 
         return ApiResponse.success(mapper.resTeacher(teacher,studentList,groupList), "Success");
     }
