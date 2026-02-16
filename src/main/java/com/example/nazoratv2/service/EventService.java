@@ -4,6 +4,7 @@ import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.request.ReqEvent;
 import com.example.nazoratv2.dto.request.ReqEventDTO;
+import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.entity.Event;
 import com.example.nazoratv2.entity.Group;
