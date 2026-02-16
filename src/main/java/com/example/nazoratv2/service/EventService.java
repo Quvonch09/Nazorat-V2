@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +125,25 @@ public class EventService {
                 emitters.remove(emitter);
             }
         }
+    }
+
+
+    public ApiResponse<List<ReqEventDTO>> getByDate(LocalDate date){
+        List<ReqEventDTO> reqEvents = new ArrayList<>();
+        for (Event event : eventRepository.findAllByDate(date)) {
+            List<String> groupNames = event.getGroupList().stream().map(Group::getName).toList();
+            ReqEventDTO reqEvent = ReqEventDTO.builder()
+                    .id(event.getId())
+                    .name(event.getName())
+                    .description(event.getDescription())
+                    .date(event.getDate())
+                    .startTime(event.getStartTime().toString())
+                    .endTime(event.getEndTime().toString())
+                    .groupNames(groupNames)
+                    .build();
+            reqEvents.add(reqEvent);
+        }
+        return ApiResponse.success(reqEvents, "Success");
     }
 
 

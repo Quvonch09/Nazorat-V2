@@ -6,11 +6,13 @@ import com.example.nazoratv2.dto.request.ReqEventDTO;
 import com.example.nazoratv2.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -59,6 +61,11 @@ public class EventController {
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<List<ReqEventDTO>>> getEventList(){
         return ResponseEntity.ok(eventService.reqEvent());
+    }
+
+    @GetMapping("/byDate")
+    public ResponseEntity<ApiResponse<List<ReqEventDTO>>> getEventListByDate(@RequestParam LocalDate date){
+        return ResponseEntity.ok(eventService.getByDate(date));
     }
 
 }
