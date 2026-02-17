@@ -26,6 +26,9 @@ public class ReqEventDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private String endTime;
 
+    @Schema(hidden = true)
+    private String color;
+
     private List<Long> groupIds;
 
     @Schema(hidden = true)

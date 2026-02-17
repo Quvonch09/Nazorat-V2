@@ -2,6 +2,8 @@ package com.example.nazoratv2.dto.request;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,9 +14,6 @@ public class ReqNews {
     private String title;
     private String description;
     private String imgUrl;
-    private String date;
-    private Long categoryId;
-    private Long markId;
-    private Long groupId;
+    private LocalDate date;
 
 }
