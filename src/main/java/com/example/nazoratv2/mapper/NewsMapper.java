@@ -14,10 +14,10 @@ public class NewsMapper {
 
     public News toEntity(ReqNews req) {
         return News.builder()
-                .date(LocalDate.parse(req.getTitle()))
+                .name(req.getTitle())
                 .description(req.getDescription())
                 .imgUrl(req.getImgUrl())
-                .date(LocalDate.parse(req.getDate()))
+                .date(req.getDate())
                 .build();
     }
 
