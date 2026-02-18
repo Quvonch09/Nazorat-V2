@@ -24,7 +24,7 @@ public class NewsMapper {
     public ResNews toDto(News news) {
         ResNews res = new ResNews();
         res.setId(news.getId());
-        res.setName(news.getName());
+        res.setTitle(news.getName());
         res.setDescription(news.getDescription());
         res.setImgUrl(news.getImgUrl());
         res.setDate(String.valueOf(news.getDate()));

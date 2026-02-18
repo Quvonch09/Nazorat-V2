@@ -26,7 +26,7 @@ public class ReqGroupDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private String endTime;
 
-    private GroupEnum weekDays;
+    private List<GroupEnum> weekDays;
 
     private Long teacherId;
 

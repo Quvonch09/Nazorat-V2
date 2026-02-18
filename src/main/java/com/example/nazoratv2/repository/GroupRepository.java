@@ -36,7 +36,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     WHERE g.room_id = :roomId
       AND w.week_days IN (:weekdays)
       AND (:startTime < g.end_time AND :endTime > g.start_time)
-      AND g.id <> :groupId
+      AND g.id <> :groupId AND g.active = true;
 """, nativeQuery = true)
     boolean existsByGroupForUpdate(@Param("weekdays") List<String> weekdays,
                                    @Param("roomId") Long roomId,
