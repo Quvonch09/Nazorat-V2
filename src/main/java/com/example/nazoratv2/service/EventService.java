@@ -9,6 +9,7 @@ import com.example.nazoratv2.dto.request.ReqGroupNotif;
 import com.example.nazoratv2.entity.Event;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.enums.ActionType;
+import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.repository.EventRepository;
 import com.example.nazoratv2.repository.GroupRepository;
@@ -40,6 +41,10 @@ public class EventService {
         List<Group> groups = groupRepository.findAllById(reqEvent.getGroupIds());
         if (groups.isEmpty()) {
             return ApiResponse.error("Group not found");
+        }
+
+        if (reqEvent.getDate().isBefore(LocalDate.now())) {
+            return ApiResponse.error("Date is before now");
         }
 
         LocalTime startTime = LocalTime.parse(reqEvent.getStartTime());
@@ -155,6 +160,7 @@ public class EventService {
                     .startTime(event.getStartTime().toString())
                     .endTime(event.getEndTime().toString())
                     .groupNames(groupNames)
+                    .color(color(event.getDate()))
                     .build();
             reqEvents.add(reqEvent);
         }
@@ -177,10 +183,23 @@ public class EventService {
                     .startTime(event.getStartTime().toString())
                     .endTime(event.getEndTime().toString())
                     .groupNames(groupNames)
+                    .color(color(event.getDate()))
                     .build();
             reqEvents.add(reqEvent);
         }
         return ApiResponse.success(reqEvents, "Success");
+    }
+
+
+    private String color(LocalDate date){
+        LocalDate today = LocalDate.now();
+        if (date.isEqual(today)) {
+            return MarkCategoryStatus.QIZIL.name();
+        } else if (date.isAfter(today)) {
+            return MarkCategoryStatus.YASHIL.name();
+        } else {
+            return MarkCategoryStatus.SARIQ.name();
+        }
     }
 
 
