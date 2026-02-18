@@ -64,7 +64,7 @@ public class GroupService {
         LocalTime startTime = LocalTime.parse(reqGroup.getStartTime());
         LocalTime endTime = LocalTime.parse(reqGroup.getEndTime());
 
-        List<String> list = weekDays(reqGroup.getWeekDays()).stream().map(WeekDays::name).toList();
+        List<String> list = weekDays(reqGroup.getWeekDays().get(0)).stream().map(WeekDays::name).toList();
 
         if (groupRepository.existsByGroup(list,room.getId(),startTime, endTime)) {
             return ApiResponse.error("There is no room for the group at this time");
@@ -76,7 +76,7 @@ public class GroupService {
                 .endTime(endTime)
                 .teacher(teacher)
                 .room(room)
-                .weekDays(weekDays(reqGroup.getWeekDays()))
+                .weekDays(weekDays(reqGroup.getWeekDays().get(0)))
                 .category(category)
                 .build();
         groupRepository.save(group);
@@ -94,9 +94,8 @@ public class GroupService {
         LocalTime startTime = LocalTime.parse(reqGroupDTO.getStartTime());
         LocalTime endTime = LocalTime.parse(reqGroupDTO.getEndTime());
 
-        List<String> list = weekDays(reqGroupDTO.getWeekDays()).stream().map(WeekDays::name).toList();
 
-        if (groupRepository.existsByGroupForUpdate(list,
+        if (groupRepository.existsByGroupForUpdate(weekDays(reqGroupDTO.getWeekDays().get(0)).stream().map(WeekDays::name).toList(),
                 reqGroupDTO.getRoomId(), startTime, endTime, group.getId())) {
             return ApiResponse.error("There is no room for the group at this time");
         }
@@ -119,7 +118,7 @@ public class GroupService {
         group.setTeacher(teacher);
         group.setRoom(room);
         group.setName(reqGroupDTO.getName());
-        group.setWeekDays(weekDays(reqGroupDTO.getWeekDays())); // endi immutable emas
+        group.setWeekDays(weekDays(reqGroupDTO.getWeekDays().get(0)));
         group.setCategory(category);
 
         groupRepository.save(group);

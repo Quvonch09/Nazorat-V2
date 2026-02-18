@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class ResNews {
     private Long id;
-    private String name;
+    private String title;
     private String description;
     private String imgUrl;
     private String date;
