@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
     boolean existsByName(String name);
@@ -22,4 +24,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     long countRoomByActiveTrue();
 
 //    int countByGroupIdAndActiveTrue(Long groupId);
+
+    List<Room> findAllByActiveTrue();
 }

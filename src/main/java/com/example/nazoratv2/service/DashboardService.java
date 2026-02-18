@@ -1,7 +1,12 @@
 package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.GroupScheduleDTO;
+import com.example.nazoratv2.dto.ScheduleResponseDTO;
 import com.example.nazoratv2.dto.dashboard.DashboardDTO;
+import com.example.nazoratv2.entity.Group;
+import com.example.nazoratv2.entity.Room;
+import com.example.nazoratv2.entity.enums.GroupEnum;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.entity.enums.WeekDays;
 import com.example.nazoratv2.repository.*;
@@ -10,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,4 +50,52 @@ public class DashboardService {
                 .build();
         return ApiResponse.success(dashboardDTO, "Success");
     }
+
+
+    public ApiResponse<List<ScheduleResponseDTO>> getSchedule(GroupEnum groupEnum) {
+
+        List<ScheduleResponseDTO> result = new ArrayList<>();
+        List<GroupScheduleDTO> groupDTOs =  new ArrayList<>();
+
+        for (Room room : roomRepository.findAllByActiveTrue()) {
+            List<Group> groups = groupRepository.findAllByRoomIdAndActiveTrue(room.getId());
+            if (groupEnum != null) {
+                if (groupEnum.equals(GroupEnum.TOQ_KUNLAR)){
+                    groupDTOs = groups.stream()
+                            .map(this::groupToDTO)
+                            .filter(group -> group.getWeekDays().contains(WeekDays.MONDAY))
+                            .toList();
+                } else if (groupEnum.equals(GroupEnum.JUFT_KUNLAR)){
+                    groupDTOs = groups.stream()
+                            .map(this::groupToDTO)
+                            .filter(group -> group.getWeekDays().contains(WeekDays.TUESDAY))
+                            .toList();
+                }
+            } else {
+                groupDTOs = groups.stream()
+                        .map(this::groupToDTO)
+                        .toList();
+            }
+
+            result.add(
+                    ScheduleResponseDTO.builder()
+                            .roomName(room.getName())
+                            .groups(groupDTOs)
+                            .build()
+            );
+        }
+
+        return ApiResponse.success(result, "Success");
+    }
+
+    private GroupScheduleDTO groupToDTO(Group group) {
+        return GroupScheduleDTO.builder()
+                .groupName(group.getName())
+                .teacherName(group.getTeacher().getFullName())
+                .startTime(group.getStartTime().toString())
+                .endTime(group.getEndTime().toString())
+                .weekDays(group.getWeekDays())
+                .build();
+    }
+
 }
