@@ -37,6 +37,9 @@ public class StudentMapper {
                 .groupId(user.getGroup() != null ? user.getGroup().getId() : null)
                 .groupName(user.getGroup() != null ? user.getGroup().getName() : null)
                 .parentName(user.getParent() != null ? user.getParent().getFullName() : null)
+                .roomName(user.getGroup().getRoom() != null ? user.getGroup().getRoom().getName() : null)
+                .teacherName(user.getGroup().getTeacher() != null ? user.getGroup().getTeacher().getFullName() : null)
+                .lessonCount(user.getGroup() != null ? user.getGroup().getWeekDays().size() : 0)
                 .build();
     }
 }

@@ -20,4 +20,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     Page<Room> searchRooms(@Param("name") String name, Pageable pageable);
 
     long countRoomByActiveTrue();
+
+//    int countByGroupIdAndActiveTrue(Long groupId);
 }
