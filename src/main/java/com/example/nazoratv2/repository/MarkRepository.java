@@ -1,11 +1,15 @@
 package com.example.nazoratv2.repository;
 
+import com.example.nazoratv2.dto.MyMarksDTO;
 import com.example.nazoratv2.entity.Mark;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface MarkRepository extends JpaRepository<Mark, Long> {
 
@@ -20,6 +24,24 @@ public interface MarkRepository extends JpaRepository<Mark, Long> {
 
     Page<Mark> findAllByCreatedByAndActiveTrue(String teacherName, Pageable pageable);
 
+
+
+
     Page<Mark> findAllByStudentIdAndActiveTrue(Long studentId, Pageable pageable);
+
+
+
+    @Query("""
+   select s.id, s.fullName, avg(m.totalScore), s.imgUrl
+   from Mark m
+   join m.student s
+   where m.active = true
+   group by s.id, s.fullName, s.imgUrl
+   order by avg(m.totalScore) desc
+""")
+    List<Object[]> topAllStudentsByAvg(Pageable pageable);
+
+
+
 
 }

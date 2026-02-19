@@ -23,5 +23,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     long countRoomByActiveTrue();
 
+//    int countByGroupIdAndActiveTrue(Long groupId);
+
     List<Room> findAllByActiveTrue();
 }

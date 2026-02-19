@@ -37,4 +37,5 @@ public class Mark extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private MarkCategoryStatus markCategoryStatus;
+
 }

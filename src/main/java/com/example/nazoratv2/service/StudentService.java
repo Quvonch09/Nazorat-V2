@@ -1,15 +1,19 @@
 package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.ApiResponse;
+import com.example.nazoratv2.dto.MyMarksDTO;
 import com.example.nazoratv2.dto.StudentDTO;
+import com.example.nazoratv2.dto.TopStudentDto;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.StudentMapper;
 import com.example.nazoratv2.repository.GroupRepository;
+import com.example.nazoratv2.repository.MarkRepository;
 import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
 import com.example.nazoratv2.security.CustomUserDetails;
@@ -20,7 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +39,7 @@ public class StudentService {
     private final JwtService jwtService;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final MarkRepository markRepository;
 
     public ApiResponse<ResPageable> getStudents(String name,String phone,int page, int size) {
 
@@ -125,4 +134,23 @@ public class StudentService {
         studentRepository.save(student);
         return ApiResponse.success(null, "Success");
     }
+
+
+    public ApiResponse<List<TopStudentDto>> getTop5Students() {
+
+        List<Object[]> rows = markRepository.topAllStudentsByAvg(PageRequest.of(0, 5));
+
+        List<TopStudentDto> topStudents = rows.stream()
+                .map(r -> TopStudentDto.builder()
+                        .studentId((Long) r[0])
+                        .studentName((String) r[1])
+                        .percent((int) Math.round((Double) r[2]))
+                        .imageUrl((String) r[3])
+                        .build())
+                .toList();
+
+        return ApiResponse.success(topStudents, "Success");
+    }
+
+
 }

@@ -110,12 +110,27 @@ public class EventService {
 
 
     public SseEmitter addEmitter() {
-        SseEmitter emitter = new SseEmitter(0L); // no timeout
+        SseEmitter emitter = new SseEmitter(0L);
+
         emitter.onCompletion(() -> emitters.remove(emitter));
-        emitter.onTimeout(() -> emitters.remove(emitter));
-        emitter.onError((e) -> emitters.remove(emitter));
+        emitter.onTimeout(() -> {
+            emitters.remove(emitter);
+            emitter.complete();
+        });
+        emitter.onError(e -> {
+            emitters.remove(emitter);
+            emitter.completeWithError(e);
+        });
 
         emitters.add(emitter);
+
+        try {
+            emitter.send(SseEmitter.event().name("connected").data("ok"));
+        } catch (IOException e) {
+            emitters.remove(emitter);
+            emitter.completeWithError(e);
+        }
+
         return emitter;
     }
 
@@ -126,8 +141,8 @@ public class EventService {
                         .name("events")
                         .data(data));
             } catch (Exception e) {
-                // Exceptionni umuman ko'rsatmasdan emitterni olib tashlash
                 emitters.remove(emitter);
+                emitter.complete();
             }
         }
     }

@@ -77,4 +77,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 """, nativeQuery = true)
     Long getTodayLessonHours(@Param("today") String today);
 
+
+//    Optional<Group> findByStudentIdAndActiveTrue(Long studentId);
+
+
 }

@@ -44,6 +44,7 @@ public class MarkService {
                 () -> new DataNotFoundException("Student not found")
         );
 
+
         Mark mark;
         if (reqMark.getMarkStatus().equals(MarkStatus.KUNLIK_BAHO)){
             int score = (reqMark.getActivityScore()+ reqMark.getHomeworkScore())/2;

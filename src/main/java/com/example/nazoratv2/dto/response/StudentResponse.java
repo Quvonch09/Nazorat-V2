@@ -17,6 +17,9 @@ public class StudentResponse {
     private String parentName;
     private String level;
     private Long groupId;
+    private String teacherName;
+    private String roomName;
+    private int lessonCount;
     private String imgUrl;
     private String role;
 }
