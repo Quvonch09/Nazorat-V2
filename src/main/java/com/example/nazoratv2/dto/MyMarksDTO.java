@@ -13,6 +13,7 @@ public class MyMarksDTO {
 
     private Long groupId;
     private String groupName;
+    private String month; // "2026-02"
     private Double marks;
     private MarkCategoryStatus status;
 

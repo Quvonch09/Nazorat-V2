@@ -9,6 +9,7 @@ import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
+import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.StudentMapper;
 import com.example.nazoratv2.repository.GroupRepository;
@@ -24,7 +25,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -147,12 +151,6 @@ public class StudentService {
 
         return ApiResponse.success(topStudents, "Success");
     }
-
-//
-//    public ApiResponse<MyMarksDTO> getMyMarks(Student student, LocalDate localDate) {
-//
-//
-//    }
 
 
 }

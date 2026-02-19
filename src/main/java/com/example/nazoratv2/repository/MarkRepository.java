@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MarkRepository extends JpaRepository<Mark, Long> {
@@ -31,12 +32,13 @@ public interface MarkRepository extends JpaRepository<Mark, Long> {
 
 
     @Query("""
-        select s.id, s.fullName, coalesce(avg(m.totalScore),0)
-        from Mark m
-        join m.student s
-        group by s.id, s.fullName
-        order by coalesce(avg(m.totalScore),0) desc
-    """)
+   select s.id, s.fullName, avg(m.totalScore), s.imgUrl
+   from Mark m
+   join m.student s
+   where m.active = true
+   group by s.id, s.fullName, s.imgUrl
+   order by avg(m.totalScore) desc
+""")
     List<Object[]> topAllStudentsByAvg(Pageable pageable);
 
 
