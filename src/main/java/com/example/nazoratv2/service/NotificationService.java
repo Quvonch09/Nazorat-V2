@@ -76,7 +76,6 @@ public class NotificationService {
     public ApiResponse<ResNotification> getNotificationById(Long id) {
         Notification notification = notificationRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Notification not found"));
         return ApiResponse.success(notificationMapper.toNotificationDTO(notification), "Success");
-
     }
 
     public ApiResponse<String> deleteNotificationById(Long id) {
