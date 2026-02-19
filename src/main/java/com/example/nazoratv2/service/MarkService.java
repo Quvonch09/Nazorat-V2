@@ -154,8 +154,8 @@ public class MarkService {
             User teacher = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Teacher not found")
             );
-
-            markPage = markRepository.findAllByCreatedByAndActiveTrue(teacher.getFullName(), pageRequest);
+            String createdBy = customUserDetails.getPhone();
+            markPage = markRepository.findAllByCreatedByAndActiveTrue(createdBy, pageRequest);
         } else {
             Student student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Student not found")
