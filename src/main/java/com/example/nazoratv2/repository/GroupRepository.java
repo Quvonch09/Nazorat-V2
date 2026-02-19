@@ -77,6 +77,9 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 """, nativeQuery = true)
     Long getTodayLessonHours(@Param("today") String today);
 
+    @Query("select g.id from groups g where g.teacher.id = :teacherId and g.active = true")
+    List<Long> findIdsByTeacherId(Long teacherId);
+
 
 //    Optional<Group> findByStudentIdAndActiveTrue(Long studentId);
 

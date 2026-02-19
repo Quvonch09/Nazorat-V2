@@ -6,12 +6,14 @@ import com.example.nazoratv2.dto.TopStudentDto;
 import com.example.nazoratv2.dto.ScheduleResponseDTO;
 import com.example.nazoratv2.dto.dashboard.DashboardDTO;
 import com.example.nazoratv2.entity.Student;
+import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.GroupEnum;
 import com.example.nazoratv2.service.DashboardService;
 import com.example.nazoratv2.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,8 +37,8 @@ public class DashboardController {
     }
 
     @GetMapping("/top-students")
-    public ApiResponse<List<TopStudentDto>> topStudents() {
-        return studentService.getTop5Students();
+    public ApiResponse<List<TopStudentDto>> topStudents(@AuthenticationPrincipal UserDetails user) {
+        return studentService.getTop5Students(user);
     }
 
     @GetMapping("/schedule")

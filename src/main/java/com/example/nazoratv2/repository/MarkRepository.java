@@ -42,6 +42,18 @@ public interface MarkRepository extends JpaRepository<Mark, Long> {
     List<Object[]> topAllStudentsByAvg(Pageable pageable);
 
 
+    @Query("""
+    select s.id, s.fullName,
+           avg(m.totalScore),
+           s.imgUrl
+    from Mark m
+    join m.student s
+    join s.group g
+    where g.id in :groupIds
+    group by s.id, s.fullName, s.imgUrl
+    order by avg(m.totalScore) desc
+""")
+    List<Object[]> topStudentsByAvgForGroups(@Param("groupIds") List<Long> groupIds, Pageable pageable);
 
 
 }

@@ -10,6 +10,7 @@ import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
+import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.StudentMapper;
 import com.example.nazoratv2.repository.GroupRepository;
@@ -22,13 +23,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -136,17 +135,52 @@ public class StudentService {
     }
 
 
-    public ApiResponse<List<TopStudentDto>> getTop5Students() {
+    public ApiResponse<List<TopStudentDto>> getTop5Students(UserDetails principal) {
 
-        List<Object[]> rows = markRepository.topAllStudentsByAvg(PageRequest.of(0, 5));
+        String phone = principal.getUsername();
+
+        Optional<User> optUser = userRepository.findByPhone(phone);
+
+        List<Object[]> rows;
+
+        if (optUser.isPresent()) {
+            User u = optUser.get();
+
+            if (u.getRole() == Role.ROLE_TEACHER) {
+                List<Long> groupIds = groupRepository.findIdsByTeacherId(u.getId());
+
+                if (groupIds == null || groupIds.isEmpty()) {
+                    return ApiResponse.success(List.of(), "Teacherga group biriktirilmagan");
+                }
+
+                rows = markRepository.topStudentsByAvgForGroups(groupIds, PageRequest.of(0, 5));
+            } else {
+                rows = markRepository.topAllStudentsByAvg(PageRequest.of(0, 5));
+            }
+
+        } else {
+
+            boolean isStudent = studentRepository.findByPhone(phone).isPresent();
+
+            if (!isStudent) {
+                return ApiResponse.error("Unauthorized");
+            }
+
+            rows = markRepository.topAllStudentsByAvg(PageRequest.of(0, 5));
+        }
 
         List<TopStudentDto> topStudents = rows.stream()
-                .map(r -> TopStudentDto.builder()
-                        .studentId((Long) r[0])
-                        .studentName((String) r[1])
-                        .percent((int) Math.round((Double) r[2]))
-                        .imageUrl((String) r[3])
-                        .build())
+                .map(r -> {
+                    Number avg = (Number) r[2];
+                    int percent = (int) Math.round(avg.doubleValue());
+
+                    return TopStudentDto.builder()
+                            .studentId((Long) r[0])
+                            .studentName((String) r[1])
+                            .percent(percent)
+                            .imageUrl((String) r[3])
+                            .build();
+                })
                 .toList();
 
         return ApiResponse.success(topStudents, "Success");
