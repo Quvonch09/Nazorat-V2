@@ -5,6 +5,7 @@ import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.UserDTO;
 import com.example.nazoratv2.dto.request.AuthRegister;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.dto.response.ResUser;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.enums.ActionType;
@@ -77,5 +78,12 @@ public class ParentController {
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllParents(){
         return ResponseEntity.ok(userService.getAllList(Role.ROLE_PARENT));
+    }
+
+
+    @GetMapping("/my-child")
+    public ResponseEntity<ApiResponse<List<ResStudent>>> getAllChilds(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return ResponseEntity.ok(userService.getAllStudentsByParent(customUserDetails));
     }
 }
