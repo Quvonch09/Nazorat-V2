@@ -1,25 +1,29 @@
 package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.configuration.TrackAction;
-import com.example.nazoratv2.dto.ApiResponse;
-import com.example.nazoratv2.dto.UserDTO;
+import com.example.nazoratv2.dto.*;
 import com.example.nazoratv2.dto.request.AuthRegister;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResStudent;
 import com.example.nazoratv2.dto.response.ResUser;
 import com.example.nazoratv2.dto.response.UserResponse;
+import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.ActionType;
+import com.example.nazoratv2.entity.enums.AttendancePeriodFilter;
+import com.example.nazoratv2.entity.enums.PeriodFilter;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.AuthService;
 import com.example.nazoratv2.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -86,4 +90,42 @@ public class ParentController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails){
         return ResponseEntity.ok(userService.getAllStudentsByParent(customUserDetails));
     }
+
+
+    @GetMapping("/{studentId}/attendance")
+    public ApiResponse<List<WeekAttendanceDTO>> attendance(
+            @AuthenticationPrincipal CustomUserDetails cud,
+            @PathVariable Long studentId,
+            @RequestParam(defaultValue = "WEEKLY") AttendancePeriodFilter filter,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return userService.getAttendance(cud, studentId, filter, date);
+    }
+
+
+
+
+    @GetMapping("/{studentId}/marks")
+    public ApiResponse<List<WeekMarkDTO>> marks(
+            @AuthenticationPrincipal CustomUserDetails cud,
+            @PathVariable Long studentId,
+            @RequestParam(defaultValue = "WEEKLY") PeriodFilter filter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return userService.getMarks(cud, studentId, filter, date);
+    }
+
+
+    @GetMapping("/{studentId}/stats")
+    public ApiResponse<StudentStatsDTO> getStats(
+            @AuthenticationPrincipal CustomUserDetails parent,
+            @PathVariable Long studentId
+    ) {
+        return userService.getStats(parent, studentId);
+    }
+
+
+
+
 }

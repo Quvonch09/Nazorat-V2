@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MarkRepository extends JpaRepository<Mark, Long> {
@@ -52,6 +53,26 @@ public interface MarkRepository extends JpaRepository<Mark, Long> {
     order by avg(m.totalScore) desc
 """)
     List<Object[]> topStudentsByAvgForGroups(@Param("groupIds") List<Long> groupIds, Pageable pageable);
+
+
+
+    List<Mark> findAllByStudentIdAndActiveTrueAndDateBetweenOrderByDateAsc(
+            Long studentId, LocalDate start, LocalDate end
+    );
+
+    @Query("""
+        select avg(m.totalScore * 1.0)
+        from Mark m
+        where m.active = true and m.student.id = :studentId
+    """)
+    Double avgTotalScore(@Param("studentId") Long studentId);
+
+    @Query("""
+        select count(m)
+        from Mark m
+        where m.active = true and m.student.id = :studentId
+    """)
+    Long countMarks(@Param("studentId") Long studentId);
 
 
 }
