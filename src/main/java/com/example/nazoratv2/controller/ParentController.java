@@ -1,12 +1,12 @@
 package com.example.nazoratv2.controller;
 
 import com.example.nazoratv2.configuration.TrackAction;
-import com.example.nazoratv2.dto.ApiResponse;
-import com.example.nazoratv2.dto.UserDTO;
+import com.example.nazoratv2.dto.*;
 import com.example.nazoratv2.dto.request.AuthRegister;
 import com.example.nazoratv2.dto.response.ResPageable;
 import com.example.nazoratv2.dto.response.ResUser;
 import com.example.nazoratv2.dto.response.UserResponse;
+import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
@@ -14,11 +14,13 @@ import com.example.nazoratv2.service.AuthService;
 import com.example.nazoratv2.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -78,4 +80,41 @@ public class ParentController {
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllParents(){
         return ResponseEntity.ok(userService.getAllList(Role.ROLE_PARENT));
     }
+
+
+
+    @GetMapping("/{studentId}/attendance/week")
+    public ApiResponse<List<WeekAttendanceDTO>> weekAttendance(
+            @AuthenticationPrincipal User parent,
+            @PathVariable Long studentId,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate weekStart
+    ) {
+        return userService.getWeekAttendance(parent, studentId, weekStart);
+    }
+
+    @GetMapping("/{studentId}/marks/week")
+    public ApiResponse<List<WeekMarkDTO>> getWeekMarks(
+            @AuthenticationPrincipal User parent,
+            @PathVariable Long studentId,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart
+    ) {
+        return userService.getWeekMarks(parent, studentId, weekStart);
+    }
+
+
+
+    @GetMapping("/{studentId}/stats")
+    public ApiResponse<StudentStatsDTO> getStats(
+            @AuthenticationPrincipal User parent,
+            @PathVariable Long studentId
+    ) {
+        return userService.getStats(parent, studentId);
+    }
+
+
+
+
 }
