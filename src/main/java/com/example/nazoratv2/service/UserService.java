@@ -351,7 +351,7 @@ public class UserService {
 
 
     public ApiResponse<List<ResStudent>> getAllStudentsByParent(CustomUserDetails customUserDetails) {
-        if (!customUserDetails.getRole().equals(Role.ROLE_PARENT)) {
+        if (!customUserDetails.getRole().equals(Role.ROLE_PARENT.name())) {
             return ApiResponse.error("Only PARENT");
         } else {
             List<ResStudent> list = studentRepository.findAllByParent_IdAndActiveTrue(
