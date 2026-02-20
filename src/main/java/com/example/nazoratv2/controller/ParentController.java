@@ -33,7 +33,7 @@ public class ParentController {
             type = ActionType.PARENT_CREATED,
             description = "Ota-ona yaratildi"
     )
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PARENT')")
     @PostMapping
     public ResponseEntity<ApiResponse<String>> parentLogin(
             @Valid @RequestBody AuthRegister register
@@ -42,7 +42,7 @@ public class ParentController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PARENT')")
     @PutMapping
     public ResponseEntity<ApiResponse<String>> updateParent(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                             @Valid @RequestBody UserDTO userDTO){
@@ -50,14 +50,14 @@ public class ParentController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PARENT')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteParent(@PathVariable Long id){
         return ResponseEntity.ok(userService.deleteById(id));
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PARENT')")
     @GetMapping
     public ResponseEntity<ApiResponse<ResPageable>> getParent(@RequestParam(required = false) String name,
                                                               @RequestParam(required = false) String phone,
@@ -67,7 +67,7 @@ public class ParentController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PARENT')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getParentById(@PathVariable Long id){
         return ResponseEntity.ok(userService.getOneUser(id));
