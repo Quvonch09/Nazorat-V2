@@ -5,9 +5,11 @@ import com.example.nazoratv2.dto.MyMarksDTO;
 import com.example.nazoratv2.dto.TopStudentDto;
 import com.example.nazoratv2.dto.ScheduleResponseDTO;
 import com.example.nazoratv2.dto.dashboard.DashboardDTO;
+import com.example.nazoratv2.dto.dashboard.TeacherDashboard;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.GroupEnum;
+import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.DashboardService;
 import com.example.nazoratv2.service.StudentService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,12 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getDashboard());
     }
 
+    @GetMapping("/teacher")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public ResponseEntity<ApiResponse<TeacherDashboard>> getDashboardTeacher(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(dashboardService.getTeacherDashboard(customUserDetails));
+    }
+
     @GetMapping("/top-students")
     public ApiResponse<List<TopStudentDto>> topStudents(@AuthenticationPrincipal UserDetails user) {
         return studentService.getTop5Students(user);
@@ -46,8 +54,9 @@ public class DashboardController {
 
     @GetMapping("/schedule")
     public ResponseEntity<ApiResponse<List<ScheduleResponseDTO>>> getSchedule(
-            @RequestParam(required = false)GroupEnum groupEnum) {
-        return ResponseEntity.ok(dashboardService.getSchedule(groupEnum));
+            @RequestParam(required = false)GroupEnum groupEnum,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(dashboardService.getSchedule(customUserDetails,groupEnum));
     }
 
 
