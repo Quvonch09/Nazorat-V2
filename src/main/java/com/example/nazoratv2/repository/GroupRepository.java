@@ -58,6 +58,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     List<Group> findAllByTeacherIdAndActiveTrue(Long teacherId);
 
     List<Group> findAllByRoomIdAndActiveTrue(Long roomId);
+    List<Group> findAllByRoomIdAndActiveTrueAndTeacher_Id(Long roomId, Long teacherId);
 
     List<Group> findAllByCategoryIdAndActiveTrue(Long roomId);
 
@@ -76,6 +77,17 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
    WHERE w.week_days = :today
 """, nativeQuery = true)
     Long getTodayLessonHours(@Param("today") String today);
+
+    @Query(value = """
+   SELECT COALESCE(SUM(
+       EXTRACT(EPOCH FROM (g.end_time - g.start_time)) / 3600
+   ), 0)
+   FROM groups g
+   JOIN groups_week_days w ON g.id = w.groups_id
+   WHERE w.week_days = :today and g.teacher_id = :teacherId
+""", nativeQuery = true)
+    Long getTodayLessonHoursByTeacher(@Param("today") String today,
+                                      @Param("teacherId") Long teacherId);
 
     @Query("select g.id from groups g where g.teacher.id = :teacherId and g.active = true")
     List<Long> findIdsByTeacherId(Long teacherId);

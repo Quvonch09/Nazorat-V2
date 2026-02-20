@@ -4,12 +4,15 @@ import com.example.nazoratv2.dto.ApiResponse;
 import com.example.nazoratv2.dto.GroupScheduleDTO;
 import com.example.nazoratv2.dto.ScheduleResponseDTO;
 import com.example.nazoratv2.dto.dashboard.DashboardDTO;
+import com.example.nazoratv2.dto.dashboard.TeacherDashboard;
 import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Room;
+import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.GroupEnum;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.entity.enums.WeekDays;
 import com.example.nazoratv2.repository.*;
+import com.example.nazoratv2.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +55,37 @@ public class DashboardService {
     }
 
 
-    public ApiResponse<List<ScheduleResponseDTO>> getSchedule(GroupEnum groupEnum) {
+    public ApiResponse<TeacherDashboard> getTeacherDashboard(CustomUserDetails customUserDetails) {
+        DayOfWeek day = LocalDate.now().getDayOfWeek();
+
+        WeekDays today = WeekDays.valueOf(day.name());
+
+        User teacher = customUserDetails.getUser();
+        int student = studentRepository.findAllByTeacher(teacher.getId()).size();
+        int group = groupRepository.findAllByTeacherIdAndActiveTrue(teacher.getId()).size();
+        Long countLesson = groupRepository.getTodayLessonHoursByTeacher(today.name(), teacher.getId());
+        TeacherDashboard teacherDashboard = TeacherDashboard.builder()
+                .countLesson(countLesson)
+                .groupCount(group)
+                .studentCount(student)
+                .build();
+        return ApiResponse.success(teacherDashboard, "Success");
+    }
+
+
+    public ApiResponse<List<ScheduleResponseDTO>> getSchedule(CustomUserDetails customUserDetails,
+                                                              GroupEnum groupEnum) {
 
         List<ScheduleResponseDTO> result = new ArrayList<>();
         List<GroupScheduleDTO> groupDTOs =  new ArrayList<>();
 
         for (Room room : roomRepository.findAllByActiveTrue()) {
-            List<Group> groups = groupRepository.findAllByRoomIdAndActiveTrue(room.getId());
+            List<Group> groups;
+            if (customUserDetails.getRole().equals(Role.ROLE_TEACHER.name())) {
+                groups = groupRepository.findAllByRoomIdAndActiveTrueAndTeacher_Id(room.getId(),customUserDetails.getUser().getId());
+            } else {
+                groups = groupRepository.findAllByRoomIdAndActiveTrue(room.getId());
+            }
             if (groupEnum != null) {
                 if (groupEnum.equals(GroupEnum.TOQ_KUNLAR)){
                     groupDTOs = groups.stream()
