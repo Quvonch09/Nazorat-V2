@@ -88,7 +88,7 @@ public class NotificationService {
     public ApiResponse<List<ResNotification>> getMyNotifications(CustomUserDetails customUserDetails) {
         User user = null;
         Student student = null;
-        if (!customUserDetails.getRole().equals("STUDENT")){
+        if (!customUserDetails.getRole().equals("ROLE_STUDENT")){
             user = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("User not found")
             );
@@ -121,7 +121,7 @@ public class NotificationService {
     public ApiResponse<Long> countMyNotifications(CustomUserDetails customUserDetails) {
         User user = null;
         Student student = null;
-        if (!customUserDetails.getRole().equals("STUDENT")){
+        if (!customUserDetails.getRole().equals("ROLE_STUDENT")){
             user = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("User not found")
             );

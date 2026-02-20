@@ -17,6 +17,6 @@ public class UserResponse {
     private String parentName;
     private String level;
     private Long groupId;
-    private String imageUrl;
+    private String imgUrl;
     private String role;
 }
