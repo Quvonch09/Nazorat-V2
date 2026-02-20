@@ -36,7 +36,6 @@ public class DashboardController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SUPER_ADMIN')")
-
     public ResponseEntity<ApiResponse<DashboardDTO>> getDashboard() {
         return ResponseEntity.ok(dashboardService.getDashboard());
     }
@@ -48,8 +47,8 @@ public class DashboardController {
     }
 
     @GetMapping("/top-students")
-    public ApiResponse<List<TopStudentDto>> topStudents(@AuthenticationPrincipal UserDetails user) {
-        return studentService.getTop5Students(user);
+    public ResponseEntity<ApiResponse<List<TopStudentDto>>> topStudents(@AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(studentService.getTop5Students(user));
     }
 
     @GetMapping("/schedule")
