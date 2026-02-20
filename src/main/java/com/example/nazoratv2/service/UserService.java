@@ -212,24 +212,29 @@ public class UserService {
 
     public ApiResponse<List<WeekMarkDTO>> getMarks(CustomUserDetails cud,
                                                    Long studentId,
-                                                   PeriodFilter filter,
-                                                   LocalDate date) {
+                                                   PeriodFilter filter) {
 
         User parent = userRepository.findByPhoneAndActiveTrue(cud.getPhone())
                 .orElseThrow(() -> new DataNotFoundException("Parent not found"));
 
         Student student = getStudentForParent(studentId, parent);
 
-        LocalDate base = (date == null) ? LocalDate.now() : date;
+        LocalDate base = LocalDate.now(); // date yo'q, doim bugungi sana
 
-        DateRange range = switch (filter) {
-            case WEEKLY -> weeklyRange(base);   // 6 kun
-            case MONTHLY -> monthlyRange(base); // oy
-        };
+        LocalDate start;
+        LocalDate end;
+
+        if (filter == PeriodFilter.WEEKLY) {
+            start = base.with(java.time.DayOfWeek.MONDAY);
+            end = start.plusDays(5); // 6 kun: Mon..Sat
+        } else { // MONTHLY
+            start = base.withDayOfMonth(1);
+            end = base.withDayOfMonth(base.lengthOfMonth());
+        }
 
         List<Mark> marks = markRepository
                 .findAllByStudentIdAndActiveTrueAndDateBetweenOrderByDateAsc(
-                        student.getId(), range.start(), range.end()
+                        student.getId(), start, end
                 );
 
         List<WeekMarkDTO> res = marks.stream()
@@ -263,15 +268,14 @@ public class UserService {
 
     public ApiResponse<List<WeekAttendanceDTO>> getAttendance(CustomUserDetails cud,
                                                               Long studentId,
-                                                              AttendancePeriodFilter filter,
-                                                              LocalDate date) {
+                                                              AttendancePeriodFilter filter) {
 
         User parent = userRepository.findByPhoneAndActiveTrue(cud.getPhone())
                 .orElseThrow(() -> new DataNotFoundException("Parent not found"));
 
         Student student = getStudentForParent(studentId, parent);
 
-        LocalDate base = (date == null) ? LocalDate.now() : date;
+        LocalDate base = LocalDate.now(); // date yo'q, doim bugungi sana
 
         LocalDate start;
         LocalDate end;
@@ -293,12 +297,10 @@ public class UserService {
             map.put(a.getDate(), a.getStatus() == AttendaceEnum.KELDI);
         }
 
-        // Response:
-        // WEEKLY: doim 6 ta chip chiqsin
-        // MONTHLY: faqat bor kunlarni qaytaramiz (agar xohlasangiz hammasini ham chiqaramiz)
         List<WeekAttendanceDTO> res = new ArrayList<>();
 
         if (filter == AttendancePeriodFilter.WEEKLY) {
+            // doim 6 ta chip qaytaradi
             for (int i = 0; i < 6; i++) {
                 LocalDate d = start.plusDays(i);
                 res.add(WeekAttendanceDTO.builder()
@@ -307,7 +309,7 @@ public class UserService {
                         .build());
             }
         } else {
-            // Oylik: bor kunlar ro'yxati (ko'p bo'lmasin)
+            // oylik: faqat bor kunlar (attendance olingan kunlar) qaytariladi
             for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
                 if (map.containsKey(d)) {
                     res.add(WeekAttendanceDTO.builder()
@@ -322,7 +324,6 @@ public class UserService {
     }
 
 
-
     private Student getStudentForParent(Long studentId, User parent) {
         Student s = studentRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found"));
@@ -334,14 +335,14 @@ public class UserService {
         return s;
     }
 
-    private LocalDate normalizeWeekStart(LocalDate weekStart) {
-        if (weekStart == null) weekStart = LocalDate.now();
-        return weekStart.with(DayOfWeek.MONDAY);
-    }
-
-    private WeekDays toWeekDays(DayOfWeek dow) {
-        return WeekDays.valueOf(dow.name()); // MONDAY..SUNDAY mos
-    }
+//    private LocalDate normalizeWeekStart(LocalDate weekStart) {
+//        if (weekStart == null) weekStart = LocalDate.now();
+//        return weekStart.with(DayOfWeek.MONDAY);
+//    }
+//
+//    private WeekDays toWeekDays(DayOfWeek dow) {
+//        return WeekDays.valueOf(dow.name()); // MONDAY..SUNDAY mos
+//    }
 
     private double round1(double v) {
         return Math.round(v * 10.0) / 10.0;
