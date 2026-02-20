@@ -348,4 +348,15 @@ public class UserService {
     }
 
 
+
+    public ApiResponse<List<ResStudent>> getAllStudentsByParent(CustomUserDetails customUserDetails) {
+        if (!customUserDetails.getRole().equals(Role.ROLE_PARENT)) {
+            return ApiResponse.error("Only PARENT");
+        } else {
+            List<ResStudent> list = studentRepository.findAllByParent_IdAndActiveTrue(
+                    customUserDetails.getUser().getId()).stream().map(studentMapper::toStudentDTO).toList();
+            return ApiResponse.success(list, "Success");
+        }
+    }
+
 }
