@@ -88,13 +88,9 @@ public class ParentController {
     public ApiResponse<List<WeekAttendanceDTO>> attendance(
             @AuthenticationPrincipal CustomUserDetails cud,
             @PathVariable Long studentId,
-            @RequestParam(defaultValue = "WEEKLY") AttendancePeriodFilter filter,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
-        return userService.getAttendance(cud, studentId, filter, date);
+            @RequestParam(defaultValue = "WEEKLY") AttendancePeriodFilter filter) {
+        return userService.getAttendance(cud, studentId, filter);
     }
-
 
 
 
@@ -102,10 +98,9 @@ public class ParentController {
     public ApiResponse<List<WeekMarkDTO>> marks(
             @AuthenticationPrincipal CustomUserDetails cud,
             @PathVariable Long studentId,
-            @RequestParam(defaultValue = "WEEKLY") PeriodFilter filter,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+            @RequestParam(defaultValue = "WEEKLY") PeriodFilter filter
     ) {
-        return userService.getMarks(cud, studentId, filter, date);
+        return userService.getMarks(cud, studentId, filter);
     }
 
 
