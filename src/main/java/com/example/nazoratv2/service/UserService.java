@@ -1,19 +1,18 @@
 package com.example.nazoratv2.service;
 
-import com.example.nazoratv2.dto.ApiResponse;
-import com.example.nazoratv2.dto.UserDTO;
+import com.example.nazoratv2.dto.*;
 import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.*;
+import com.example.nazoratv2.entity.Attendance;
+import com.example.nazoratv2.entity.Mark;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
-import com.example.nazoratv2.entity.enums.Role;
+import com.example.nazoratv2.entity.enums.*;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.GroupMapper;
 import com.example.nazoratv2.mapper.StudentMapper;
 import com.example.nazoratv2.mapper.UserMapper;
-import com.example.nazoratv2.repository.GroupRepository;
-import com.example.nazoratv2.repository.StudentRepository;
-import com.example.nazoratv2.repository.UserRepository;
+import com.example.nazoratv2.repository.*;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,18 +36,20 @@ public class UserService {
     private final StudentRepository studentRepository;
     private final GroupMapper groupMapper;
     private final StudentMapper studentMapper;
+    private final MarkRepository markRepository;
+    private final AttendanceRepository attendanceRepository;
 
     public ApiResponse<?> getProfile(CustomUserDetails currentUser) {
-        if (currentUser.getRole().equals("ROLE_STUDENT")){
+        if (currentUser.getRole().equals("ROLE_STUDENT")) {
             Student student = currentUser.getStudent();
-            return ApiResponse.success(studentMapper.toResponseUser(student),"Success");
+            return ApiResponse.success(studentMapper.toResponseUser(student), "Success");
         } else {
             User user = currentUser.getUser();
-            return ApiResponse.success(mapper.toResponseUser(user),"success");
+            return ApiResponse.success(mapper.toResponseUser(user), "success");
         }
     }
 
-    public ApiResponse<String> update(CustomUserDetails current , UserDTO req) {
+    public ApiResponse<String> update(CustomUserDetails current, UserDTO req) {
 
         User currentUser = current.getUser();
         Long targetId = req.getId();
@@ -110,10 +113,10 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return ApiResponse.success(null,"success");
+        return ApiResponse.success(null, "success");
     }
 
-    public ApiResponse<UserResponse> getOneUser(Long id){
+    public ApiResponse<UserResponse> getOneUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new DataNotFoundException("User topilmadi"));
         return ApiResponse.success(mapper.toResponseUser(user), "Success");
     }
@@ -145,8 +148,7 @@ public class UserService {
     }
 
 
-
-    public ApiResponse<ResTeacher> getOneTeacher(Long id){
+    public ApiResponse<ResTeacher> getOneTeacher(Long id) {
         User teacher = userRepository.findByIdAndActiveTrue(id).orElseThrow(
                 () -> new DataNotFoundException("Teacher not found")
         );
@@ -156,7 +158,7 @@ public class UserService {
         List<ResGroupDTO> groupList = groupRepository.findAllByTeacherIdAndActiveTrue(teacher.getId())
                 .stream().map(groupMapper::toRes).toList();
 
-        return ApiResponse.success(mapper.resTeacher(teacher,studentList,groupList), "Success");
+        return ApiResponse.success(mapper.resTeacher(teacher, studentList, groupList), "Success");
     }
 
 
@@ -164,5 +166,186 @@ public class UserService {
         List<UserResponse> list = userRepository.findAllByRole(role).stream().map(mapper::toResponseUser).toList();
         return ApiResponse.success(list, "success");
     }
+
+
+    public ApiResponse<StudentStatsDTO> getStats(CustomUserDetails cud, Long studentId) {
+
+        User parent = userRepository.findByPhoneAndActiveTrue(cud.getPhone())
+                .orElseThrow(() -> new DataNotFoundException("Parent not found"));
+
+        Student student = getStudentForParent(studentId, parent);
+
+        Double avg = markRepository.avgTotalScore(student.getId());
+        if (avg == null) avg = 0.0;
+
+        int groupsCount = (student.getGroup() != null) ? 1 : 0;
+
+        StudentStatsDTO dto = StudentStatsDTO.builder()
+                .averageGrade(round1(avg))
+                .subjectsCount(groupsCount) // sizda field nomi shunaqa bo'lsa
+                .build();
+
+        return ApiResponse.success(dto, "Success");
+    }
+
+//    public ApiResponse<List<WeekMarkDTO>> getWeekMarks(User parent, Long studentId, LocalDate weekStart) {
+//        Student student = getStudentForParent(studentId, parent);
+//
+//        LocalDate start = normalizeWeekStart(weekStart); // Monday
+//        LocalDate end = start.plusDays(4);               // Mon..Fri (7 kun kerak bo'lsa +6)
+//
+//        List<Mark> marks = markRepository
+//                .findAllByStudentIdAndActiveTrueAndDateBetweenOrderByDateAsc(student.getId(), start, end);
+//
+//        List<WeekMarkDTO> res = marks.stream()
+//                .map(m -> WeekMarkDTO.builder()
+//                        .day(toWeekDays(m.getDate().getDayOfWeek()))
+//                        .score(m.getTotalScore())
+//                        .category(m.getMarkCategoryStatus()) // YASHIL/SARIQ/QIZIL
+//                        .date(m.getDate())
+//                        .build())
+//                .toList();
+//
+//        return ApiResponse.success(res, "Success");
+//    }
+
+
+    public ApiResponse<List<WeekMarkDTO>> getMarks(CustomUserDetails cud,
+                                                   Long studentId,
+                                                   PeriodFilter filter,
+                                                   LocalDate date) {
+
+        User parent = userRepository.findByPhoneAndActiveTrue(cud.getPhone())
+                .orElseThrow(() -> new DataNotFoundException("Parent not found"));
+
+        Student student = getStudentForParent(studentId, parent);
+
+        LocalDate base = (date == null) ? LocalDate.now() : date;
+
+        DateRange range = switch (filter) {
+            case WEEKLY -> weeklyRange(base);   // 6 kun
+            case MONTHLY -> monthlyRange(base); // oy
+        };
+
+        List<Mark> marks = markRepository
+                .findAllByStudentIdAndActiveTrueAndDateBetweenOrderByDateAsc(
+                        student.getId(), range.start(), range.end()
+                );
+
+        List<WeekMarkDTO> res = marks.stream()
+                .map(m -> WeekMarkDTO.builder()
+                        .day(WeekDays.valueOf(m.getDate().getDayOfWeek().name()))
+                        .score(m.getTotalScore())
+                        .category(m.getMarkCategoryStatus())
+                        .date(m.getDate())
+                        .build())
+                .toList();
+
+        return ApiResponse.success(res, "Success");
+    }
+
+
+
+    // 6 kun: Dushanba..Shanba
+    private DateRange weeklyRange(LocalDate anyDay) {
+        LocalDate start = anyDay.with(java.time.DayOfWeek.MONDAY);
+        LocalDate end = start.plusDays(5);
+        return new DateRange(start, end);
+    }
+
+    // Oylik: 1-kun..oxirgi-kun
+    private DateRange monthlyRange(LocalDate anyDay) {
+        LocalDate start = anyDay.withDayOfMonth(1);
+        LocalDate end = anyDay.withDayOfMonth(anyDay.lengthOfMonth());
+        return new DateRange(start, end);
+    }
+
+
+    public ApiResponse<List<WeekAttendanceDTO>> getAttendance(CustomUserDetails cud,
+                                                              Long studentId,
+                                                              AttendancePeriodFilter filter,
+                                                              LocalDate date) {
+
+        User parent = userRepository.findByPhoneAndActiveTrue(cud.getPhone())
+                .orElseThrow(() -> new DataNotFoundException("Parent not found"));
+
+        Student student = getStudentForParent(studentId, parent);
+
+        LocalDate base = (date == null) ? LocalDate.now() : date;
+
+        LocalDate start;
+        LocalDate end;
+
+        if (filter == AttendancePeriodFilter.WEEKLY) {
+            start = base.with(java.time.DayOfWeek.MONDAY);
+            end = start.plusDays(5); // 6 kun: Mon..Sat
+        } else { // MONTHLY
+            start = base.withDayOfMonth(1);
+            end = base.withDayOfMonth(base.lengthOfMonth()); // oy oxiri
+        }
+
+        List<Attendance> list =
+                attendanceRepository.findAllByStudentIdAndDateBetween(student.getId(), start, end);
+
+        // date -> present (KELDI=true)
+        Map<LocalDate, Boolean> map = new HashMap<>();
+        for (Attendance a : list) {
+            map.put(a.getDate(), a.getStatus() == AttendaceEnum.KELDI);
+        }
+
+        // Response:
+        // WEEKLY: doim 6 ta chip chiqsin
+        // MONTHLY: faqat bor kunlarni qaytaramiz (agar xohlasangiz hammasini ham chiqaramiz)
+        List<WeekAttendanceDTO> res = new ArrayList<>();
+
+        if (filter == AttendancePeriodFilter.WEEKLY) {
+            for (int i = 0; i < 6; i++) {
+                LocalDate d = start.plusDays(i);
+                res.add(WeekAttendanceDTO.builder()
+                        .day(WeekDays.valueOf(d.getDayOfWeek().name()))
+                        .present(map.getOrDefault(d, false))
+                        .build());
+            }
+        } else {
+            // Oylik: bor kunlar ro'yxati (ko'p bo'lmasin)
+            for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+                if (map.containsKey(d)) {
+                    res.add(WeekAttendanceDTO.builder()
+                            .day(WeekDays.valueOf(d.getDayOfWeek().name()))
+                            .present(map.get(d))
+                            .build());
+                }
+            }
+        }
+
+        return ApiResponse.success(res, "Success");
+    }
+
+
+
+    private Student getStudentForParent(Long studentId, User parent) {
+        Student s = studentRepository.findById(studentId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found"));
+
+        // parent check
+        if (s.getParent() == null || !Objects.equals(s.getParent().getId(), parent.getId())) {
+            throw new RuntimeException("Bu farzand sizga tegishli emas");
+        }
+        return s;
+    }
+
+    private LocalDate normalizeWeekStart(LocalDate weekStart) {
+        if (weekStart == null) weekStart = LocalDate.now();
+        return weekStart.with(DayOfWeek.MONDAY);
+    }
+
+    private WeekDays toWeekDays(DayOfWeek dow) {
+        return WeekDays.valueOf(dow.name()); // MONDAY..SUNDAY mos
+    }
+
+    private double round1(double v) {
+        return Math.round(v * 10.0) / 10.0;
+    }
+
 
 }

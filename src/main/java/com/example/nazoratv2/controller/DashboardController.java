@@ -12,6 +12,7 @@ import com.example.nazoratv2.service.DashboardService;
 import com.example.nazoratv2.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,8 @@ public class DashboardController {
 
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SUPER_ADMIN')")
+
     public ResponseEntity<ApiResponse<DashboardDTO>> getDashboard() {
         return ResponseEntity.ok(dashboardService.getDashboard());
     }
