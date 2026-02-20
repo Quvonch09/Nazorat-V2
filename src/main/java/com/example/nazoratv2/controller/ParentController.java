@@ -8,6 +8,8 @@ import com.example.nazoratv2.dto.response.ResUser;
 import com.example.nazoratv2.dto.response.UserResponse;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.ActionType;
+import com.example.nazoratv2.entity.enums.AttendancePeriodFilter;
+import com.example.nazoratv2.entity.enums.PeriodFilter;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.AuthService;
@@ -82,33 +84,34 @@ public class ParentController {
     }
 
 
-
-    @GetMapping("/{studentId}/attendance/week")
-    public ApiResponse<List<WeekAttendanceDTO>> weekAttendance(
-            @AuthenticationPrincipal User parent,
+    @GetMapping("/{studentId}/attendance")
+    public ApiResponse<List<WeekAttendanceDTO>> attendance(
+            @AuthenticationPrincipal CustomUserDetails cud,
             @PathVariable Long studentId,
+            @RequestParam(defaultValue = "WEEKLY") AttendancePeriodFilter filter,
             @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate weekStart
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        return userService.getWeekAttendance(parent, studentId, weekStart);
+        return userService.getAttendance(cud, studentId, filter, date);
     }
 
-    @GetMapping("/{studentId}/marks/week")
-    public ApiResponse<List<WeekMarkDTO>> getWeekMarks(
-            @AuthenticationPrincipal User parent,
-            @PathVariable Long studentId,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart
-    ) {
-        return userService.getWeekMarks(parent, studentId, weekStart);
-    }
 
+
+
+    @GetMapping("/{studentId}/marks")
+    public ApiResponse<List<WeekMarkDTO>> marks(
+            @AuthenticationPrincipal CustomUserDetails cud,
+            @PathVariable Long studentId,
+            @RequestParam(defaultValue = "WEEKLY") PeriodFilter filter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return userService.getMarks(cud, studentId, filter, date);
+    }
 
 
     @GetMapping("/{studentId}/stats")
     public ApiResponse<StudentStatsDTO> getStats(
-            @AuthenticationPrincipal User parent,
+            @AuthenticationPrincipal CustomUserDetails parent,
             @PathVariable Long studentId
     ) {
         return userService.getStats(parent, studentId);
