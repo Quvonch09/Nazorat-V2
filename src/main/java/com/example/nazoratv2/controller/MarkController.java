@@ -59,7 +59,7 @@ public class MarkController {
 
     @GetMapping("/myMarks")
     @Operation(summary = "Teacher, Student, Parent uziga tegishli baholarni kurish")
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_PARENT', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_PARENT', 'STUDENT','ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<ResPageable>> getMyMarks(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size){

@@ -156,6 +156,8 @@ public class MarkService {
             );
             String createdBy = customUserDetails.getPhone();
             markPage = markRepository.findAllByCreatedByAndActiveTrue(createdBy, pageRequest);
+        } else if (customUserDetails.getRole().equals(Role.ROLE_SUPER_ADMIN.name())) {
+            markPage = markRepository.findAll(pageRequest);
         } else {
             Student student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Student not found")

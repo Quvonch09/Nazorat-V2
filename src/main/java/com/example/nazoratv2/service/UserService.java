@@ -62,10 +62,10 @@ public class UserService {
             if (targetId.equals(currentUser.getId())) {
                 targetUser = currentUser;
             } else {
-                if (!currentUser.getRole().name().equals("ROLE_ADMIN") &&
-                        !currentUser.getRole().name().equals("ROLE_SUPER_ADMIN")) {
-                    return ApiResponse.error("Siz boshqa userni update qila olmaysiz!");
-                }
+//                if (!currentUser.getRole().name().equals("ROLE_ADMIN") &&
+//                        !currentUser.getRole().name().equals("ROLE_SUPER_ADMIN")) {
+//                    return ApiResponse.error("Siz boshqa userni update qila olmaysiz!");
+//                }
                 targetUser = userRepository.findById(targetId)
                         .orElseThrow(() -> new DataNotFoundException("User topilmadi"));
             }
