@@ -18,6 +18,22 @@ public class MarkMapper {
     }
 
 
+    public ResMark toMarkDTO(Mark mark) {
+        return ResMark.builder()
+                .markId(mark.getId())
+                .studentId(mark.getStudent() != null ? mark.getStudent().getId() : null)
+                .studentName(mark.getStudent() != null ? mark.getStudent().getFullName() : null)
+                .imageUrl(mark.getStudent() != null ? mark.getStudent().getImgUrl() : null)
+                .totalScore(mark.getTotalScore())
+                .activityScore(mark.getActiveScore())
+                .homeworkScore(mark.getHomeworkScore())
+                .markStatus(mark.getStatus() != null ? mark.getStatus().name() : null)
+                .markCategoryStatus(mark.getMarkCategoryStatus() != null ? mark.getMarkCategoryStatus().name() : null)
+                .markDate(mark.getDate())
+                .build();
+    }
+
+
 
     public ResMark toFullDTO(Mark mark) {
         return ResMark.builder()

@@ -15,6 +15,7 @@ public class ResMark {
     private Long markId;
     private Long studentId;
     private String studentName;
+    private String imageUrl;
     private int totalScore;
     private int activityScore;
     private int homeworkScore;
