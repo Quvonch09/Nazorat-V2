@@ -6,6 +6,7 @@ import com.example.nazoratv2.dto.request.ReqMark;
 import com.example.nazoratv2.dto.request.ReqMarkDTO;
 import com.example.nazoratv2.dto.response.ResMark;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Mark;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
@@ -15,6 +16,7 @@ import com.example.nazoratv2.entity.enums.MarkStatus;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.MarkMapper;
+import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.MarkRepository;
 import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
@@ -33,6 +35,7 @@ public class MarkService {
     private final StudentRepository studentRepository;
     private final MarkMapper markMapper;
     private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
 
 
     @TrackAction(
@@ -129,12 +132,17 @@ public class MarkService {
 
 
 
-    public ApiResponse<ResPageable> getAllMarkForAdmin(String keyword, int page, int size){
-        Page<Mark> markPage = markRepository.findAllMark(keyword, PageRequest.of(page, size));
+    public ApiResponse<ResPageable> getAllMarkForAdmin(String keyword, Long groupId, int page, int size){
+
+        Page<Mark> markPage = markRepository.findAllMark(keyword, groupId, PageRequest.of(page, size));
 
         isFoundMark(markPage.getTotalElements());
 
-        List<ResMark> marks = markPage.getContent().stream().map(markMapper::toDTO).toList();
+        List<ResMark> marks = markPage.getContent()
+                .stream()
+                .map(markMapper::toMarkDTO)
+                .toList();
+
         ResPageable resPageable = ResPageable.builder()
                 .page(page)
                 .size(size)
@@ -142,6 +150,7 @@ public class MarkService {
                 .totalPage(markPage.getTotalPages())
                 .body(marks)
                 .build();
+
         return ApiResponse.success(resPageable, "Success");
     }
 

@@ -251,19 +251,19 @@ public class UserService {
 
 
 
-    // 6 kun: Dushanba..Shanba
-    private DateRange weeklyRange(LocalDate anyDay) {
-        LocalDate start = anyDay.with(java.time.DayOfWeek.MONDAY);
-        LocalDate end = start.plusDays(5);
-        return new DateRange(start, end);
-    }
-
-    // Oylik: 1-kun..oxirgi-kun
-    private DateRange monthlyRange(LocalDate anyDay) {
-        LocalDate start = anyDay.withDayOfMonth(1);
-        LocalDate end = anyDay.withDayOfMonth(anyDay.lengthOfMonth());
-        return new DateRange(start, end);
-    }
+//    // 6 kun: Dushanba..Shanba
+//    private DateRange weeklyRange(LocalDate anyDay) {
+//        LocalDate start = anyDay.with(java.time.DayOfWeek.MONDAY);
+//        LocalDate end = start.plusDays(5);
+//        return new DateRange(start, end);
+//    }
+//
+//    // Oylik: 1-kun..oxirgi-kun
+//    private DateRange monthlyRange(LocalDate anyDay) {
+//        LocalDate start = anyDay.withDayOfMonth(1);
+//        LocalDate end = anyDay.withDayOfMonth(anyDay.lengthOfMonth());
+//        return new DateRange(start, end);
+//    }
 
 
     public ApiResponse<List<WeekAttendanceDTO>> getAttendance(CustomUserDetails cud,

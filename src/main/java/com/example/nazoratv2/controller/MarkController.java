@@ -48,12 +48,13 @@ public class MarkController {
     }
 
 
-    @GetMapping
+    @GetMapping("/{groupId}")
     @Operation(summary = "Faqat admin uchun barcha marklarni kurish")
     public ResponseEntity<ApiResponse<ResPageable>> getForAdmin(@RequestParam(required = false) String keyword,
+                                                                @PathVariable Long groupId,
                                                                 @RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(markService.getAllMarkForAdmin(keyword, page, size));
+        return ResponseEntity.ok(markService.getAllMarkForAdmin(keyword,groupId, page, size));
     }
 
 

@@ -10,6 +10,6 @@ import lombok.*;
 public class TopStudentDto {
     private Long studentId;
     private String studentName;
-    private Integer percent;
+    private Integer totalScore;
     private String imageUrl;
 }
