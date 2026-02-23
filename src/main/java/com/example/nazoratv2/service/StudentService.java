@@ -171,15 +171,10 @@ public class StudentService {
 
         List<TopStudentDto> topStudents = rows.stream()
                 .map(r -> {
-                    final int MAX_TOTAL = 30;
-
-                    Number avg = (Number) r[2];              // avg(totalScore)
-                    int percent = (int) Math.round(avg.doubleValue() * 100.0 / MAX_TOTAL);
-
                     return TopStudentDto.builder()
                             .studentId((Long) r[0])
                             .studentName((String) r[1])
-                            .percent(percent)
+                            .totalScore(((Number) r[2]).intValue())
                             .imageUrl((String) r[3])
                             .build();
                 })

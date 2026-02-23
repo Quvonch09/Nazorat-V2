@@ -12,13 +12,19 @@ import java.util.List;
 
 public interface MarkRepository extends JpaRepository<Mark, Long> {
 
-    @Query(value = """
-    select m.* from mark m join student s on s.id = m.student_id join groups g on g.id = s.group_id where
-    (:keyword IS NULL OR LOWER(g.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) and
-    (:keyword IS NULL OR LOWER(s.full_name) LIKE LOWER(CONCAT('%', :keyword, '%'))) and m.active = true and
-    (:keyword IS NULL OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :keyword, '%'))) order by m.created_at desc
-    """, nativeQuery = true)
-    Page<Mark> findAllMark(@Param("keyword") String keyword, Pageable pageable);
+    @Query("""
+select m from Mark m
+where m.active = true
+  and (:groupId is null or m.student.group.id = :groupId)
+  and (
+       :keyword is null or :keyword = '' or
+       lower(m.student.fullName) like lower(concat('%', :keyword, '%'))
+  )
+order by m.date desc, m.id desc
+""")
+    Page<Mark> findAllMark(@Param("keyword") String keyword,
+                           @Param("groupId") Long groupId,
+                           Pageable pageable);
 
 
     Page<Mark> findAllByCreatedByAndActiveTrue(String createdBy, Pageable pageable);
@@ -31,26 +37,25 @@ public interface MarkRepository extends JpaRepository<Mark, Long> {
 
 
     @Query("""
-   select s.id, s.fullName, avg(m.totalScore), s.imgUrl
-   from Mark m
-   join m.student s
-   where m.active = true
-   group by s.id, s.fullName, s.imgUrl
-   order by avg(m.totalScore) desc
+select m.student.id, m.student.fullName,
+       sum(coalesce(m.totalScore, 0)),
+       m.student.imgUrl
+from Mark m
+where m.active = true
+group by m.student.id, m.student.fullName, m.student.imgUrl
+order by sum(coalesce(m.totalScore, 0)) desc, m.student.fullName asc
 """)
     List<Object[]> topAllStudentsByAvg(Pageable pageable);
 
-
     @Query("""
-    select s.id, s.fullName,
-           avg(m.totalScore),
-           s.imgUrl
-    from Mark m
-    join m.student s
-    join s.group g
-    where g.id in :groupIds
-    group by s.id, s.fullName, s.imgUrl
-    order by avg(m.totalScore) desc
+select m.student.id, m.student.fullName,
+       sum(coalesce(m.totalScore, 0)),
+       m.student.imgUrl
+from Mark m
+where m.active = true
+  and m.student.group.id in :groupIds
+group by m.student.id, m.student.fullName, m.student.imgUrl
+order by sum(coalesce(m.totalScore, 0)) desc, m.student.fullName asc
 """)
     List<Object[]> topStudentsByAvgForGroups(@Param("groupIds") List<Long> groupIds, Pageable pageable);
 
