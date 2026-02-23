@@ -280,7 +280,7 @@ public class AuthService {
                 .fullName(req.getFullName())
                 .parent(parent)
                 .phone(req.getPhone())
-                .password(passwordEncoder.encode(req.getPassword()))
+                .password(passwordEncoder.encode(req.getPhone().substring(8,12)))
                 .group(group)
                 .imgUrl(req.getImgUrl())
                 .build();
