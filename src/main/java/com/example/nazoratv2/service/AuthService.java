@@ -1,11 +1,14 @@
 package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.configuration.TrackAction;
+import com.example.nazoratv2.dto.TelegramLoginResult;
 import com.example.nazoratv2.dto.request.*;
 import com.example.nazoratv2.entity.enums.ActionType;
+import com.example.nazoratv2.telegram.TelegramUserExtractor;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.nazoratv2.dto.ApiResponse;
@@ -31,6 +34,9 @@ public class AuthService {
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
     private final NotificationService notificationService;
+
+    @Value("${telegram.bot.token}")
+    String botToken;
 
     public ApiResponse<String> login(String phone, String password) {
         Optional<User> optionalUser = userRepository.findByPhoneAndActiveTrue(phone);
@@ -83,6 +89,33 @@ public class AuthService {
         }
 
         return ApiResponse.error("User topilmadi");
+    }
+
+    public TelegramLoginResult login(String initData) {
+        if (!com.example.nazoratv2.security.telegram.TelegramInitDataVerifier.verify(initData, botToken)) {
+            throw new RuntimeException("Telegram initData verify failed");
+        }
+
+        long telegramId = TelegramUserExtractor.extractTelegramId(initData);
+
+        // 1) User dan qidiramiz
+        User user = userRepository.findByTelegramId(telegramId).orElse(null);
+        if (user != null) {
+            CustomUserDetails details = CustomUserDetails.fromUser(user);
+            String token = jwtService.generateTokenWithTelegram(details); // pastda moslab beraman
+            return new TelegramLoginResult(token, details.getRole(), details.getFullName());
+        }
+
+        // 2) Student dan qidiramiz
+        Student student = studentRepository.findByTelegramId(telegramId).orElse(null);
+        if (student != null) {
+            CustomUserDetails details = CustomUserDetails.fromStudent(student);
+            String token = jwtService.generateTokenWithTelegram(details);
+            return new TelegramLoginResult(token, details.getRole(), details.getFullName());
+        }
+
+        // Topilmasa: demak hali bog‘lanmagan
+        throw new RuntimeException("Bu Telegram akkaunt hali tizimga bog'lanmagan");
     }
 
 
@@ -214,6 +247,46 @@ public class AuthService {
 
         return ApiResponse.error("User already exists");
 
+    }
+
+
+    public ApiResponse<String> registerFromTelegram(ReqStudentBot req) {
+
+        // 0) TelegramId allaqachon bog'langan bo'lsa
+        if (userRepository.existsByTelegramId(req.getParentTelegramId())) {
+            return ApiResponse.error("Bu Telegram akkaunt allaqachon bog'langan");
+        }
+
+        boolean parentExists = userRepository.existsByPhoneAndActiveTrue(req.getParentPhone());
+        if (parentExists) return ApiResponse.error("User already exists");
+
+        boolean studentExists = studentRepository.existsByPhone(req.getPhone());
+        if (studentExists) return ApiResponse.error("Student already exists");
+
+        User parent = User.builder()
+                .fullName(req.getParentName())
+                .role(Role.ROLE_PARENT)
+                .phone(req.getParentPhone())
+                .telegramId(req.getParentTelegramId()) // ✅ muhim
+                .password(passwordEncoder.encode(req.getParentPhone().substring(8,12)))
+                .build();
+        userRepository.save(parent);
+
+        Group group = groupRepository.findById(req.getGroupId()).orElseThrow(
+                () -> new DataNotFoundException("Group not found")
+        );
+
+        Student student = Student.builder()
+                .fullName(req.getFullName())
+                .parent(parent)
+                .phone(req.getPhone())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .group(group)
+                .imgUrl(req.getImgUrl())
+                .build();
+        studentRepository.save(student);
+
+        return ApiResponse.success(null, "Successfully registered user");
     }
 
 

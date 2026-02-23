@@ -24,6 +24,8 @@ public class Student extends BaseEntity {
 
     private String imgUrl;
 
+    private long telegramId;
+
     private int coin;
 
     @ManyToOne

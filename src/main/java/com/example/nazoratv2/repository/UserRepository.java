@@ -35,6 +35,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     List<User> findAllByRole(Role role);
 
+    Optional<User> findByTelegramId(Long telegramId);
+    boolean existsByTelegramId(Long telegramId);
+
     long countUserByActiveTrueAndRole(Role role);
 
     Optional<User> findByPhone(String phone);

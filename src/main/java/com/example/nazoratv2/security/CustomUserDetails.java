@@ -16,6 +16,7 @@ public class CustomUserDetails implements UserDetails {
     private final Student student;
 
     private final String fullName;
+    private final long telegramId;
     private final String phone;
     private final String password;
     private final String role;
@@ -25,6 +26,7 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(User user) {
         this.user = user;
         this.student = null;
+        this.telegramId = user.getTelegramId();
         this.fullName = user.getFullName();
         this.phone = user.getPhone();
         this.password = user.getPassword();
@@ -37,6 +39,7 @@ public class CustomUserDetails implements UserDetails {
         this.user = null;
         this.student = student;
         this.fullName = student.getFullName();
+        this.telegramId = student.getTelegramId();
         this.phone = student.getPhone();
         this.password = student.getPassword();
         this.role = "ROLE_STUDENT";

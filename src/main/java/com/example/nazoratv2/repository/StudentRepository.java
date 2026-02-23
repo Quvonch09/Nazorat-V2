@@ -32,6 +32,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     """, nativeQuery = true)
     List<Student> findAllByTeacher(Long teacherId);
 
+    Optional<Student> findByTelegramId(long telegramId);
+
     List<Student> findAllByParent_IdAndActiveTrue(Long parent_id);
 
     List<Student> findAllByActiveTrue();
