@@ -31,7 +31,8 @@ public class User extends BaseEntity implements UserDetails {
     private Role role;
     private String imageUrl;
 
-    private long telegramId;
+    private Long telegramId;
+    private String telegramUsername;
 
 
     @Override

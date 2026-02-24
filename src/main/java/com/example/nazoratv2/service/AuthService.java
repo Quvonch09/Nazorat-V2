@@ -4,7 +4,6 @@ import com.example.nazoratv2.configuration.TrackAction;
 import com.example.nazoratv2.dto.TelegramLoginResult;
 import com.example.nazoratv2.dto.request.*;
 import com.example.nazoratv2.entity.enums.ActionType;
-import com.example.nazoratv2.telegram.TelegramUserExtractor;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.security.JwtService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -91,37 +91,6 @@ public class AuthService {
         return ApiResponse.error("User topilmadi");
     }
 
-    public TelegramLoginResult login(String initData) {
-        if (!com.example.nazoratv2.security.telegram.TelegramInitDataVerifier.verify(initData, botToken)) {
-            throw new RuntimeException("Telegram initData verify failed");
-        }
-
-        long telegramId = TelegramUserExtractor.extractTelegramId(initData);
-
-        // 1) User dan qidiramiz
-        User user = userRepository.findByTelegramId(telegramId).orElse(null);
-        if (user != null) {
-            CustomUserDetails details = CustomUserDetails.fromUser(user);
-            String token = jwtService.generateTokenWithTelegram(details); // pastda moslab beraman
-            return new TelegramLoginResult(token, details.getRole(), details.getFullName());
-        }
-
-        // 2) Student dan qidiramiz
-        Student student = studentRepository.findByTelegramId(telegramId).orElse(null);
-        if (student != null) {
-            CustomUserDetails details = CustomUserDetails.fromStudent(student);
-            String token = jwtService.generateTokenWithTelegram(details);
-            return new TelegramLoginResult(token, details.getRole(), details.getFullName());
-        }
-
-        // Topilmasa: demak hali bog‘lanmagan
-        throw new RuntimeException("Bu Telegram akkaunt hali tizimga bog'lanmagan");
-    }
-
-
-
-
-
 
     public ApiResponse<String> saveUser(AuthRegister authRegister, Role role){
 
@@ -145,8 +114,6 @@ public class AuthService {
             type = ActionType.STUDENT_CREATED,
             description = "Student yaratildi"
     )
-
-
     public ApiResponse<String> saveStudent(ReqStudent reqStudent){
 
         boolean b = studentRepository.existsByPhone(reqStudent.getPhone());
@@ -252,43 +219,133 @@ public class AuthService {
 
     public ApiResponse<String> registerFromTelegram(ReqStudentBot req) {
 
-        // 0) TelegramId allaqachon bog'langan bo'lsa
-        if (userRepository.existsByTelegramId(req.getParentTelegramId())) {
-            return ApiResponse.error("Bu Telegram akkaunt allaqachon bog'langan");
+        // student tgId bog'langanmi
+        if (req.getStudentTelegramId() != null &&
+                studentRepository.existsByTelegramId(req.getStudentTelegramId())) {
+            return ApiResponse.error("Bu Telegram akkaunt allaqachon studentga bog'langan");
         }
 
-        boolean parentExists = userRepository.existsByPhoneAndActiveTrue(req.getParentPhone());
-        if (parentExists) return ApiResponse.error("User already exists");
-
-        boolean studentExists = studentRepository.existsByPhone(req.getPhone());
-        if (studentExists) return ApiResponse.error("Student already exists");
-
-        User parent = User.builder()
-                .fullName(req.getParentName())
-                .role(Role.ROLE_PARENT)
-                .phone(req.getParentPhone())
-                .telegramId(req.getParentTelegramId()) // ✅ muhim
-                .password(passwordEncoder.encode(req.getParentPhone().substring(8,12)))
-                .build();
-        userRepository.save(parent);
+        if (studentRepository.existsByPhone(req.getPhone())) {
+            return ApiResponse.error("Student already exists");
+        }
 
         Group group = groupRepository.findById(req.getGroupId()).orElseThrow(
                 () -> new DataNotFoundException("Group not found")
         );
 
+        User parent = null;
+
+        // 1) username orqali qidiramiz
+        if (req.getParentUsername() != null && !req.getParentUsername().isBlank()) {
+            parent = userRepository.findByTelegramUsername(req.getParentUsername()).orElse(null);
+        }
+
+        // 2) topilmasa phone orqali qidiramiz
+        if (parent == null && req.getParentPhone() != null && !req.getParentPhone().isBlank()) {
+            String p = normalizePhone(req.getParentPhone());
+            parent = userRepository.findByPhoneAndActiveTrue(p).orElse(null);
+            req.setParentPhone(p);
+        }
+
+        // 3) parent topilmasa -> yaratamiz (phone majburiy)
+        if (parent == null) {
+            if (req.getParentPhone() == null || !req.getParentPhone().matches("^998\\d{9}$")) {
+                return ApiResponse.error("Parent phone required. Parent contact must be phone number (998...)");
+            }
+            if (req.getParentName() == null || req.getParentName().isBlank()) {
+                return ApiResponse.error("Parent name required");
+            }
+
+            // phone unique bo'lsin
+            if (userRepository.existsByPhoneAndActiveTrue(req.getParentPhone())) {
+                return ApiResponse.error("Parent phone already exists");
+            }
+
+            parent = User.builder()
+                    .fullName(req.getParentName())
+                    .role(Role.ROLE_PARENT)
+                    .phone(req.getParentPhone())
+                    .telegramUsername(req.getParentUsername()) // ✅ username saqlanadi
+                    .telegramId(null) // parent keyin kirib bog'laydi
+                    .password(passwordEncoder.encode(last4(req.getParentPhone())))
+                    .build();
+
+            userRepository.save(parent);
+        }
+
+        // 4) student yaratamiz
         Student student = Student.builder()
                 .fullName(req.getFullName())
-                .parent(parent)
                 .phone(req.getPhone())
-                .password(passwordEncoder.encode(req.getPhone().substring(8,12)))
+                .telegramId(req.getStudentTelegramId())
+                .password(passwordEncoder.encode(last4(req.getPhone())))
                 .group(group)
+                .parent(parent)
                 .imgUrl(req.getImgUrl())
                 .build();
+
         studentRepository.save(student);
 
-        return ApiResponse.success(null, "Successfully registered user");
+        return ApiResponse.success(null, "Successfully registered student");
     }
 
+    private String normalizePhone(String s) {
+        if (s == null) return null;
+        return s.replace("+", "").replace(" ", "").trim();
+    }
+
+    private String last4(String phone) {
+        return phone.substring(phone.length() - 4);
+    }
+
+    @Transactional
+    public ApiResponse<String> linkParentTelegram(String phone,
+                                                  Long telegramId,
+                                                  String telegramUsername) {
+
+        if (phone == null || phone.isBlank()) {
+            return ApiResponse.error("Telefon raqam kiritilmadi");
+        }
+
+        // 1️⃣ Parentni topamiz
+        Optional<User> optionalParent =
+                userRepository.findByPhoneAndRole(
+                        phone,
+                        Role.ROLE_PARENT
+                );
+
+        if (optionalParent.isEmpty()) {
+            return ApiResponse.error("Parent topilmadi");
+        }
+
+        User parent = optionalParent.get();
+
+        // 2️⃣ Agar boshqa telegramga allaqachon bog'langan bo'lsa
+        if (parent.getTelegramId() != 0 &&
+                !parent.getTelegramId().equals(telegramId)) {
+
+            return ApiResponse.error("Bu parent boshqa Telegram akkauntga bog'langan");
+        }
+
+        // 3️⃣ TelegramId boshqa userda ishlatilmaganini tekshiramiz
+        boolean telegramAlreadyUsed =
+                userRepository.existsByTelegramIdAndIdNot(telegramId, parent.getId());
+
+        if (telegramAlreadyUsed) {
+            return ApiResponse.error("Bu Telegram akkaunt boshqa foydalanuvchiga bog'langan");
+        }
+
+        // 4️⃣ Parentga telegramni biriktiramiz
+        parent.setTelegramId(telegramId);
+
+        if (telegramUsername != null && !telegramUsername.isBlank()) {
+            parent.setTelegramUsername(telegramUsername);
+        }
+
+        userRepository.save(parent);
+
+        return ApiResponse.success(null, "Telegram muvaffaqiyatli bog'landi");
+    }
 
     public ApiResponse<String> validate(Token token) {
         if (token.getToken() == null || token.getToken().trim().isEmpty()) {
@@ -324,6 +381,28 @@ public class AuthService {
             // Shu yerda token parsingda xatolik bo‘lsa
             return ApiResponse.error("Invalid token");
         }
+    }
+
+    public boolean parentExist(String parentContact) {
+
+        if (parentContact == null || parentContact.isBlank()) {
+            return false;
+        }
+
+        String contact = parentContact.trim();
+
+        // Username (@abc)
+        if (contact.startsWith("@")) {
+            String username = contact.substring(1);
+            return userRepository.existsByTelegramUsername(username);
+        }
+
+        // Phone (998...)
+        if (contact.matches("^998\\d{9}$")) {
+            return userRepository.existsByPhoneAndActiveTrue(contact);
+        }
+
+        return false;
     }
 
 }
