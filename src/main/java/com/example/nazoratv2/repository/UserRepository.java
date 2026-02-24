@@ -20,6 +20,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByIdAndActiveTrue(Long id);
     boolean existsByPhone(String phone);
     boolean existsByPhoneAndActiveTrue(String phone);
+    Optional<User> findByTelegramUsername(String telegramUsername);
 
     @Query("""
     select u from User u
@@ -35,8 +36,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     List<User> findAllByRole(Role role);
 
-    Optional<User> findByTelegramId(Long telegramId);
-    boolean existsByTelegramId(Long telegramId);
+    boolean existsByTelegramIdAndIdNot(Long telegramId, Long id);
+    boolean existsByTelegramUsername(String telegramUsername);
 
     long countUserByActiveTrueAndRole(Role role);
 

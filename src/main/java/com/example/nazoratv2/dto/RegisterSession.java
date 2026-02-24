@@ -5,15 +5,18 @@ import lombok.Data;
 
 @Data
 public class RegisterSession {
-    private Step step = Step.PARENT_NAME;
+    private Step step = Step.STUDENT_PHONE;
 
-    private String parentName;
-    private String parentPhone;
-
+    // student
     private String studentName;
     private String studentPhone;
-
+    private Long studentTelegramId;
     private Long groupId;
-    private String studentPassword;
-}
 
+    // parent
+    private String parentUsername; // @abc bo'lsa shu
+    private String parentPhone;    // 998...
+    private String parentName;     // parent topilmasa yaratish uchun
+    private Long parentId; // parent flow uchun
+    private Long pickedStudentId; // parent tanlagan bola
+}

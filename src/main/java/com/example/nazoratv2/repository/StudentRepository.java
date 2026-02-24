@@ -38,6 +38,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     List<Student> findAllByActiveTrue();
     long countByActiveTrue();
+    boolean existsByTelegramId(Long telegramId);
 //
 //    @Query(value = """
 //    select s.* from student s join groups g on g.id = s.group_id join users u on u.id = g.teacher_id where
