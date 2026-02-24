@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     select u from User u
     where (:name is null or :name = '' or lower(u.fullName) like lower(concat('%', :name, '%')))
       and (:phone is null or :phone = '' or u.phone like concat('%', :phone, '%'))
-      and (:role is null or u.role = :role) and u.role <> 'ROLE_SUPER_ADMIN'
+      and (:role is null or u.role = :role) and u.role <> 'ROLE_SUPER_ADMIN' and u.active = true
 """)
     Page<User> searchUser(@Param("name") String name,
                           @Param("phone") String phone,
