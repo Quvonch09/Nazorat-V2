@@ -8,6 +8,7 @@ import com.example.nazoratv2.entity.Mark;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.*;
+import com.example.nazoratv2.exception.BadRequestException;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.GroupMapper;
 import com.example.nazoratv2.mapper.StudentMapper;
@@ -99,14 +100,14 @@ public class UserService {
             if (size == 0) {
                 user.setActive(false);
             } else {
-                return ApiResponse.error("Cannot delete teacher");
+                throw new BadRequestException("Cannot delete teacher");
             }
         } else if (user.getRole().name().equals("ROLE_PARENT")) {
             int size = studentRepository.findAllByParent_Id(user.getId()).size();
             if (size == 0) {
                 user.setActive(false);
             } else {
-                return ApiResponse.error("Cannot delete parent");
+                throw new BadRequestException("Cannot delete parent");
             }
         } else {
             user.setActive(false);

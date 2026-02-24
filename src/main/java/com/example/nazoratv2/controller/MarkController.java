@@ -48,7 +48,7 @@ public class MarkController {
     }
 
 
-    @GetMapping("/{groupId}")
+    @GetMapping("/byGroup/{groupId}")
     @Operation(summary = "Faqat admin uchun barcha marklarni kurish")
     public ResponseEntity<ApiResponse<ResPageable>> getForAdmin(@RequestParam(required = false) String keyword,
                                                                 @PathVariable Long groupId,
