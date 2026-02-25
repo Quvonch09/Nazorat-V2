@@ -353,12 +353,11 @@ public class NazoratBot extends TelegramLongPollingBot {
         }
 
         sendText(chatId,
-                "✅ Ro'yxatdan o'tdingiz!\n\n" +
-                        "Login: " + s.getStudentPhone() + "\n" +
-                        "Password: " + last4(s.getStudentPhone()) + "\n\n" +
-                        "⚠️ Parol — telefonning oxirgi 4 raqami.");
+                "✅ Arizangiz qabul qilindi!\n" +
+                        "⏳ Admin tasdiqlashini kuting.\n\n" +
+                        "Tasdiqlangandan keyin login/parol va Mini App shu botdan yuboriladi.");
 
-        sendMiniAppButton(chatId);
+//        sendMiniAppButton(chatId);
         sessions.remove(studentTgId);
     }
 

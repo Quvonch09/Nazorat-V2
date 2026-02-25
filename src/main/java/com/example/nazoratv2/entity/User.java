@@ -4,6 +4,7 @@ import com.example.nazoratv2.entity.base.BaseEntity;
 import com.example.nazoratv2.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +18,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Table(name = "users")
 @Where(clause = "active = true")
 public class User extends BaseEntity implements UserDetails {

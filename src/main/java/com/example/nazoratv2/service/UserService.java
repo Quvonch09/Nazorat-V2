@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -39,6 +40,8 @@ public class UserService {
     private final StudentMapper studentMapper;
     private final MarkRepository markRepository;
     private final AttendanceRepository attendanceRepository;
+    private final AuthService authService;
+    private final TelegramNotifyService telegramNotifyService;
 
     public ApiResponse<?> getProfile(CustomUserDetails currentUser) {
         if (currentUser.getRole().equals("ROLE_STUDENT")) {
@@ -361,4 +364,48 @@ public class UserService {
         }
     }
 
+
+
+    @Transactional
+    public ApiResponse<String> approveStudent(Long studentId) {
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found"));
+
+        student.setActive(true);
+        studentRepository.save(student);
+
+        User parent = student.getParent(); // null bo'lmasligi kerak
+        parent.setActive(true);
+        userRepository.save(parent);
+
+        // ✅ login/parol tayyorlash
+        String studentPhone = student.getPhone();
+        String studentPass  = authService.last4(studentPhone);
+
+        String parentPhone = parent.getPhone();
+        String parentPass  = authService.last4(parentPhone);
+
+        // ✅ STUDENTga yuboramiz
+        telegramNotifyService.sendText(student.getTelegramId(),
+                "✅ Admin tasdiqladi!\n\n" +
+                        "🧑‍🎓 Student login:\n" +
+                        "Login: " + studentPhone + "\n" +
+                        "Password: " + studentPass + "\n\n" +
+                        "⚠️ Parol — telefonning oxirgi 4 raqami.");
+
+        telegramNotifyService.sendMiniApp(student.getTelegramId());
+
+        // ✅ PARENTga yuboramiz (agar parent telegram bog'langan bo'lsa)
+        telegramNotifyService.sendText(parent.getTelegramId(),
+                "✅ Farzandingiz tasdiqlandi: " + student.getFullName() + "\n\n" +
+                        "👨‍👩‍👧 Parent login:\n" +
+                        "Login: " + parentPhone + "\n" +
+                        "Password: " + parentPass + "\n\n" +
+                        "⚠️ Parol — telefonning oxirgi 4 raqami.");
+
+        telegramNotifyService.sendMiniApp(parent.getTelegramId());
+
+        return ApiResponse.success(null, "Approved and notified");
+    }
 }

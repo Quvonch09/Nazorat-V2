@@ -4,6 +4,7 @@ import com.example.nazoratv2.entity.base.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
 
@@ -11,9 +12,8 @@ import org.hibernate.annotations.Where;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
-@Where(clause = "active = true")
 public class Student extends BaseEntity {
 
     private String fullName;
