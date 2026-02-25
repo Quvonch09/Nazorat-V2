@@ -57,4 +57,9 @@ public class UserController {
     }
 
 
+    @PutMapping("/activateStudent/{studentId}")
+    public ResponseEntity<ApiResponse<String>> activateStudent(@PathVariable Long studentId) {
+        return ResponseEntity.ok(userService.approveStudent(studentId));
+    }
+
 }

@@ -63,6 +63,12 @@ public class StudentService {
         return ApiResponse.success(list, "Success");
     }
 
+    public ApiResponse<List<ResStudent>> getDeActiveStudentList(){
+        List<ResStudent> list = studentRepository.
+                findAllByTelegramIdIsNotNullAndActiveTrue().stream().map(studentMapper::toStudentDTO).toList();
+        return ApiResponse.success(list, "Success");
+    }
+
     public ApiResponse<ResStudent> getById(Long id) {
 
         Student student = studentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Student not found"));

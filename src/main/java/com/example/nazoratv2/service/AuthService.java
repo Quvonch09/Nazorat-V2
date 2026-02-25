@@ -104,6 +104,9 @@ public class AuthService {
                 .fullName(authRegister.getFullName())
                 .password(passwordEncoder.encode(authRegister.getPassword()))
                 .role(role)
+                .telegramId(0L)
+                .telegramUsername(null)
+                .active(true)
                 .build();
         userRepository.save(teacher);
         return ApiResponse.success(null, "Successfully added user");
@@ -190,6 +193,9 @@ public class AuthService {
                         .role(Role.ROLE_PARENT)
                         .phone(reqStudent.getParentPhone())
                         .password(passwordEncoder.encode(reqStudent.getParentPhone().substring(8,12)))
+                        .telegramUsername(null)
+                        .telegramId(0L)
+                        .active(true)
                         .build();
                 userRepository.save(parent);
 
@@ -204,6 +210,7 @@ public class AuthService {
                         .password(passwordEncoder.encode(reqStudent.getPassword()))
                         .group(group)
                         .imgUrl(reqStudent.getImgUrl())
+                        .active(true)
                         .build();
                 studentRepository.save(student);
                 return ApiResponse.success(null, "Successfully registered user");
@@ -268,6 +275,7 @@ public class AuthService {
                     .telegramUsername(req.getParentUsername()) // ✅ username saqlanadi
                     .telegramId(null) // parent keyin kirib bog'laydi
                     .password(passwordEncoder.encode(last4(req.getParentPhone())))
+                    .active(false)
                     .build();
 
             userRepository.save(parent);
@@ -282,6 +290,7 @@ public class AuthService {
                 .group(group)
                 .parent(parent)
                 .imgUrl(req.getImgUrl())
+                .active(false)
                 .build();
 
         studentRepository.save(student);
@@ -294,7 +303,7 @@ public class AuthService {
         return s.replace("+", "").replace(" ", "").trim();
     }
 
-    private String last4(String phone) {
+    public String last4(String phone) {
         return phone.substring(phone.length() - 4);
     }
 
@@ -381,28 +390,6 @@ public class AuthService {
             // Shu yerda token parsingda xatolik bo‘lsa
             return ApiResponse.error("Invalid token");
         }
-    }
-
-    public boolean parentExist(String parentContact) {
-
-        if (parentContact == null || parentContact.isBlank()) {
-            return false;
-        }
-
-        String contact = parentContact.trim();
-
-        // Username (@abc)
-        if (contact.startsWith("@")) {
-            String username = contact.substring(1);
-            return userRepository.existsByTelegramUsername(username);
-        }
-
-        // Phone (998...)
-        if (contact.matches("^998\\d{9}$")) {
-            return userRepository.existsByPhoneAndActiveTrue(contact);
-        }
-
-        return false;
     }
 
 }

@@ -73,4 +73,10 @@ public class StudentController {
     public ResponseEntity<ApiResponse<List<ResStudent>>> getList(){
         return ResponseEntity.ok(studentService.getStudentList());
     }
+
+
+    @GetMapping("/inactive-student")
+    public ResponseEntity<ApiResponse<List<ResStudent>>> getInactiveList(){
+        return ResponseEntity.ok(studentService.getDeActiveStudentList());
+    }
 }

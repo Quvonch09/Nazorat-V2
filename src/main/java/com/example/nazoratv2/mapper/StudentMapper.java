@@ -19,11 +19,11 @@ public class StudentMapper {
                 .fulName(student.getFullName())
                 .imgUrl(student.getImgUrl())
                 .phoneNumber(student.getPhone())
-                .groupId(student.getGroup().getId())
-                .groupName(student.getGroup().getName())
-                .parentId(student.getParent().getId())
-                .parentName(student.getParent().getFullName())
-                .parentPhone(student.getParent().getPhone())
+                .groupId(student.getGroup() != null ? student.getGroup().getId() : null)
+                .groupName(student.getGroup() != null ? student.getGroup().getName() : null)
+                .parentId(student.getParent() != null ? student.getParent().getId() : null)
+                .parentName(student.getParent() != null ? student.getParent().getFullName() : null)
+                .parentPhone(student.getParent() != null ? student.getParent().getPhone() : null)
                 .build();
     }
 
