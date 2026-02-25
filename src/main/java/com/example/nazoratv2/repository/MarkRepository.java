@@ -13,14 +13,16 @@ import java.util.List;
 public interface MarkRepository extends JpaRepository<Mark, Long> {
 
     @Query("""
-select m from Mark m
-where m.active = true
-  and (:groupId is null or m.student.group.id = :groupId)
-  and (
-       :keyword is null or :keyword = '' or
-       lower(m.student.fullName) like lower(concat('%', :keyword, '%'))
-  )
-order by m.date desc, m.id desc
+    SELECT m
+    FROM Mark m
+    WHERE m.id IN (
+        SELECT MAX(m2.id)
+        FROM Mark m2
+        WHERE (:keyword IS NULL OR :keyword = '' OR LOWER(m2.student.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND (:groupId IS NULL OR m2.student.group.id = :groupId)
+        GROUP BY m2.student.id
+    )
+    ORDER BY m.id DESC
 """)
     Page<Mark> findAllMark(@Param("keyword") String keyword,
                            @Param("groupId") Long groupId,
