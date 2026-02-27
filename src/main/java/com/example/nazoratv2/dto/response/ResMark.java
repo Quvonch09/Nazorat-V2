@@ -1,5 +1,6 @@
 package com.example.nazoratv2.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -21,5 +22,6 @@ public class ResMark {
     private int homeworkScore;
     private String markCategoryStatus;
     private String markStatus;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate markDate;
 }

@@ -174,8 +174,15 @@ public class GroupService {
     }
 
 
-    public ApiResponse<List<ResGroup>> getAllGroup(){
-        List<Group> groups = groupRepository.findAllByActiveTrue();
+    public ApiResponse<List<ResGroup>> getAllGroup(CustomUserDetails userDetails){
+
+        List<Group> groups;
+        if (userDetails.getRole().equals(Role.ROLE_TEACHER.name())){
+            groups = groupRepository.findAllByActiveTrueAndTeacher_Id(userDetails.getUser().getId());
+        } else {
+            groups = groupRepository.findAllByActiveTrue();
+        }
+
         List<ResGroup> list = groups.stream().map(groupMapper::toDtoRes).toList();
         return ApiResponse.success(list, "Success");
     }

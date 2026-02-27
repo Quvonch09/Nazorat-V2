@@ -25,11 +25,11 @@ public class MarkMapper {
                 .studentName(mark.getStudent() != null ? mark.getStudent().getFullName() : null)
                 .imageUrl(mark.getStudent() != null ? mark.getStudent().getImgUrl() : null)
                 .totalScore(mark.getTotalScore())
-                .activityScore(mark.getActiveScore())
-                .homeworkScore(mark.getHomeworkScore())
+                .activityScore(mark.getActiveScore()!= null ? mark.getActiveScore() : null)
+                .homeworkScore(mark.getHomeworkScore() != null ? mark.getHomeworkScore() : null)
                 .markStatus(mark.getStatus() != null ? mark.getStatus().name() : null)
                 .markCategoryStatus(mark.getMarkCategoryStatus() != null ? mark.getMarkCategoryStatus().name() : null)
-                .markDate(mark.getDate())
+                .markDate(mark.getDate() != null ? mark.getDate() : null)
                 .build();
     }
 

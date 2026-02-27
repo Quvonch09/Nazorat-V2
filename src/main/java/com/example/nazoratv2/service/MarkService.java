@@ -50,23 +50,27 @@ public class MarkService {
 
         Mark mark;
         if (reqMark.getMarkStatus().equals(MarkStatus.KUNLIK_BAHO)){
+            int activity = clampScore10(reqMark.getActivityScore(), "activityScore");
+            int homework = clampScore10(reqMark.getHomeworkScore(), "homeworkScore");
+
             int score = (reqMark.getActivityScore()+ reqMark.getHomeworkScore())/2;
             mark = Mark.builder()
                     .student(student)
                     .status(reqMark.getMarkStatus())
                     .homeworkScore(reqMark.getHomeworkScore())
-                    .activeScore(reqMark.getActivityScore())
-                    .totalScore(score)
+                    .activeScore(activity)
+                    .totalScore(homework)
                     .date(reqMark.getDate())
                     .markCategoryStatus(markCategoryStatus(score))
                     .build();
         } else {
+
             mark = Mark.builder()
                     .student(student)
                     .status(reqMark.getMarkStatus())
                     .homeworkScore(null)
                     .activeScore(null)
-                    .totalScore(reqMark.getTotalScore())
+                    .totalScore(clampTotal10(reqMark.getTotalScore()))
                     .date(reqMark.getDate())
                     .markCategoryStatus(markCategoryStatus(reqMark.getTotalScore()))
                     .build();
@@ -160,7 +164,7 @@ public class MarkService {
         Page<Mark> markPage;
         PageRequest pageRequest = PageRequest.of(page, size);
         if (customUserDetails.getRole().equals(Role.ROLE_TEACHER.name())){
-            User teacher = userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
+             userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
                     () -> new DataNotFoundException("Teacher not found")
             );
             String createdBy = customUserDetails.getPhone();
@@ -221,7 +225,7 @@ public class MarkService {
             return MarkCategoryStatus.YASHIL;
         } else if (score > 5) {
             return MarkCategoryStatus.SARIQ;
-        } else if (score <= 4) {
+        } else if (score <= 3) {
             return MarkCategoryStatus.QIZIL;
         } else {
             return MarkCategoryStatus.QIZIL;
@@ -233,6 +237,22 @@ public class MarkService {
         if (totalMark == 0){
             ApiResponse.error("Mark not found");
         }
+    }
+
+    private int clampScore10(Integer score, String field) {
+        if (score == null) throw new IllegalArgumentException(field + " is required");
+        if (score < 0 || score > 5) {
+            throw new IllegalArgumentException(field + " must be between 0 and 10");
+        }
+        return score;
+    }
+
+    private int clampTotal10(Integer total) {
+        if (total == null) throw new IllegalArgumentException("totalScore is required");
+        if (total < 0 || total > 5) {
+            throw new IllegalArgumentException("totalScore must be between 0 and 10");
+        }
+        return total;
     }
 
 }
