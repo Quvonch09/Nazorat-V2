@@ -75,7 +75,10 @@ public class AttendanceService {
         Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(
                 () -> new DataNotFoundException("Attendance not found")
         );
+        Long id = attendance.getGroup().getId();
         attendanceRepository.delete(attendance);
+
+        sendToAll(getAllAttendanceByGroup(id));
         return ApiResponse.success(null, "Success");
     }
 

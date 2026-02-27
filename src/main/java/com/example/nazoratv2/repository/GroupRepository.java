@@ -63,6 +63,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     List<Group> findAllByCategoryIdAndActiveTrue(Long roomId);
 
     List<Group> findAllByActiveTrue();
+    List<Group> findAllByActiveTrueAndTeacher_Id(Long teacherId);
 
     long countAllByActiveTrue();
 

@@ -71,10 +71,11 @@ public class GroupController {
 
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('ADMIN','TEACHER', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_TEACHER', 'ROLE_SUPER_ADMIN')")
     @Operation(summary = "Guruhni hammasini kurish")
-    public ResponseEntity<ApiResponse<List<ResGroup>>> getAllGroup(){
-        return ResponseEntity.ok(groupService.getAllGroup());
+    public ResponseEntity<ApiResponse<List<ResGroup>>> getAllGroup(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return ResponseEntity.ok(groupService.getAllGroup(customUserDetails));
     }
 
 
