@@ -217,7 +217,7 @@ public class MarkService {
 
         List<ResMark> body = markPage.getContent()
                 .stream()
-                .map(markMapper::toDTO)
+                .map(markMapper::toMarkDTO)
                 .toList();
 
         ResPageable res = ResPageable.builder()
