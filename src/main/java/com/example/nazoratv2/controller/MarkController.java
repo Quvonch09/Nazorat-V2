@@ -73,4 +73,16 @@ public class MarkController {
         return ResponseEntity.ok(markService.getOneMark(markId));
     }
 
+
+    @GetMapping("/groups/{groupId}/archive-marks")
+    public ResponseEntity<ApiResponse<ResPageable>> archiveMarks(
+            @AuthenticationPrincipal CustomUserDetails cud,
+            @PathVariable Long groupId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(markService.getGroupByArchiveMarks(cud, groupId, keyword, page, size));
+    }
+
 }

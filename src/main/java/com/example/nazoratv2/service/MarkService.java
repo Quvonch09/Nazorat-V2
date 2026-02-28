@@ -195,6 +195,42 @@ public class MarkService {
 
     }
 
+    public ApiResponse<ResPageable> getGroupByArchiveMarks(CustomUserDetails cud,Long groupId, String keyword, int page, int size){
+        PageRequest pr = PageRequest.of(page, size);
+
+        String createdBy = null;
+
+        if (cud.getRole().equals(Role.ROLE_TEACHER.name())) {
+            userRepository.findByPhoneAndActiveTrue(cud.getPhone())
+                    .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
+            createdBy = cud.getPhone();
+        } else if (!cud.getRole().equals(Role.ROLE_SUPER_ADMIN.name())) {
+            throw new BadRequestException("Ruxsat yo'q");
+        }
+
+        LocalDate today = LocalDate.now();
+
+        Page<Mark> markPage = markRepository.findArchiveMarksByGroup(
+                groupId, today, keyword, createdBy, pr);
+
+        isFoundMark(markPage.getTotalElements());
+
+        List<ResMark> body = markPage.getContent()
+                .stream()
+                .map(markMapper::toDTO)
+                .toList();
+
+        ResPageable res = ResPageable.builder()
+                .page(page)
+                .size(size)
+                .totalElements(markPage.getTotalElements())
+                .totalPage(markPage.getTotalPages())
+                .body(body)
+                .build();
+
+        return ApiResponse.success(res, "Success");
+    }
+
 
 
     public ApiResponse<ResMark> getOneMark(Long markId){
