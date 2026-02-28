@@ -17,5 +17,4 @@ public class ReqMarkDTO {
     private int activityScore;
     private int totalScore;
     private MarkStatus markStatus;
-    private LocalDate date;
 }
