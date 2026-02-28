@@ -14,6 +14,7 @@ import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
 import com.example.nazoratv2.entity.enums.MarkStatus;
 import com.example.nazoratv2.entity.enums.Role;
+import com.example.nazoratv2.exception.BadRequestException;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.MarkMapper;
 import com.example.nazoratv2.repository.GroupRepository;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -44,8 +46,7 @@ public class MarkService {
     )
     public ApiResponse<String> saveMark(ReqMark reqMark){
         Student student = studentRepository.findById(reqMark.getStudentId()).orElseThrow(
-                () -> new DataNotFoundException("Student not found")
-        );
+                () -> new DataNotFoundException("Student not found"));
 
 
         Mark mark;
@@ -53,7 +54,7 @@ public class MarkService {
             int activity = clampScore10(reqMark.getActivityScore(), "activityScore");
             int homework = clampScore10(reqMark.getHomeworkScore(), "homeworkScore");
 
-            int score = (reqMark.getActivityScore()+ reqMark.getHomeworkScore())/2;
+            int score = (activity+ homework)/2;
             mark = Mark.builder()
                     .student(student)
                     .status(reqMark.getMarkStatus())
@@ -85,23 +86,29 @@ public class MarkService {
 
     @TrackAction(
             type = ActionType.MARK_UPDATED,
-            description = "Baho tahrirlandi"
-    )
+            description = "Baho tahrirlandi")
     public ApiResponse<String> updateMark(ReqMarkDTO reqMarkDTO ){
         Mark mark = markRepository.findById(reqMarkDTO.getId()).orElseThrow(
-                () -> new DataNotFoundException("Mark not found")
-        );
+                () -> new DataNotFoundException("Mark not found"));
 
         Student student = studentRepository.findById(reqMarkDTO.getStudentId()).orElseThrow(
-                () -> new DataNotFoundException("Student not found")
-        );
+                () -> new DataNotFoundException("Student not found"));
+
+        LocalDate today = LocalDate.now();
+        if (mark.getDate() != null && mark.getDate().isBefore(today)) {
+            throw new BadRequestException("O'tgan kun bahosini o'zgartirib bo'lmaydi");
+        }
+        Integer oldTotal = mark.getTotalScore();
 
         if (reqMarkDTO.getMarkStatus().equals(MarkStatus.KUNLIK_BAHO)){
-            int score = (reqMarkDTO.getActivityScore()+ reqMarkDTO.getHomeworkScore())/2;
+
+            int activity = clampScore10(reqMarkDTO.getActivityScore(), "activityScore");
+            int homework = clampScore10(reqMarkDTO.getHomeworkScore(), "homeworkScore");
+
+            int score = (activity+ homework)/2;
             mark.setStatus(reqMarkDTO.getMarkStatus());
-            mark.setHomeworkScore(reqMarkDTO.getHomeworkScore());
-            mark.setActiveScore(reqMarkDTO.getActivityScore());
-            mark.setDate(reqMarkDTO.getDate());
+            mark.setHomeworkScore(homework);
+            mark.setActiveScore(activity);
             mark.setTotalScore(score);
             mark.setMarkCategoryStatus(markCategoryStatus(score));
             mark.setStudent(student);
@@ -109,13 +116,11 @@ public class MarkService {
             mark.setStatus(reqMarkDTO.getMarkStatus());
             mark.setActiveScore(null);
             mark.setHomeworkScore(null);
-            mark.setDate(reqMarkDTO.getDate());
-            mark.setTotalScore(reqMarkDTO.getTotalScore());
+            mark.setTotalScore(clampTotal10(reqMarkDTO.getTotalScore()));
             mark.setStudent(student);
             mark.setMarkCategoryStatus(markCategoryStatus(reqMarkDTO.getTotalScore()));
         }
-
-        plusCoin(mark.getTotalScore(), student);
+        applyCoinDiff(oldTotal, mark.getTotalScore(), student);
 
         markRepository.save(mark);
         return ApiResponse.success(null, "Success");
@@ -125,8 +130,7 @@ public class MarkService {
 
     public ApiResponse<String> deleteMark(Long markId){
         Mark mark = markRepository.findById(markId).orElseThrow(
-                () -> new DataNotFoundException("Mark not found")
-        );
+                () -> new DataNotFoundException("Mark not found"));
 
         mark.setActive(false);
         markRepository.save(mark);
@@ -173,13 +177,10 @@ public class MarkService {
             markPage = markRepository.findAll(pageRequest);
         } else {
             Student student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
-                    () -> new DataNotFoundException("Student not found")
-            );
+                    () -> new DataNotFoundException("Student not found"));
 
             markPage = markRepository.findAllByStudentIdAndActiveTrue(student.getId(), pageRequest);
         }
-
-
         isFoundMark(markPage.getTotalElements());
 
         List<ResMark> marks = markPage.getContent().stream().map(markMapper::toDTO).toList();
@@ -208,25 +209,29 @@ public class MarkService {
 
 
     private void plusCoin(int score, Student student){
-        if (score > 7){
-            student.setCoin(student.getCoin() + 3);
-        } else if (score > 5) {
-            student.setCoin(student.getCoin() + 2);
-        } else if (score <= 4) {
-            student.setCoin(student.getCoin() + 1);
+        int add = 0;
+
+        if (score == 5) {
+            add = 3;
+        } else if (score == 4) {
+            add = 2;
+        } else if (score == 3) {
+            add = 1;
         }
-        studentRepository.save(student);
+
+        if (add > 0) {
+            student.setCoin(student.getCoin() + add);
+            studentRepository.save(student);
+        }
     }
 
 
 
     private MarkCategoryStatus markCategoryStatus(int score){
-        if (score > 7){
+        if (score == 5) {
             return MarkCategoryStatus.YASHIL;
-        } else if (score > 5) {
+        } else if (score == 4 || score == 3) {
             return MarkCategoryStatus.SARIQ;
-        } else if (score <= 3) {
-            return MarkCategoryStatus.QIZIL;
         } else {
             return MarkCategoryStatus.QIZIL;
         }
@@ -242,17 +247,29 @@ public class MarkService {
     private int clampScore10(Integer score, String field) {
         if (score == null) throw new IllegalArgumentException(field + " is required");
         if (score < 0 || score > 5) {
-            throw new IllegalArgumentException(field + " must be between 0 and 10");
+            throw new IllegalArgumentException(field + " must be between 0 and 5");
         }
         return score;
     }
 
     private int clampTotal10(Integer total) {
         if (total == null) throw new IllegalArgumentException("totalScore is required");
-        if (total < 0 || total > 5) {
-            throw new IllegalArgumentException("totalScore must be between 0 and 10");
+        if (total < 0 || total > 100) {
+            throw new IllegalArgumentException("totalScore must be between 0 and 5");
         }
         return total;
     }
+
+    private void applyCoinDiff(Integer oldScore, Integer newScore, Student student) {
+        int oldVal = oldScore == null ? 0 : oldScore;
+        int newVal = newScore == null ? 0 : newScore;
+
+        int diff = newVal - oldVal;
+        if (diff != 0) {
+            student.setCoin(student.getCoin() + diff);
+            studentRepository.save(student);
+        }
+    }
+
 
 }

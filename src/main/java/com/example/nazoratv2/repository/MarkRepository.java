@@ -13,6 +13,19 @@ import java.util.List;
 public interface MarkRepository extends JpaRepository<Mark, Long> {
 
     @Query("""
+SELECT m
+FROM Mark m
+WHERE m.id IN (
+    SELECT MAX(m2.id)
+    FROM Mark m2
+    WHERE m2.student.group.teacher.id = :teacherId
+    GROUP BY m2.student.id
+)
+ORDER BY m.id DESC
+""")
+    Page<Mark> findAllByTeacherId(@Param("teacherId") Long teacherId, Pageable pageable);
+
+    @Query("""
     SELECT m
     FROM Mark m
     WHERE m.id IN (
@@ -29,6 +42,17 @@ public interface MarkRepository extends JpaRepository<Mark, Long> {
                            Pageable pageable);
 
 
+    @Query("""
+SELECT m
+FROM Mark m
+WHERE m.id IN (
+    SELECT MAX(m2.id)
+    FROM Mark m2
+    WHERE m2.createdBy = :createdBy AND m2.active = true
+    GROUP BY m2.student.id
+)
+ORDER BY m.id DESC
+""")
     Page<Mark> findAllByCreatedByAndActiveTrue(String createdBy, Pageable pageable);
 
 

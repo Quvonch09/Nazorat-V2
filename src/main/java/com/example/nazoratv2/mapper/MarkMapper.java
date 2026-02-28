@@ -14,6 +14,7 @@ public class MarkMapper {
                 .totalScore(mark.getTotalScore())
                 .studentId(mark.getStudent() != null ? mark.getStudent().getId() : null)
                 .studentName(mark.getStudent() != null ? mark.getStudent().getFullName() : null)
+                .markDate(mark.getDate())
                 .build();
     }
 
@@ -25,8 +26,8 @@ public class MarkMapper {
                 .studentName(mark.getStudent() != null ? mark.getStudent().getFullName() : null)
                 .imageUrl(mark.getStudent() != null ? mark.getStudent().getImgUrl() : null)
                 .totalScore(mark.getTotalScore())
-                .activityScore(mark.getActiveScore()!= null ? mark.getActiveScore() : null)
-                .homeworkScore(mark.getHomeworkScore() != null ? mark.getHomeworkScore() : null)
+                .activityScore(mark.getActiveScore()!= null ? mark.getActiveScore() : 0)
+                .homeworkScore(mark.getHomeworkScore() != null ? mark.getHomeworkScore() : 0)
                 .markStatus(mark.getStatus() != null ? mark.getStatus().name() : null)
                 .markCategoryStatus(mark.getMarkCategoryStatus() != null ? mark.getMarkCategoryStatus().name() : null)
                 .markDate(mark.getDate() != null ? mark.getDate() : null)

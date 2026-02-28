@@ -72,4 +72,5 @@ public class MarkController {
     public ResponseEntity<ApiResponse<ResMark>> getONeMark(@PathVariable Long markId){
         return ResponseEntity.ok(markService.getOneMark(markId));
     }
+
 }

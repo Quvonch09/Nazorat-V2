@@ -12,6 +12,7 @@ import com.example.nazoratv2.entity.enums.ActionType;
 import com.example.nazoratv2.entity.enums.Role;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.AuthService;
+import com.example.nazoratv2.service.MarkService;
 import com.example.nazoratv2.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
+    private final MarkService markService;
     private final AuthService authService;
 
     @GetMapping
@@ -79,4 +81,5 @@ public class StudentController {
     public ResponseEntity<ApiResponse<List<ResStudent>>> getInactiveList(){
         return ResponseEntity.ok(studentService.getDeActiveStudentList());
     }
+
 }
