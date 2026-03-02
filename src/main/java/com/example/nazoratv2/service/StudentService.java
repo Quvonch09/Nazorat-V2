@@ -65,7 +65,7 @@ public class StudentService {
 
     public ApiResponse<List<ResStudent>> getDeActiveStudentList(){
         List<ResStudent> list = studentRepository.
-                findAllByTelegramIdIsNotNullAndActiveTrue().stream().map(studentMapper::toStudentDTO).toList();
+                findAllByTelegramIdIsNotNullAndActiveFalse().stream().map(studentMapper::toStudentDTO).toList();
         return ApiResponse.success(list, "Success");
     }
 

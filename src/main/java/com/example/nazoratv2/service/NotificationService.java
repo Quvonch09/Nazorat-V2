@@ -142,7 +142,7 @@ public class NotificationService {
                 () -> new DataNotFoundException("Group not found")
         );
 
-        for (Student student : studentRepository.findAllByGroup_id(group.getId())) {
+        for (Student student : studentRepository.findAllByGroup_idAndActiveTrue(group.getId())) {
             Notification notification = Notification.builder()
                     .message(reqGroupNotif.getTitle())
                     .description(reqGroupNotif.getDescription())
