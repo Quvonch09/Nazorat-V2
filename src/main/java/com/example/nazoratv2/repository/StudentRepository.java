@@ -19,7 +19,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByPhone(String phoneNumber);
 
 
-    List<Student> findAllByGroup_id(Long group_id);
+    List<Student> findAllByGroup_idAndActiveTrue(Long group_id);
 //
 //    Optional<Student> findByParent_Phone(String phone);
 //
@@ -235,7 +235,7 @@ Page<Student> searchStudents(@Param("name") String name,
                              Pageable pageable);
 
 
-    List<Student> findAllByTelegramIdIsNotNullAndActiveTrue();
+    List<Student> findAllByTelegramIdIsNotNullAndActiveFalse();
 
 
 

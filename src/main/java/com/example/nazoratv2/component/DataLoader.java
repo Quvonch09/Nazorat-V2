@@ -26,7 +26,9 @@ public class DataLoader implements CommandLineRunner {
                     .password(encoder.encode("admin123"))
                     .role(Role.ROLE_SUPER_ADMIN)
                     .fullName("Admin Admin")
-//                    .enabled(true)
+                    .active(true)
+                    .telegramId(0L)
+                    .telegramUsername(null)
                     .build();
 
             userRepository.save(admin);
