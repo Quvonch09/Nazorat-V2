@@ -106,9 +106,10 @@ public class UserService {
                 throw new BadRequestException("Cannot delete teacher");
             }
         } else if (user.getRole().name().equals("ROLE_PARENT")) {
-            int size = studentRepository.findAllByParent_Id(user.getId()).size();
+            int size = studentRepository.findAllByParent_IdAndActiveTrue(user.getId()).size();
             if (size == 0) {
                 user.setActive(false);
+                user.setTelegramId(0L);
             } else {
                 throw new BadRequestException("Cannot delete parent");
             }
@@ -192,27 +193,6 @@ public class UserService {
         return ApiResponse.success(dto, "Success");
     }
 
-//    public ApiResponse<List<WeekMarkDTO>> getWeekMarks(User parent, Long studentId, LocalDate weekStart) {
-//        Student student = getStudentForParent(studentId, parent);
-//
-//        LocalDate start = normalizeWeekStart(weekStart); // Monday
-//        LocalDate end = start.plusDays(4);               // Mon..Fri (7 kun kerak bo'lsa +6)
-//
-//        List<Mark> marks = markRepository
-//                .findAllByStudentIdAndActiveTrueAndDateBetweenOrderByDateAsc(student.getId(), start, end);
-//
-//        List<WeekMarkDTO> res = marks.stream()
-//                .map(m -> WeekMarkDTO.builder()
-//                        .day(toWeekDays(m.getDate().getDayOfWeek()))
-//                        .score(m.getTotalScore())
-//                        .category(m.getMarkCategoryStatus()) // YASHIL/SARIQ/QIZIL
-//                        .date(m.getDate())
-//                        .build())
-//                .toList();
-//
-//        return ApiResponse.success(res, "Success");
-//    }
-
 
     public ApiResponse<List<WeekMarkDTO>> getMarks(CustomUserDetails cud,
                                                    Long studentId,
@@ -252,22 +232,6 @@ public class UserService {
 
         return ApiResponse.success(res, "Success");
     }
-
-
-
-//    // 6 kun: Dushanba..Shanba
-//    private DateRange weeklyRange(LocalDate anyDay) {
-//        LocalDate start = anyDay.with(java.time.DayOfWeek.MONDAY);
-//        LocalDate end = start.plusDays(5);
-//        return new DateRange(start, end);
-//    }
-//
-//    // Oylik: 1-kun..oxirgi-kun
-//    private DateRange monthlyRange(LocalDate anyDay) {
-//        LocalDate start = anyDay.withDayOfMonth(1);
-//        LocalDate end = anyDay.withDayOfMonth(anyDay.lengthOfMonth());
-//        return new DateRange(start, end);
-//    }
 
 
     public ApiResponse<List<WeekAttendanceDTO>> getAttendance(CustomUserDetails cud,
@@ -332,21 +296,11 @@ public class UserService {
         Student s = studentRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found"));
 
-        // parent check
         if (s.getParent() == null || !Objects.equals(s.getParent().getId(), parent.getId())) {
             throw new RuntimeException("Bu farzand sizga tegishli emas");
         }
         return s;
     }
-
-//    private LocalDate normalizeWeekStart(LocalDate weekStart) {
-//        if (weekStart == null) weekStart = LocalDate.now();
-//        return weekStart.with(DayOfWeek.MONDAY);
-//    }
-//
-//    private WeekDays toWeekDays(DayOfWeek dow) {
-//        return WeekDays.valueOf(dow.name()); // MONDAY..SUNDAY mos
-//    }
 
     private double round1(double v) {
         return Math.round(v * 10.0) / 10.0;

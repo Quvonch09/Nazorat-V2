@@ -78,6 +78,7 @@ public class StudentService {
     public ApiResponse<String> delete(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Student not found"));
         student.setActive(false);
+        student.setTelegramId(0L);
         studentRepository.save(student);
         return ApiResponse.success(null, "Success");
     }

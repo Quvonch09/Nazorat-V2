@@ -25,7 +25,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 //
     long countByGroup_Id(Long groupId);
 
-    List<Student> findAllByParent_Id(Long parent_id);
 
 
     @Query(value = """
@@ -228,7 +227,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 @Query("""
     select s from Student s
     where (:name is null or :name = '' or lower(s.fullName) like lower(concat('%', :name, '%')))
-      and (:phone is null or :phone = '' or s.phone like concat('%', :phone, '%'))
+      and (:phone is null or :phone = '' or s.phone like concat('%', :phone, '%')) and s.active = true
 """)
 Page<Student> searchStudents(@Param("name") String name,
                              @Param("phone") String phone,
