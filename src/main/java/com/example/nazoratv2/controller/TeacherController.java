@@ -35,7 +35,7 @@ public class TeacherController {
             type = ActionType.TEACHER_CREATED,
             description = "O'qituvchi yaratildi"
     )
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN', 'ROLE_ADMIN')")
     @PostMapping("/saveUser")
     public ResponseEntity<ApiResponse<String>> userLogin(
             @Valid @RequestBody AuthRegister register
