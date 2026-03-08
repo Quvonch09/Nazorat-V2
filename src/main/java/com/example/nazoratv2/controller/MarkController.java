@@ -75,6 +75,7 @@ public class MarkController {
 
 
     @GetMapping("/groups/{groupId}/archive-marks")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ResponseEntity<ApiResponse<ResPageable>> archiveMarks(
             @AuthenticationPrincipal CustomUserDetails cud,
             @PathVariable Long groupId,
