@@ -37,7 +37,6 @@ public class MarkService {
     private final StudentRepository studentRepository;
     private final MarkMapper markMapper;
     private final UserRepository userRepository;
-    private final GroupRepository groupRepository;
 
 
     @TrackAction(
@@ -58,9 +57,9 @@ public class MarkService {
             mark = Mark.builder()
                     .student(student)
                     .status(reqMark.getMarkStatus())
-                    .homeworkScore(reqMark.getHomeworkScore())
+                    .homeworkScore(homework)
                     .activeScore(activity)
-                    .totalScore(homework)
+                    .totalScore(score)
                     .date(reqMark.getDate())
                     .markCategoryStatus(markCategoryStatus(score))
                     .build();
