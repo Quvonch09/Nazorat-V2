@@ -20,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @Table(name = "users")
-@Where(clause = "active = true")
 public class User extends BaseEntity implements UserDetails {
 
     private String phone;

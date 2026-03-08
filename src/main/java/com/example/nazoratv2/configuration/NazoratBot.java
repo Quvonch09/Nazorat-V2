@@ -498,7 +498,7 @@ public class NazoratBot extends TelegramLongPollingBot {
 
     private void showParentChildren(long chatId, Long parentId) {
 
-        var kids = studentRepository.findAllByParent_Id(parentId);
+        var kids = studentRepository.findAllByParent_IdAndActiveTrue(parentId);
 
         if (kids == null || kids.isEmpty()) {
             sendText(chatId, "Hozircha sizga biriktirilgan farzand topilmadi.");

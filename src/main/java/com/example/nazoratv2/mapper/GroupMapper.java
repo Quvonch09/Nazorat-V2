@@ -31,7 +31,7 @@ public class GroupMapper {
                 .categoryId(group.getCategory() != null ? group.getCategory().getId() : null)
                 .categoryName(group.getCategory() != null ? group.getCategory().getName() : null)
                 .weekDays(group.getWeekDays().stream().map(Enum::toString).toList())
-                .students(studentRepository.findAllByGroup_id(group.getId()).stream()
+                .students(studentRepository.findAllByGroup_idAndActiveTrue(group.getId()).stream()
                         .map(studentMapper::toStudentDTO).toList())
                 .build();
     }
