@@ -187,7 +187,7 @@ public class UserService {
 
         // Attendance hisoblash
         Integer totalDays = attendanceRepository.countByStudentId(student.getId());
-        Integer presentDays = attendanceRepository.countByStudentIdAndPresentTrue(student.getId());
+        Integer presentDays = attendanceRepository.countByStudentIdAndStatus(student.getId(),AttendaceEnum.KELDI);
 
         if (totalDays == null) totalDays = 0;
         if (presentDays == null) presentDays = 0;

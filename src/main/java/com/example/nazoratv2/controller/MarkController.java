@@ -5,6 +5,7 @@ import com.example.nazoratv2.dto.request.ReqMark;
 import com.example.nazoratv2.dto.request.ReqMarkDTO;
 import com.example.nazoratv2.dto.response.ResMark;
 import com.example.nazoratv2.dto.response.ResPageable;
+import com.example.nazoratv2.entity.enums.PeriodFilter;
 import com.example.nazoratv2.security.CustomUserDetails;
 import com.example.nazoratv2.service.MarkService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,9 +63,10 @@ public class MarkController {
     @Operation(summary = "Teacher, Student, Parent uziga tegishli baholarni kurish")
     @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_PARENT', 'STUDENT','ROLE_SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<ResPageable>> getMyMarks(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                               @RequestParam PeriodFilter filter,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(markService.getMyMarks(customUserDetails, page, size));
+        return ResponseEntity.ok(markService.getMyMarks(customUserDetails,filter, page, size));
     }
 
 
