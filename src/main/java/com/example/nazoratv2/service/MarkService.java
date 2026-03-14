@@ -53,7 +53,7 @@ public class MarkService {
             int activity = clampScore10(reqMark.getActivityScore(), "activityScore");
             int homework = clampScore10(reqMark.getHomeworkScore(), "homeworkScore");
 
-            int score = (activity+ homework)/2;
+            int score = (activity+ homework);
             mark = Mark.builder()
                     .student(student)
                     .status(reqMark.getMarkStatus())
@@ -104,7 +104,7 @@ public class MarkService {
             int activity = clampScore10(reqMarkDTO.getActivityScore(), "activityScore");
             int homework = clampScore10(reqMarkDTO.getHomeworkScore(), "homeworkScore");
 
-            int score = (activity+ homework)/2;
+            int score = (activity+ homework);
             mark.setStatus(reqMarkDTO.getMarkStatus());
             mark.setHomeworkScore(homework);
             mark.setActiveScore(activity);
@@ -263,9 +263,9 @@ public class MarkService {
 
 
     private MarkCategoryStatus markCategoryStatus(int score){
-        if (score == 5) {
+        if (score >= 8) {
             return MarkCategoryStatus.YASHIL;
-        } else if (score == 4 || score == 3) {
+        } else if (score >= 4 || score == 3) {
             return MarkCategoryStatus.SARIQ;
         } else {
             return MarkCategoryStatus.QIZIL;
