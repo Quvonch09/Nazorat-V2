@@ -185,10 +185,25 @@ public class UserService {
 
         int groupsCount = (student.getGroup() != null) ? 1 : 0;
 
+        // Attendance hisoblash
+        Integer totalDays = attendanceRepository.countByStudentId(student.getId());
+        Integer presentDays = attendanceRepository.countByStudentIdAndPresentTrue(student.getId());
+
+        if (totalDays == null) totalDays = 0;
+        if (presentDays == null) presentDays = 0;
+
+        int attendancePercent = 0;
+
+        if (totalDays > 0) {
+            attendancePercent = (presentDays * 100) / totalDays;
+        }
+
         StudentStatsDTO dto = StudentStatsDTO.builder()
                 .averageGrade(round1(avg))
-                .subjectsCount(groupsCount) // sizda field nomi shunaqa bo'lsa
+                .attendancePercent(attendancePercent)
+                .subjectsCount(groupsCount)
                 .build();
+
 
         return ApiResponse.success(dto, "Success");
     }
@@ -208,7 +223,7 @@ public class UserService {
         LocalDate start;
         LocalDate end;
 
-        if (filter == PeriodFilter.WEEKLY) {
+        if (filter == PeriodFilter.WEEK) {
             start = base.with(java.time.DayOfWeek.MONDAY);
             end = start.plusDays(5); // 6 kun: Mon..Sat
         } else { // MONTHLY

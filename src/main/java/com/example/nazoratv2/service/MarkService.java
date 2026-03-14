@@ -10,10 +10,7 @@ import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Mark;
 import com.example.nazoratv2.entity.Student;
 import com.example.nazoratv2.entity.User;
-import com.example.nazoratv2.entity.enums.ActionType;
-import com.example.nazoratv2.entity.enums.MarkCategoryStatus;
-import com.example.nazoratv2.entity.enums.MarkStatus;
-import com.example.nazoratv2.entity.enums.Role;
+import com.example.nazoratv2.entity.enums.*;
 import com.example.nazoratv2.exception.BadRequestException;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.MarkMapper;
@@ -27,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -163,26 +161,86 @@ public class MarkService {
 
 
 
-    public ApiResponse<ResPageable> getMyMarks(CustomUserDetails customUserDetails, int page, int size){
+    public ApiResponse<ResPageable> getMyMarks(CustomUserDetails customUserDetails, PeriodFilter filter, int page, int size){
         Page<Mark> markPage;
         PageRequest pageRequest = PageRequest.of(page, size);
-        if (customUserDetails.getRole().equals(Role.ROLE_TEACHER.name())){
-             userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone()).orElseThrow(
-                    () -> new DataNotFoundException("Teacher not found")
-            );
-            String createdBy = customUserDetails.getPhone();
-            markPage = markRepository.findAllByCreatedByAndActiveTrue(createdBy, pageRequest);
-        } else if (customUserDetails.getRole().equals(Role.ROLE_SUPER_ADMIN.name())) {
-            markPage = markRepository.findAll(pageRequest);
-        } else {
-            Student student = studentRepository.findByPhone(customUserDetails.getPhone()).orElseThrow(
-                    () -> new DataNotFoundException("Student not found"));
 
-            markPage = markRepository.findAllByStudentIdAndActiveTrue(student.getId(), pageRequest);
+        LocalDate now = LocalDate.now();
+        LocalDate startDate;
+        LocalDate endDate;
+
+        switch (filter) {
+
+            case DAY:
+                startDate = now;
+                endDate = now;
+                break;
+
+            case WEEK:
+                startDate = now.with(DayOfWeek.MONDAY);
+                endDate = startDate.plusDays(6);
+                break;
+
+            case MONTH:
+                startDate = now.withDayOfMonth(1);
+                endDate = now.withDayOfMonth(now.lengthOfMonth());
+                break;
+
+            case YEAR:
+                startDate = now.withDayOfYear(1);
+                endDate = now.withDayOfYear(now.lengthOfYear());
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid filter");
         }
+
+        if (customUserDetails.getRole().equals(Role.ROLE_TEACHER.name())) {
+
+            userRepository.findByPhoneAndActiveTrue(customUserDetails.getPhone())
+                    .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
+
+            String createdBy = customUserDetails.getPhone();
+
+            markPage = markRepository
+                    .findAllByCreatedByAndDateBetweenAndActiveTrue(
+                            createdBy,
+                            startDate,
+                            endDate,
+                            pageRequest
+                    );
+
+        } else if (customUserDetails.getRole().equals(Role.ROLE_SUPER_ADMIN.name())) {
+
+            markPage = markRepository
+                    .findAllByDateBetweenAndActiveTrue(
+                            startDate,
+                            endDate,
+                            pageRequest
+                    );
+
+        } else {
+
+            Student student = studentRepository
+                    .findByPhone(customUserDetails.getPhone())
+                    .orElseThrow(() -> new DataNotFoundException("Student not found"));
+
+            markPage = markRepository
+                    .findAllByStudentIdAndDateBetweenAndActiveTrue(
+                            student.getId(),
+                            startDate,
+                            endDate,
+                            pageRequest
+                    );
+        }
+
         isFoundMark(markPage.getTotalElements());
 
-        List<ResMark> marks = markPage.getContent().stream().map(markMapper::toDTO).toList();
+        List<ResMark> marks = markPage.getContent()
+                .stream()
+                .map(markMapper::toDTO)
+                .toList();
+
         ResPageable resPageable = ResPageable.builder()
                 .page(page)
                 .size(size)
