@@ -1,6 +1,7 @@
 package com.example.nazoratv2.repository;
 
 import com.example.nazoratv2.entity.Attendance;
+import com.example.nazoratv2.entity.enums.AttendaceEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +18,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     Integer countByStudentId(Long studentId);
 
-    Integer countByStudentIdAndPresentTrue(Long studentId);
+    Integer countByStudentIdAndStatus(Long studentId, AttendaceEnum status);
 }
