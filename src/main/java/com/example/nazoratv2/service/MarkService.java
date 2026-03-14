@@ -263,9 +263,9 @@ public class MarkService {
 
 
     private MarkCategoryStatus markCategoryStatus(int score){
-        if (score == 5) {
+        if (score >= 8) {
             return MarkCategoryStatus.YASHIL;
-        } else if (score == 4 || score == 3) {
+        } else if (score >= 4 || score == 3) {
             return MarkCategoryStatus.SARIQ;
         } else {
             return MarkCategoryStatus.QIZIL;
