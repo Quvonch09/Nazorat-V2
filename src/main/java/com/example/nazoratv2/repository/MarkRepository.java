@@ -130,4 +130,23 @@ order by sum(coalesce(m.totalScore, 0)) desc, m.student.fullName asc
             @Param("keyword") String keyword,
             @Param("createdBy") String createdBy,
             Pageable pageable);
+
+
+
+    Page<Mark> findAllByCreatedByAndDateBetweenAndActiveTrue(
+            String createdBy,
+            LocalDate start,
+            LocalDate end,
+            Pageable pageable);
+
+    Page<Mark> findAllByStudentIdAndDateBetweenAndActiveTrue(
+            Long studentId,
+            LocalDate start,
+            LocalDate end,
+            Pageable pageable);
+
+    Page<Mark> findAllByDateBetweenAndActiveTrue(
+            LocalDate start,
+            LocalDate end,
+            Pageable pageable);
 }
