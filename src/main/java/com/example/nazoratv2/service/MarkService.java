@@ -6,15 +6,12 @@ import com.example.nazoratv2.dto.request.ReqMark;
 import com.example.nazoratv2.dto.request.ReqMarkDTO;
 import com.example.nazoratv2.dto.response.ResMark;
 import com.example.nazoratv2.dto.response.ResPageable;
-import com.example.nazoratv2.entity.Group;
 import com.example.nazoratv2.entity.Mark;
 import com.example.nazoratv2.entity.Student;
-import com.example.nazoratv2.entity.User;
 import com.example.nazoratv2.entity.enums.*;
 import com.example.nazoratv2.exception.BadRequestException;
 import com.example.nazoratv2.exception.DataNotFoundException;
 import com.example.nazoratv2.mapper.MarkMapper;
-import com.example.nazoratv2.repository.GroupRepository;
 import com.example.nazoratv2.repository.MarkRepository;
 import com.example.nazoratv2.repository.StudentRepository;
 import com.example.nazoratv2.repository.UserRepository;
@@ -176,7 +173,7 @@ public class MarkService {
                 endDate = now;
                 break;
 
-            case WEEK:
+            case WEEKLY:
                 startDate = now.with(DayOfWeek.MONDAY);
                 endDate = startDate.plusDays(6);
                 break;

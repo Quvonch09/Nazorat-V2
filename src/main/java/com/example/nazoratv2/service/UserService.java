@@ -1,7 +1,6 @@
 package com.example.nazoratv2.service;
 
 import com.example.nazoratv2.dto.*;
-import com.example.nazoratv2.dto.request.ReqGroupDTO;
 import com.example.nazoratv2.dto.response.*;
 import com.example.nazoratv2.entity.Attendance;
 import com.example.nazoratv2.entity.Mark;
@@ -23,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -223,7 +221,7 @@ public class UserService {
         LocalDate start;
         LocalDate end;
 
-        if (filter == PeriodFilter.WEEK) {
+        if (filter == PeriodFilter.WEEKLY) {
             start = base.with(java.time.DayOfWeek.MONDAY);
             end = start.plusDays(5); // 6 kun: Mon..Sat
         } else { // MONTHLY
