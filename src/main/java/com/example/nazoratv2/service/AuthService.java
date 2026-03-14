@@ -273,7 +273,7 @@ public class AuthService {
                     .role(Role.ROLE_PARENT)
                     .phone(req.getParentPhone())
                     .telegramUsername(req.getParentUsername()) // ✅ username saqlanadi
-                    .telegramId(null) // parent keyin kirib bog'laydi
+                    .telegramId(0L) // parent keyin kirib bog'laydi
                     .password(passwordEncoder.encode(last4(req.getParentPhone())))
                     .active(false)
                     .build();

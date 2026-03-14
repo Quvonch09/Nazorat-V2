@@ -115,46 +115,77 @@ public class NazoratBot extends TelegramLongPollingBot {
                 }
 
                 String phone = normalizePhone(msg.getContact().getPhoneNumber());
+
                 if (!isUzPhone(phone)) {
                     sendText(chatId, "Telefon formati xato. Masalan: 998901234567");
-                    askStudentPhoneWithContactButton(chatId);
                     return;
                 }
 
-                // ✅ 1) Avval tekshiramiz: bu phone USER jadvalida bormi va ROLE_PARENTmi?
+                // 🔥 1. Parent USER jadvalida bormi?
                 var parentOpt = userRepository.findByPhoneAndActiveTrue(phone);
 
                 if (parentOpt.isPresent()) {
-                    // ✅ bu parent registratsiyasi ekan
-                    String username = msg.getFrom().getUserName(); // null bo'lishi mumkin
 
-                    // parent telegramni bog'laymiz (telegramId + username)
-                    ApiResponse<String> linkRes = authService.linkParentTelegram(phone, tgId, username);
+                    var parent = parentOpt.get();
+
+                    boolean hasActiveKids =
+                            studentRepository.existsByParentIdAndActiveTrue(parent.getId());
+
+                    String username = msg.getFrom().getUserName();
+
+                    ApiResponse<String> linkRes =
+                            authService.linkParentTelegram(phone, tgId, username);
 
                     if (!linkRes.isSuccess()) {
                         sendText(chatId, "❌ Xatolik: " + linkRes.getMessage());
                         return;
                     }
 
-                    // contact keyboardni olib tashlaymiz
-                    sendTextRemoveKeyboard(chatId, "✅ Parent topildi. Farzandlaringiz ro'yxati:");
+                    sendTextRemoveKeyboard(chatId, "✅ Parent topildi.");
 
-                    // ✅ parent bolalarini chiqaramiz (button)
-                    showParentChildren(chatId, parentOpt.get().getId());
+                    if (hasActiveKids) {
 
-                    // parent flow bo'lgani uchun sessionni tozalab yuborsak ham bo'ladi,
-                    // lekin tanlash callback'iga parentId kerak bo'ladi.
-                    // Shuning uchun sessionga parentId saqlab ketamiz:
+                        sendText(chatId,
+                                "👨‍👩‍👧 Siz allaqachon tizimda ro'yxatdan o'tgansiz.\n\n" +
+                                        "Login: " + phone + "\n" +
+                                        "Password: " + last4(phone));
+
+                        sendMiniAppButton(chatId);
+
+                        sessions.remove(tgId);
+                        return;
+                    }
+
+                    showParentChildren(chatId, parent.getId());
+
                     s.setParentPhone(phone);
-                    s.setParentId(parentOpt.get().getId()); // RegisterSessionga qo'shasan
-                    s.setStep(Step.PARENT_PICK_CHILD);      // Stepga qo'shasan
+                    s.setParentId(parent.getId());
+                    s.setStep(Step.PARENT_PICK_CHILD);
 
                     return;
                 }
 
-                // ✅ 2) Parent emas => student registr davom etadi
+                // 🔥 2. Agar USER da parent bo'lmasa ham
+                // STUDENT orqali parent tekshiramiz
+                boolean hasActiveStudent =
+                        studentRepository.existsByParentPhoneAndActiveTrue(phone);
+
+                if (hasActiveStudent) {
+
+                    sendTextRemoveKeyboard(chatId,
+                            "👨‍👩‍👧 Farzandingiz tizimda mavjud.\n\n" +
+                                    "Login: " + phone +
+                                    "\nPassword: " + last4(phone));
+
+                    sendMiniAppButton(chatId);
+
+                    sessions.remove(tgId);
+                    return;
+                }
+
+                // 🔥 3. Student registratsiyasi davom etadi
                 s.setStudentPhone(phone);
-                s.setStudentTelegramId(tgId); // (sessionga saqlab qo'ygan yaxshi)
+                s.setStudentTelegramId(tgId);
                 s.setStep(Step.STUDENT_NAME);
 
                 sendTextRemoveKeyboard(chatId, "Ism-familiyangizni kiriting:");

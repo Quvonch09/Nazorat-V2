@@ -236,6 +236,9 @@ Page<Student> searchStudents(@Param("name") String name,
 
     List<Student> findAllByTelegramIdIsNotNullAndActiveFalse();
 
+    boolean existsByParentIdAndActiveTrue(Long parentId);
+    boolean existsByParentPhoneAndActiveTrue(String phone);
+
 
 
 
